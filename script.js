@@ -269,7 +269,8 @@ async function waitForBotInGuild(guildId, timeout = 180000, interval = 3000){
 // Open the invite page in a new tab and wait for the bot to be added to `guildId`.
 // When detected, redirect the current page to the server dashboard for that guild.
 function startInviteAndWait(guildId, serverName, btn){
-  const url = `/invite-now?guild_id=${encodeURIComponent(guildId)}`;
+  // Open the Discord invite URL generated client-side — avoids hitting /invite-now on static deployments
+  const url = buildInviteUrl(guildId);
   const win = window.open(url, '_blank');
   if (btn){ btn.disabled = true; btn.textContent = 'Waiting for invite…'; }
 

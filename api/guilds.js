@@ -17,12 +17,39 @@ module.exports = async (req, res) => {
       // Optionally check bot presence using BOT_TOKEN
       const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN || process.env.BOT_TOKEN || process.env.DISCORD_TOKEN;
       const BOT_ID = process.env.DISCORD_BOT_ID || process.env.DISCORD_CLIENT_ID || process.env.CLIENT_ID;
-      if (BOT_TOKEN && BOT_ID){
+      const BOT_PRESENCE_URL = process.env.BOT_PRESENCE_URL || null;
+      const BOT_NOTIFY_SECRET = process.env.BOT_NOTIFY_SECRET || process.env.WEBHOOK_SECRET || '';
+
+      if (Array.isArray(guilds) && guilds.length > 0){
         await Promise.all(guilds.map(async (g) => {
           try{
-            const memberResp = await axios.get(`https://discord.com/api/guilds/${g.id}/members/${BOT_ID}`, { headers: { Authorization: `Bot ${BOT_TOKEN}` }, timeout: 5000, validateStatus: () => true });
-            g.bot_present = memberResp.status === 200;
-          }catch(e){ g.bot_present = false; }
+            // 1) Prefer direct bot token check if available
+            if (BOT_TOKEN && BOT_ID){
+              try{
+                const memberResp = await axios.get(`https://discord.com/api/guilds/${g.id}/members/${BOT_ID}`, { headers: { Authorization: `Bot ${BOT_TOKEN}` }, timeout: 5000, validateStatus: () => true });
+                g.bot_present = memberResp.status === 200;
+                return;
+              }catch(e){ /* fall through to next check */ }
+            }
+
+            // 2) Fallback to bot presence endpoint if configured
+            if (BOT_PRESENCE_URL && BOT_ID){
+              try{
+                const base = BOT_PRESENCE_URL.replace(/\/$/, '');
+                // prefer per-member check when available
+                const r = await axios.get(`${base}/guild-member/${encodeURIComponent(g.id)}/${encodeURIComponent(BOT_ID)}`, { headers: (BOT_NOTIFY_SECRET ? { 'x-dashboard-secret': BOT_NOTIFY_SECRET } : {}), timeout: 5000, validateStatus: () => true });
+                if (r && r.status >= 200 && r.status < 300 && r.data && r.data.member) {
+                  g.bot_present = true;
+                  return;
+                }
+                // if the member endpoint returns 404, treat as not present
+                if (r && r.status === 404){ g.bot_present = false; return; }
+              }catch(e){ /* ignore and mark as not present below */ }
+            }
+
+            // Default: not present
+            g.bot_present = false;
+          }catch(err){ console.warn('Error checking bot presence for guild', g.id, err?.message || err); g.bot_present = false; }
         }));
       }
 

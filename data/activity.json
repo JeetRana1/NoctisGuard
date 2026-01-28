@@ -10,6 +10,48 @@
         "giveaway": {
           "duration": 1,
           "channel": "1464390485136244747",
+          "prize": "ttf",
+          "mention": true
+        }
+      }
+    },
+    "user": {
+      "id": "474580691225673738",
+      "username": ".tintz._.#0"
+    },
+    "ts": 1769639160640
+  },
+  {
+    "guildId": "1336111006644047964",
+    "type": "plugin_config_update",
+    "pluginId": "giveaway",
+    "config": {
+      "giveaway": {
+        "giveaway": {
+          "duration": 1,
+          "channel": "1464390485136244747",
+          "prize": "ttf",
+          "mention": true
+        }
+      }
+    },
+    "user": {
+      "id": "474580691225673738",
+      "username": ".tintz._.#0"
+    },
+    "ts": 1769639134192
+  },
+  {
+    "guildId": "1336111006644047964",
+    "type": "plugin_test",
+    "pluginId": "giveaway",
+    "payload": {
+      "testType": "giveaway",
+      "userId": null,
+      "config": {
+        "giveaway": {
+          "duration": 1,
+          "channel": "1464390485136244747",
           "prize": "U<EG",
           "mention": true
         }
