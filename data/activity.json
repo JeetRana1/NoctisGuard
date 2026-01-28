@@ -1,5 +1,17 @@
 [
   {
+    "type": "stats_update",
+    "guildId": null,
+    "payload": {
+      "type": "stats_update",
+      "stats": {
+        "guildCount": 2,
+        "totalMembers": 48
+      }
+    },
+    "ts": 1769640823958
+  },
+  {
     "guildId": "1336111006644047964",
     "type": "plugin_test",
     "pluginId": "giveaway",
