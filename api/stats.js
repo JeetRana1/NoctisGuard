@@ -6,6 +6,15 @@ module.exports = (req, res) => {
     const p = path.join(process.cwd(), 'data', 'stats.json');
     const raw = fs.readFileSync(p, 'utf8') || '{}';
     const obj = JSON.parse(raw || '{}');
+
+    // If requested path ends with stats-history, return history array
+    const isHistory = String(req.url || '').includes('/stats-history');
+    if (isHistory){
+      const history = Array.isArray(obj.history) ? obj.history : [];
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(200).json({ history });
+    }
+
     const uptimeStart = Number(obj.uptimeStart) || Date.now();
     const uptimeHours = Math.floor((Date.now() - uptimeStart) / (1000 * 60 * 60));
 

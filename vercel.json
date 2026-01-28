@@ -13,6 +13,7 @@
     { "src": "^/callback$", "dest": "/api/callback.js" },
     { "src": "^/invite-now$", "dest": "/api/invite-now.js" },
     { "src": "^/invite-callback$", "dest": "/api/invite-callback.js" },
+    { "src": "^/api/stats-history$", "dest": "/api/stats.js" },
     { "src": "^/logout$", "dest": "/api/logout.js" },
     { "src": "^/api/(.*)$", "dest": "/api/$1.js" },
     { "src": "^/$", "dest": "/index.html" },

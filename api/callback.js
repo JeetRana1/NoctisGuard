@@ -36,8 +36,10 @@ module.exports = async (req, res) => {
 
     // Set cookies (not HttpOnly to mirror local dev behavior)
     const cookies = [];
-    cookies.push(`ng_token=${encodeURIComponent(access_token)}; Max-Age=${24*60*60}; Path=/`);
-    cookies.push(`ng_user=${encodeURIComponent(JSON.stringify(user))}; Max-Age=${24*60*60}; Path=/`);
+    // Use SameSite=None and Secure so the cookies are accepted after cross-site OAuth redirects
+    const cookieOpts = `Max-Age=${24*60*60}; Path=/; SameSite=None; Secure`;
+    cookies.push(`ng_token=${encodeURIComponent(access_token)}; ${cookieOpts}`);
+    cookies.push(`ng_user=${encodeURIComponent(JSON.stringify(user))}; ${cookieOpts}`);
 
     res.setHeader('Set-Cookie', cookies);
     res.writeHead(302, { Location: '/dashboard.html' });
