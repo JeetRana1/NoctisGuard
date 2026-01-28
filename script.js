@@ -1,6 +1,7 @@
 // Local mock OAuth + UI helpers
 // When running as a static site, build OAuth URLs on the client using the public CLIENT_ID
-const USE_MOCK = true; // toggle to false when testing with real OAuth flow
+// Decide whether to use mock auth: explicit config (NG_CONFIG.USE_MOCK) or default to local dev
+const USE_MOCK = (window.NG_CONFIG && !!window.NG_CONFIG.USE_MOCK) || (location.hostname === 'localhost' || location.hostname === '127.0.0.1'); // set NG_CONFIG.USE_MOCK=true for dev previews if needed
 
 function buildInviteUrl(guildId){
   try{
