@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Server Settings - NoctisGuard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.svg" sizes="any">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon.svg">
+  <style>.settings-card{max-width:820px;margin:48px auto;padding:28px;border-radius:12px;background:var(--card);border:1px solid var(--border)}</style>
+</head>
+<body class="page-server-settings">
+  <!-- Page loader overlay (visible while page loads) -->
+  <div id="page-loader" class="page-loader" aria-hidden="false">
+    <div class="spinner" aria-hidden="true"></div>
+  </div>
+
+  <nav class="container" style="padding-top:24px;display:flex;align-items:center;gap:12px"><a href="dashboard.html" class="btn ghost">← Back</a><h2 style="margin:0">Server Settings</h2></nav>
+
+  <div class="container">
+    <div class="settings-card">
+      <h3 id="server-name">Server</h3>
+      <p class="small-muted" id="server-desc">Configure server-specific settings here (mock)</p>
+
+      <form id="theme-form" style="margin-top:18px;display:flex;flex-direction:column;gap:22px">
+        <fieldset style="border:0;padding:0;margin:0">
+          <legend style="font-weight:700;margin-bottom:8px">Theme Preset</legend>
+          <div class="preset-inline" role="radiogroup" aria-label="Theme presets">
+            <label class="preset-option"><input type="radio" name="preset" value="default" checked><span>Default</span></label>
+            <label class="preset-option"><input type="radio" name="preset" value="dark"><span>Dark</span></label>
+            <label class="preset-option"><input type="radio" name="preset" value="purple"><span>Purple</span></label>
+            <label class="preset-option"><input type="radio" name="preset" value="blue"><span>Blue</span></label>
+          </div>
+        </fieldset>
+
+        <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label for="accent-color">Accent color</label>
+            <div class="color-control">
+              <input type="color" id="accent-color" value="#7c5cff" aria-label="Accent color">
+              <button type="button" id="accent-swatch" class="color-swatch" title="Accent color swatch" aria-label="Accent color swatch"></button>
+
+              <!-- Custom color picker popup -->
+              <div class="custom-color-picker" id="accent-picker" aria-hidden="true">
+                <div class="picker-row">
+                  <div id="accent-sv" class="sv-area" role="application" aria-label="Saturation and Value selector">
+                    <div class="sv-cursor" id="accent-sv-cursor" aria-hidden="true"></div>
+                  </div>
+                  <div class="picker-preview" id="accent-preview" aria-hidden="true" style="background:#7c5cff"></div>
+                </div>
+                <div class="picker-row" style="margin-top:8px">
+                  <div id="accent-hue" class="hue-strip" role="slider" aria-label="Hue selector" aria-valuemin="0" aria-valuemax="360" aria-valuenow="260">
+                    <div class="hue-cursor" id="accent-hue-cursor" aria-hidden="true"></div>
+                  </div>
+                </div>
+                <div class="picker-row picker-controls">
+                  <input id="accent-hex-picker" class="hex-input-picker" maxlength="7" value="#7c5cff" aria-label="Accent hex input" />
+                  <div class="preset-swatches" id="accent-presets" aria-hidden="true">
+                    <button class="swatch-preset" data-color="#7c5cff" title="#7c5cff" style="background:#7c5cff"></button>
+                    <button class="swatch-preset" data-color="#2b9cff" title="#2b9cff" style="background:#2b9cff"></button>
+                    <button class="swatch-preset" data-color="#ff7a59" title="#ff7a59" style="background:#ff7a59"></button>
+                    <button class="swatch-preset" data-color="#34d399" title="#34d399" style="background:#34d399"></button>
+                    <button class="swatch-preset" data-color="#f59e0b" title="#f59e0b" style="background:#f59e0b"></button>
+                  </div>
+                </div> 
+                <div class="picker-actions">
+                  <button type="button" class="btn ghost" id="accent-picker-close">Close</button>
+                  <button type="button" class="btn primary" id="accent-picker-apply">Apply</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;min-width:220px">
+            <label for="accent-hex">Accent (hex)</label>
+            <div class="hex-control">
+              <span class="hex-prefix">#</span>
+              <input type="text" id="accent-hex" class="hex-input" placeholder="7c5cff" inputmode="text" maxlength="6" autocomplete="off" title="Enter 6 hex digits (e.g. 7c5cff)">
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label for="bg-mode">Background</label>
+            <div class="custom-dropdown" data-value="dark">
+              <button id="bg-dropdown-button" type="button" class="custom-dropdown-button" aria-haspopup="listbox" aria-expanded="false">Dark</button>
+              <ul id="bg-dropdown-list" class="custom-dropdown-list" role="listbox" tabindex="-1" aria-labelledby="bg-dropdown-button">
+                <li role="option" class="custom-dropdown-item" data-value="dark" aria-selected="true">Dark</li>
+                <li role="option" class="custom-dropdown-item" data-value="light" aria-selected="false">Light</li>
+              </ul>
+              <!-- hidden select kept for compatibility and persistence -->
+              <select id="bg-mode" aria-hidden="true" style="display:none"><option value="dark">Dark</option><option value="light">Light</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:center;margin-top:14px">
+          <label class="switch">
+            <input type="checkbox" id="apply-global" aria-label="Apply theme globally" checked>
+            <span class="switch-ui" aria-hidden="true"></span>
+            <span class="switch-label">Apply globally</span>
+          </label>
+          <span class="small-muted" style="margin-left:6px"></span>
+          <button type="button" class="btn ghost" id="export-settings">Export</button>
+          <button type="button" class="btn ghost" id="import-settings">Import</button>
+        </div>
+
+        <div style="margin-top:6px">
+          <div class="small-muted">Preview:</div>
+          <div id="theme-preview" style="margin-top:8px;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;gap:12px">
+            <div style="width:44px;height:44px;border-radius:8px;background:var(--accent)"></div>
+            <div>
+              <div style="font-weight:700">Preview Title</div>
+              <div class="small-muted">Sample text to preview background & accent</div>
+            </div>
+          </div>
+        </div>
+
+      </form>
+
+      <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+        <button class="btn primary" id="save-settings">Save</button>
+        <button class="btn ghost" id="reset-settings">Reset</button>
+      </div>
+
+      <div id="save-msg" style="margin-top:12px;display:none" class="small-muted">Settings saved.</div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    (()=>{
+      const params = new URLSearchParams(location.search);
+      const serverId = params.get('id') || 'server-global';
+      document.getElementById('server-name').textContent = params.get('id') || 'Server Settings';
+
+      const form = document.getElementById('theme-form');
+      const accentColor = document.getElementById('accent-color');
+      const accentHex = document.getElementById('accent-hex');
+      const bgMode = document.getElementById('bg-mode');
+      // custom dropdown elements
+      const bgDropdownButton = document.getElementById('bg-dropdown-button');
+      const bgDropdownList = document.getElementById('bg-dropdown-list');
+      const bgDropdownItems = bgDropdownList ? Array.from(bgDropdownList.querySelectorAll('.custom-dropdown-item')) : [];
+      const presets = form.querySelectorAll('input[name="preset"]');
+      const applyGlobal = document.getElementById('apply-global');
+      const preview = document.getElementById('theme-preview');
+      const saveBtn = document.getElementById('save-settings');
+      const resetBtn = document.getElementById('reset-settings');
+      const exportBtn = document.getElementById('export-settings');
+      const importBtn = document.getElementById('import-settings');
+      const saveMsg = document.getElementById('save-msg');
+
+      // Dropdown helpers
+      function setBgDropdownValue(val){
+        if (!val) return;
+        const normalized = String(val);
+        // update hidden select for readForm
+        if (bgMode) bgMode.value = normalized;
+        // update button text
+        if (bgDropdownButton) bgDropdownButton.textContent = normalized[0].toUpperCase() + normalized.slice(1);
+        // update aria-selected on items
+        bgDropdownItems.forEach(it => { const v = it.dataset.value; const sel = (v === normalized); it.setAttribute('aria-selected', sel ? 'true' : 'false'); it.classList.toggle('selected', sel); });
+      }
+
+      function closeBgDropdown(){ if (!bgDropdownButton) return; bgDropdownButton.setAttribute('aria-expanded','false'); if (bgDropdownList) bgDropdownList.style.display = 'none'; }
+      function openBgDropdown(){ if (!bgDropdownButton) return; bgDropdownButton.setAttribute('aria-expanded','true'); bgDropdownList.style.display = 'block'; // focus first selected item
+        const sel = bgDropdownItems.find(it => it.getAttribute('aria-selected') === 'true'); if (sel) sel.focus(); else if (bgDropdownItems[0]) bgDropdownItems[0].focus(); }
+
+      if (bgDropdownButton){
+        bgDropdownButton.addEventListener('click', ()=>{ const open = bgDropdownButton.getAttribute('aria-expanded') === 'true'; if (open) closeBgDropdown(); else openBgDropdown(); });
+        bgDropdownButton.addEventListener('keydown', (ev)=>{ if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp'){ ev.preventDefault(); openBgDropdown(); } if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openBgDropdown(); } });
+      }
+
+      bgDropdownItems.forEach(item => {
+        item.setAttribute('tabindex','0');
+        item.addEventListener('click', ()=>{ const v = item.dataset.value; setBgDropdownValue(v); closeBgDropdown(); applySettings(readForm()); autoSaveDebounced(); });
+        item.addEventListener('keydown', (ev)=>{
+          if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); item.click(); }
+          else if (ev.key === 'ArrowDown'){ ev.preventDefault(); const ni = bgDropdownItems[(bgDropdownItems.indexOf(item)+1) % bgDropdownItems.length]; if (ni) ni.focus(); }
+          else if (ev.key === 'ArrowUp'){ ev.preventDefault(); const pi = bgDropdownItems[(bgDropdownItems.indexOf(item)-1 + bgDropdownItems.length) % bgDropdownItems.length]; if (pi) pi.focus(); }
+          else if (ev.key === 'Escape'){ ev.preventDefault(); closeBgDropdown(); }
+        });
+      });
+
+      // close on outside click
+      document.addEventListener('click', (e)=>{ if (!bgDropdownList || !bgDropdownButton) return; if (!e.composedPath().includes(bgDropdownList) && !e.composedPath().includes(bgDropdownButton)) closeBgDropdown(); });
+
+      // make sure the hidden select stays in sync if changed programmatically
+      if (bgMode){ bgMode.addEventListener('change', ()=>{ setBgDropdownValue(bgMode.value); }); }
+
+
+      const DEFAULTS = {
+        preset: 'default',
+        accent: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#7c5cff',
+        bgMode: 'dark'
+      };
+
+      // Autosave helpers
+      let _autoSaveTimer = null;
+      function showLocalToast(message, type='info', duration=2200){
+        // local toast for this page (falls back to global showToast if available)
+        try{ if (typeof showToast === 'function'){ showToast(message, type, duration); return; } }catch(e){}
+        let t = document.querySelector('.toast');
+        if (!t){ t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role','status'); document.body.appendChild(t); }
+        t.textContent = message;
+        t.classList.remove('toast-error','toast-info');
+        t.classList.add(type === 'error' ? 'toast-error' : 'toast-info');
+        t.classList.add('show');
+        clearTimeout(t._hideTimeout);
+        t._hideTimeout = setTimeout(()=>{ t.classList.remove('show'); }, duration);
+      }
+
+      function saveSettingsImmediate(){
+        const settings = readForm();
+        const global = !!applyGlobal.checked;
+        // Persist the user's apply-global preference so toggle state survives refresh
+        settings.applyGlobal = global;
+        // Always save server-specific settings first to ensure page load reflects the latest choice
+        localStorage.setItem(getStorageKey(serverId, false), JSON.stringify(settings));
+        // If user opted to apply globally, also write the global key and notify other pages
+        if (global) {
+          const prev = localStorage.getItem(getStorageKey(null, true));
+          const newVal = JSON.stringify(settings);
+          localStorage.setItem(getStorageKey(null, true), newVal);
+          try{
+            // Dispatch a storage-like event so other windows react immediately
+            window.dispatchEvent(new StorageEvent('storage', { key: getStorageKey(null,true), oldValue: prev, newValue: newVal, storageArea: localStorage, url: location.href }));
+          }catch(e){ /* some browsers may restrict constructing StorageEvent */ }
+          try{ window.dispatchEvent(new CustomEvent('theme:changed', { detail: settings })); }catch(e){}
+        }
+        // visual confirmation
+        if (saveMsg) {
+          saveMsg.textContent = 'Settings saved';
+          saveMsg.style.display = 'block';
+          if (saveMsg._hideTimeout) clearTimeout(saveMsg._hideTimeout);
+          // keep the inline saved message visible slightly longer to match toast timing
+          saveMsg._hideTimeout = setTimeout(()=>{ saveMsg.style.display='none'; }, 3500);
+        }
+        try{ showLocalToast('Settings applied', 'info', 3500); }catch(e){}
+      }
+      function autoSaveDebounced(delay = 700){
+        if (_autoSaveTimer) clearTimeout(_autoSaveTimer);
+        _autoSaveTimer = setTimeout(()=>{ saveSettingsImmediate(); _autoSaveTimer = null; }, delay);
+      }
+
+      function getStorageKey(id, global=false){ return global ? 'ng_theme_global' : `ng_theme_${id}`; }
+
+      function applySettings(s){
+        if (!s) return;
+        // apply accent
+        if (s.accent){
+          document.documentElement.style.setProperty('--accent', s.accent);
+          try{
+            const hex = (s.accent || '').replace(/^#/, '');
+            if (/^[0-9a-f]{6}$/i.test(hex)){
+              const r = parseInt(hex.slice(0,2),16);
+              const g = parseInt(hex.slice(2,4),16);
+              const b = parseInt(hex.slice(4,6),16);
+              document.documentElement.style.setProperty('--accent-rgb', `${r}, ${g}, ${b}`);
+            }
+          }catch(e){}
+        }
+        // apply bg mode and theme variables (light/dark)
+        if (s.bgMode === 'light'){
+          document.documentElement.style.setProperty('--bg-1', '#f6f7fb');
+          document.documentElement.style.setProperty('--card', 'rgba(0,0,0,0.04)');
+          document.documentElement.style.setProperty('--muted','rgba(0,0,0,0.6)');
+          document.documentElement.style.setProperty('--text','#0b1720');
+          document.documentElement.style.setProperty('--on-accent','#fff');
+          document.documentElement.style.setProperty('--preset-checked-text','#0b1720');
+          document.documentElement.style.setProperty('--border','rgba(0,0,0,0.08)');
+          document.documentElement.style.setProperty('--glass','rgba(0,0,0,0.02)');
+          document.documentElement.style.setProperty('--card-2','rgba(0,0,0,0.015)');
+          document.documentElement.style.setProperty('--spinner-track','rgba(0,0,0,0.06)');
+        } else {
+          document.documentElement.style.setProperty('--bg-1', '#0b0f12');
+          document.documentElement.style.setProperty('--card', 'rgba(255,255,255,0.03)');
+          document.documentElement.style.setProperty('--muted','rgba(255,255,255,0.68)');
+          document.documentElement.style.setProperty('--text','#e9eef6');
+          document.documentElement.style.setProperty('--on-accent','#fff');
+          document.documentElement.style.setProperty('--preset-checked-text', 'var(--on-accent)');
+          document.documentElement.style.setProperty('--border','rgba(255,255,255,0.04)');
+          document.documentElement.style.setProperty('--glass','rgba(255,255,255,0.02)');
+          document.documentElement.style.setProperty('--card-2','rgba(255,255,255,0.015)');
+          document.documentElement.style.setProperty('--spinner-track','rgba(255,255,255,0.06)');
+        }
+        // update theme class for light/dark so global CSS (toasts, etc.) can adapt
+        if (s.bgMode === 'light') document.documentElement.classList.add('theme-light'); else document.documentElement.classList.remove('theme-light');
+        // update preview accent swatch
+        const swatch = preview.querySelector('div');
+        if (swatch) swatch.style.background = s.accent || DEFAULTS.accent;
+        // also update the accent swatch button so it matches immediately
+        try{ const swBtn = document.getElementById('accent-swatch'); if (swBtn) swBtn.style.background = s.accent || DEFAULTS.accent; }catch(e){}
+      }
+
+      function loadSettings(){
+        // prefer server-specific settings, otherwise fall back to global, otherwise defaults
+        let s = null;
+        let source = 'default';
+        try{
+          const serverRaw = localStorage.getItem(getStorageKey(serverId, false));
+          if (serverRaw) { s = JSON.parse(serverRaw); source = 'server'; }
+          else {
+            const g = localStorage.getItem(getStorageKey(null, true));
+            if (g) { s = JSON.parse(g); source = 'global'; }
+          }
+        }catch(e){ console.warn('Failed to parse theme settings', e); }
+        if (!s) { s = DEFAULTS; source = 'default'; }
+        // populate form
+        if (s.preset) {
+          const r = form.querySelector(`input[name="preset"][value="${s.preset}"]`);
+          if (r) r.checked = true;
+        }
+        if (s.accent) { accentColor.value = s.accent; accentHex.value = s.accent.replace(/^#/, ''); const sw = preview.querySelector('div'); if (sw) sw.style.background = s.accent; }
+        if (s.bgMode) bgMode.value = s.bgMode;
+
+        // Initialize apply-global checkbox so users can toggle it; default to true if not specified
+        if (applyGlobal) { applyGlobal.disabled = false; applyGlobal.checked = !!(s.applyGlobal === undefined ? true : s.applyGlobal); }
+
+        applySettings(s);
+        // attach metadata about where these settings came from
+        s._from = source;
+        return s;
+      }
+
+      function readForm(){
+        const selected = form.querySelector('input[name="preset"]:checked');
+        const hexRaw = (accentHex.value || '').replace(/^#/, '').trim();
+        const accent = accentColor.value || (hexRaw ? ('#' + hexRaw) : DEFAULTS.accent);
+        return { preset: selected ? selected.value : 'default', accent, bgMode: bgMode.value || 'dark' };
+      }
+
+      function syncColorInputs(){
+        // set hex input without leading # and update preview swatch and swatch button
+        accentHex.value = (accentColor.value || '').replace(/^#/, '');
+        const sw = preview.querySelector('div'); if (sw) sw.style.background = accentColor.value;
+        // update the small accent swatch button so it reflects the current color immediately
+        try{ const swBtn = document.getElementById('accent-swatch'); if (swBtn) swBtn.style.background = accentColor.value || getComputedStyle(document.documentElement).getPropertyValue('--accent'); }catch(e){}
+      }
+      function syncHexToPicker(){
+        const raw = (accentHex.value || '').replace(/^#/, '').trim();
+        if (/^[0-9a-f]{6}$/i.test(raw)){
+          accentColor.value = '#' + raw;
+          const sw = preview.querySelector('div'); if (sw) sw.style.background = '#' + raw;
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      // wire inputs
+      accentColor.addEventListener('input', ()=>{ syncColorInputs(); applySettings(readForm()); autoSaveDebounced(); });
+      accentHex.addEventListener('input', ()=>{ const ok = syncHexToPicker(); accentHex.classList.toggle('invalid', !ok && accentHex.value.length > 0); if (ok) { applySettings(readForm()); autoSaveDebounced(); } });
+
+      // Accept only hex characters for the hex input; normalize leading '#' if typed
+      accentHex.addEventListener('keydown', (ev)=>{
+        const allowed = /^[0-9a-fA-F]$/;
+        const key = ev.key;
+        // Allow control/navigation keys
+        const allowedControl = ['Backspace','Delete','ArrowLeft','ArrowRight','Home','End','Tab'];
+        if (allowedControl.includes(key)) return;
+        // If user typed '#', prevent and ignore (we show prefix separately)
+        if (key === '#'){ ev.preventDefault(); return; }
+        if (!allowed.test(key)){
+          ev.preventDefault();
+        }
+      });
+
+      // Also ensure copy/paste normalization: strip non-hex and leading '#'
+      accentHex.addEventListener('paste', (ev)=>{
+        ev.preventDefault();
+        const text = (ev.clipboardData || window.clipboardData).getData('text') || '';
+        const cleaned = text.replace(/[^0-9a-fA-F]/g,'').slice(0,6);
+        const start = accentHex.selectionStart || 0;
+        const val = accentHex.value || '';
+        const newVal = (val.slice(0,start) + cleaned + val.slice(accentHex.selectionEnd || start)).slice(0,6);
+        accentHex.value = newVal;
+        const ok = syncHexToPicker(); accentHex.classList.toggle('invalid', !ok && accentHex.value.length > 0);
+        if (ok) { applySettings(readForm()); autoSaveDebounced(); }
+      });
+
+      // Close background dropdown when interacting with other controls so inputs receive focus
+      try{
+        // Close on focus/mousedown into hex input
+        accentHex.addEventListener('focus', ()=> closeBgDropdown());
+        accentHex.addEventListener('mousedown', ()=> closeBgDropdown());
+        // Close when clicking color picker area
+        if (accentColor) { accentColor.addEventListener('mousedown', ()=> closeBgDropdown()); }
+        const swatch = document.getElementById('accent-swatch'); if (swatch) swatch.addEventListener('mousedown', ()=> closeBgDropdown());
+        // Hide native color control - we use a custom picker
+        if (accentColor){ accentColor.style.display = 'none'; accentColor.disabled = true; }
+
+        // Positioning helpers for the custom picker: keep it under the swatch and in the viewport
+        const accentPicker = document.getElementById('accent-picker');
+        function openAccentPickerPositioned(){
+          if (!accentPicker || !swatch) return;
+          try{ updatePickerUIFromHex(accentColor.value); if (accentHexPicker) accentHexPicker.value = accentColor.value; if (accentPreview) accentPreview.style.background = accentColor.value; updateSvBackground(); updateCursors(); }catch(e){}
+          if (accentPicker.parentElement !== document.body) document.body.appendChild(accentPicker);
+          accentPicker.setAttribute('aria-hidden','false'); accentPicker.classList.add('open'); accentPicker.style.display = 'block'; accentPicker.style.position = 'fixed';
+          const pr = accentPicker.getBoundingClientRect(); const sr = swatch.getBoundingClientRect();
+          const vpw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+          const vph = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+          let left = Math.round(sr.left);
+          if (left + pr.width > vpw - 8) left = Math.max(8, vpw - pr.width - 8);
+          if (left < 8) left = 8;
+          let top = Math.round(sr.bottom + 8);
+          if (top + pr.height > vph - 8){ top = Math.round(sr.top - pr.height - 8); if (top < 8) top = 8; }
+          accentPicker.style.left = left + 'px'; accentPicker.style.top = top + 'px'; accentPicker.style.zIndex = 1200;
+        }
+        function closeAccentPickerPositioned(){ if (!accentPicker) return; accentPicker.setAttribute('aria-hidden','true'); accentPicker.classList.remove('open'); accentPicker.style.display='none'; accentPicker.style.left=''; accentPicker.style.top=''; accentPicker.style.position=''; }
+
+        if (swatch) { swatch.addEventListener('click', (ev)=>{ ev.stopPropagation(); const open = accentPicker && accentPicker.classList.contains('open'); if (open) closeAccentPickerPositioned(); else openAccentPickerPositioned(); }); }
+
+        // Robust outside-click handler using Node.contains (more compatible than composedPath)
+        document.addEventListener('click', (ev)=>{ try{ if (!accentPicker) return; const t = ev.target; if (!accentPicker.contains(t) && !swatch.contains(t)) closeAccentPickerPositioned(); }catch(e){} });
+
+        // Prevent clicks inside the picker from bubbling and accidentally closing it
+        if (accentPicker) accentPicker.addEventListener('click', (ev)=> ev.stopPropagation());
+
+        // --- Picker interaction wiring: SV / Hue / Hex / Presets / Apply / Close ---
+        const accentSv = document.getElementById('accent-sv');
+        const accentSvCursor = document.getElementById('accent-sv-cursor');
+        const accentHue = document.getElementById('accent-hue');
+        const accentHueCursor = document.getElementById('accent-hue-cursor');
+        const accentHexPickerEl = document.getElementById('accent-hex-picker');
+        const accentPreviewEl = document.getElementById('accent-preview');
+        const presetBtns = Array.from(document.querySelectorAll('#accent-presets .swatch-preset'));
+        const pickerCloseBtn = document.getElementById('accent-picker-close');
+        const pickerApplyBtn = document.getElementById('accent-picker-apply');
+
+        // Helpers
+        function hexToRgb(hex){ if (!hex) return null; const h = hex.replace(/^#/, ''); if (!/^[0-9a-f]{6}$/i.test(h)) return null; return { r: parseInt(h.slice(0,2),16), g: parseInt(h.slice(2,4),16), b: parseInt(h.slice(4,6),16) }; }
+        function rgbToHex(r,g,b){ return '#' + [r,g,b].map(v=> v.toString(16).padStart(2,'0')).join(''); }
+        function rgbToHsv(r,g,b){ r/=255; g/=255; b/=255; const max = Math.max(r,g,b), min = Math.min(r,g,b); const d = max-min; let h=0, s = max===0?0:d/max, v=max; if (d!==0){ if (max===r) h = ((g-b)/d)%6; else if (max===g) h = (b-r)/d + 2; else h = (r-g)/d + 4; h = Math.round(h*60); if (h<0) h+=360; } return {h: h||0, s, v}; }
+        function hsvToRgb(h,s,v){ const c = v*s; const x = c*(1 - Math.abs(((h/60)%2) - 1)); const m = v-c; let r=0,g=0,b=0; if (0<=h && h<60){ r=c; g=x; b=0; } else if (60<=h && h<120){ r=x; g=c; b=0; } else if (120<=h && h<180){ r=0; g=c; b=x; } else if (180<=h && h<240){ r=0; g=x; b=c; } else if (240<=h && h<300){ r=x; g=0; b=c; } else { r=c; g=0; b=x; } return { r: Math.round((r+m)*255), g: Math.round((g+m)*255), b: Math.round((b+m)*255) }; }
+
+        // State
+        let _h = 260, _s = 0.77, _v = 1;
+        function updateSvBg(){ if (!accentSv) return; accentSv.style.background = `linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0)), linear-gradient(to right, #fff, hsl(${_h},100%,50%))`; }
+        function updateCursors(){ if (!accentSv || !accentHue) return; const r = accentSv.getBoundingClientRect(); if (r.width){ const left = (_s * r.width); const top = ((1 - _v) * r.height); accentSvCursor.style.left = (left)+'px'; accentSvCursor.style.top = (top)+'px'; } const hr = accentHue.getBoundingClientRect(); accentHueCursor.style.left = Math.round((_h/360)*hr.width)+'px'; accentHue.setAttribute('aria-valuenow', Math.round(_h)); }
+        function setColorFromHsv(h,s,v, apply=true){ _h = (h%360+360)%360; _s = Math.max(0,Math.min(1,s)); _v = Math.max(0,Math.min(1,v)); const rgb = hsvToRgb(_h,_s,_v); const hex = rgbToHex(rgb.r,rgb.g,rgb.b); if (accentColor) accentColor.value = hex; if (accentHex) accentHex.value = hex.replace(/^#/,''); if (accentPreviewEl) accentPreviewEl.style.background = hex; updateSvBg(); updateCursors(); if (apply){ syncColorInputs(); applySettings(readForm()); // if user intends to apply globally, persist immediately so other pages update
+            try{ if (applyGlobal && applyGlobal.checked){ localStorage.setItem('ng_theme_global', JSON.stringify(readForm())); } }catch(e){}
+            autoSaveDebounced(); } }
+        function updatePickerFromHex(hex){ const rgb = hexToRgb(hex); if (!rgb) return; const hv = rgbToHsv(rgb.r,rgb.g,rgb.b); _h = hv.h; _s = hv.s; _v = hv.v; updateSvBg(); updateCursors(); if (accentPreviewEl) accentPreviewEl.style.background = hex; }
+
+        // Pointer handlers
+        function startSvPointer(e){ e.preventDefault(); accentSv.setPointerCapture && accentSv.setPointerCapture(e.pointerId); onSvMove(e); window.addEventListener('pointermove', onSvMove); window.addEventListener('pointerup', endSvPointer); }
+        function onSvMove(e){ const rect = accentSv.getBoundingClientRect(); let x = (e.clientX - rect.left)/rect.width; let y = (e.clientY - rect.top)/rect.height; x = Math.max(0,Math.min(1,x)); y = Math.max(0,Math.min(1,y)); setColorFromHsv(_h, x, 1-y); }
+        function endSvPointer(e){ try{ accentSv.releasePointerCapture && accentSv.releasePointerCapture(e.pointerId); }catch(e){} window.removeEventListener('pointermove', onSvMove); window.removeEventListener('pointerup', endSvPointer); }
+        function startHuePointer(e){ e.preventDefault(); accentHue.setPointerCapture && accentHue.setPointerCapture(e.pointerId); onHueMove(e); window.addEventListener('pointermove', onHueMove); window.addEventListener('pointerup', endHuePointer); }
+        function onHueMove(e){ const rect = accentHue.getBoundingClientRect(); let x = (e.clientX - rect.left)/rect.width; x = Math.max(0,Math.min(1,x)); const h = Math.round(x*360); setColorFromHsv(h, _s, _v); }
+        function endHuePointer(e){ try{ accentHue.releasePointerCapture && accentHue.releasePointerCapture(e.pointerId); }catch(e){} window.removeEventListener('pointermove', onHueMove); window.removeEventListener('pointerup', endHuePointer); }
+
+        if (accentSv){ accentSv.addEventListener('pointerdown', startSvPointer); accentSv.addEventListener('mousedown', startSvPointer); }
+        if (accentHue){ accentHue.addEventListener('pointerdown', startHuePointer); accentHue.addEventListener('mousedown', startHuePointer); }
+
+        // Hex input
+        if (accentHexPickerEl){ accentHexPickerEl.addEventListener('input', (e)=>{ let v = (e.target.value||'').trim(); if (!v.startsWith('#')) v = '#'+v; if (/^#[0-9a-f]{6}$/i.test(v)){ if (accentColor) accentColor.value = v; if (accentHex) accentHex.value = v.replace(/^#/,''); updatePickerFromHex(v); syncColorInputs(); applySettings(readForm()); autoSaveDebounced(); } }); }
+
+        // Presets
+        if (presetBtns.length){ presetBtns.forEach(p => p.addEventListener('click', ()=>{ const c = p.dataset.color; if (accentColor) accentColor.value = c; if (accentHex) accentHex.value = c.replace(/^#/,''); updatePickerFromHex(c); syncColorInputs(); applySettings(readForm()); autoSaveDebounced(); closeAccentPickerPositioned(); })); }
+
+        // Close / Apply
+        if (pickerCloseBtn) pickerCloseBtn.addEventListener('click', ()=> closeAccentPickerPositioned());
+        if (pickerApplyBtn) pickerApplyBtn.addEventListener('click', ()=> closeAccentPickerPositioned());
+
+        // Prevent internal clicks from closing and keep in sync
+        if (accentPicker) accentPicker.addEventListener('click', (ev)=> ev.stopPropagation());
+        if (accentColor){ accentColor.addEventListener('input', ()=>{ try{ updatePickerFromHex(accentColor.value); if (accentHexPickerEl) accentHexPickerEl.value = accentColor.value; if (accentPreviewEl) accentPreviewEl.style.background = accentColor.value; }catch(e){} }); }
+
+      }catch(e){/* ignore if missing */}
+      presets.forEach(p=> p.addEventListener('change', ()=>{
+        const v = p.value;
+        // Preserve current bg mode (do not force dark/light when changing preset)
+        if (v === 'default'){ accentColor.value = DEFAULTS.accent; accentHex.value = DEFAULTS.accent.replace(/^#/, ''); }
+        if (v === 'dark'){ accentColor.value = '#7c5cff'; accentHex.value='7c5cff'; }
+        if (v === 'purple'){ accentColor.value = '#7c5cff'; accentHex.value='7c5cff'; }
+        if (v === 'blue'){ accentColor.value = '#2b9cff'; accentHex.value='2b9cff'; }
+        applySettings(readForm());
+        // Immediately save preset selection so it persists on refresh
+        saveSettingsImmediate();
+      }));
+      bgMode.addEventListener('change', ()=>{ applySettings(readForm()); autoSaveDebounced(); });
+
+      saveBtn.addEventListener('click', ()=>{ if (_autoSaveTimer) { clearTimeout(_autoSaveTimer); _autoSaveTimer = null; } saveSettingsImmediate(); });
+      // immediate save when apply-global checkbox toggles
+      applyGlobal.addEventListener('change', ()=> saveSettingsImmediate());
+
+      resetBtn.addEventListener('click', ()=>{
+        if (!confirm('Reset to defaults?')) return;
+        // remove server-specific key and also global when requested
+        localStorage.removeItem(getStorageKey(serverId, false));
+        localStorage.removeItem(getStorageKey(null, true));
+        // restore defaults
+        accentColor.value = DEFAULTS.accent; accentHex.value = DEFAULTS.accent.replace(/^#/, ''); bgMode.value = 'dark';
+        form.querySelector('input[name="preset"][value="default"]').checked = true;
+        applySettings(DEFAULTS);
+        saveMsg.textContent = 'Reset to defaults.'; saveMsg.style.display='block'; setTimeout(()=>{ saveMsg.style.display='none'; saveMsg.textContent='Settings saved.' }, 1800);
+      });
+
+      exportBtn.addEventListener('click', ()=>{
+        const settings = readForm();
+        const data = JSON.stringify(settings, null, 2);
+        // try to copy to clipboard
+        if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(data).then(()=> alert('Settings copied to clipboard (JSON)')); return; }
+        prompt('Export settings JSON', data);
+      });
+
+      importBtn.addEventListener('click', ()=>{
+        const raw = prompt('Paste settings JSON to import');
+        if (!raw) return;
+        try{
+          const parsed = JSON.parse(raw);
+          // basic validation
+          if (!parsed.accent) throw new Error('Invalid format');
+          accentColor.value = parsed.accent; accentHex.value = parsed.accent.replace(/^#/, '');
+          if (parsed.bgMode) bgMode.value = parsed.bgMode;
+          if (parsed.preset) form.querySelector(`input[name="preset"][value="${parsed.preset}"]`).checked = true;
+          applySettings(parsed);
+          saveMsg.style.display='block'; setTimeout(()=> saveMsg.style.display='none', 1600);
+        }catch(e){ alert('Failed to import settings: ' + e.message); }
+      });
+
+      // initial load will happen on DOMContentLoaded to ensure UI elements are present
+      document.addEventListener('DOMContentLoaded', function(){
+        const s = loadSettings();
+        // sync custom dropdown visibility to hidden select value
+        try{ setBgDropdownValue(bgMode.value); }catch(e){/* ignore if function not available */}
+        // show a subtle toast when previously-saved settings are applied automatically
+        try{ if ((s && (s._from === 'server' || s._from === 'global'))){
+          if (typeof showLocalToast === 'function') showLocalToast('Applied saved theme', 'info', 3500);
+        }}catch(e){}
+
+        const pl = document.getElementById('page-loader');
+        if (pl) { pl.classList.add('hidden'); setTimeout(()=> { pl.style.display='none'; }, 350); }
+      });
+    })();
+  </script>
+</body>
+</html>

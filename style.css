@@ -1,0 +1,1134 @@
+:root{
+  --bg-1: #0b0f12;
+  --bg-2: #0b0f12; /* flat background */
+  --accent: #7c5cff; /* single accent color */
+  --muted: rgba(255,255,255,0.68);
+  --text: #e9eef6; /* primary text color (dark mode) */
+  --on-accent: #fff; /* text color used on accent backgrounds */
+  --preset-checked-text: var(--on-accent); /* text color used on selected preset */
+  --glass: rgba(255,255,255,0.02);
+  --card: rgba(255,255,255,0.03);
+  --card-2: rgba(255,255,255,0.015);
+  --danger: #ff6b6b;
+  --border: rgba(255,255,255,0.04);
+  --spinner-track: rgba(255,255,255,0.06);
+  --shadow: 0 8px 30px rgba(2,6,23,0.6);
+  /* Modal background (can be overridden by themes) */
+  --modal-bg: rgba(7,10,12,0.94);
+}
+
+/* Light theme overrides */
+.theme-light{
+  --bg-1: #f6f7f8;
+  --bg-2: #ffffff;
+  --accent: #7c5cff;
+  --muted: rgba(0,0,0,0.6);
+  --text: #0b0f12;
+  --on-accent: #fff;
+  --preset-checked-text: var(--on-accent);
+  --glass: rgba(0,0,0,0.03);
+  --card: rgba(0,0,0,0.04);
+  --card-2: rgba(0,0,0,0.02);
+  --danger: #ff4d4d;
+  --border: rgba(16,20,24,0.06);
+  --spinner-track: rgba(0,0,0,0.06);
+  --shadow: 0 8px 30px rgba(2,6,23,0.06);
+  /* Light theme modal */
+  --modal-bg: rgba(255,255,255,0.98);
+}
+
+*{box-sizing:border-box}
+body {
+  font-family: 'Poppins', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-1);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing:antialiased;
+  -webkit-font-feature-settings: "liga";
+  font-feature-settings: "liga";
+}
+
+.container{max-width:1200px;margin:0 auto;padding:0 20px} 
+
+header{position:fixed;width:100%;top:0;z-index:100;background:transparent;backdrop-filter:blur(10px);box-shadow:0 2px 8px rgba(0,0,0,0.6)}
+
+/* Dashboard header tweaks */
+header nav.container{position:relative;align-items:center}
+.dashboard-title{position:absolute;left:50%;transform:translateX(-50%);color:var(--muted);font-size:0.95rem;margin:0;font-weight:600;pointer-events:none}
+@media (max-width:700px){
+  .dashboard-title{position:static;transform:none;margin-left:6px}
+  header nav.container{gap:10px}
+  .nav-menu{display:none}
+}
+
+nav.container{display:flex;align-items:center;gap:16px;padding:18px 0}
+.brand{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none}
+.brand img{border-radius:8px;height:36px;width:auto;display:block;object-fit:contain}
+.brand span{font-weight:700;font-size:1.1rem}
+
+#nav-toggle{display:none;background:transparent;border:0;cursor:pointer}
+#nav-toggle .burger{width:22px;height:2px;background:var(--muted);display:block;position:relative}
+#nav-toggle .burger:before,#nav-toggle .burger:after{content:'';position:absolute;left:0;width:22px;height:2px;background:var(--muted)}
+#nav-toggle .burger:before{top:-7px}
+#nav-toggle .burger:after{top:7px}
+
+.nav-menu{list-style:none;display:flex;gap:18px;margin:0;padding:0;align-items:center}
+.nav-menu a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px;transition:background .18s,color .18s,box-shadow .18s}
+.nav-menu a:hover{color:var(--text);background:transparent;border:1px solid var(--border);box-shadow:0 6px 18px rgba(124,92,255,0.06)}
+
+/* Light-mode: show a thick dark border on hover/focus for nav Home & Settings */
+.theme-light .nav-menu a{padding:8px 12px;border-radius:10px;color:var(--text);background:transparent;border:1.5px solid transparent;transition:border-color .12s ease,transform .12s ease,filter .12s ease}
+.theme-light .nav-menu a:hover, .theme-light .nav-menu a:focus{border-color:rgba(0,0,0,0.9);transform:translateY(-1px);filter:brightness(1.03);outline:none}
+.theme-light .nav-menu a:focus{box-shadow:0 0 0 4px rgba(0,0,0,0.06)}
+/* Highlight current page with dark background */
+.theme-light .nav-menu a[aria-current="page"]{background:transparent;color:#000000;box-shadow:0 8px 20px rgba(6,10,20,0.06)}
+
+.actions{margin-left:auto;display:flex;gap:10px;align-items:center}
+
+/* Index header invite button: thick dark border appears only on hover/focus */
+.theme-light header .container .actions #invite-btn,
+.theme-light header .container .actions .btn.ghost#invite-btn{
+  border:1.5px solid transparent !important; 
+  padding:8px 12px !important; 
+  border-radius:10px !important;
+  background:transparent !important;
+  color:var(--text) !important;
+  box-shadow:0 8px 24px rgba(6,10,20,0.06) !important;
+  transition: border-color .12s ease, transform .12s ease, filter .12s ease;
+}
+.theme-light header .container .actions #invite-btn:hover,
+.theme-light header .container .actions .btn.ghost#invite-btn:hover,
+.theme-light header .container .actions #invite-btn:focus,
+.theme-light header .container .actions .btn.ghost#invite-btn:focus{
+  border-color: rgba(0,0,0,0.9) !important;
+  transform:translateY(-1px); filter:brightness(1.03);
+  outline:none;
+}
+.btn{display:inline-flex;align-items:center;gap:10px;border-radius:12px;padding:10px 16px;text-decoration:none;font-weight:600;transition:background .18s,box-shadow .18s,color .18s;border:1px solid transparent}
+.btn.primary{background:var(--accent);color:var(--on-accent);box-shadow:0 10px 30px rgba(var(--accent-rgb),0.06);border-color:transparent}
+.btn.primary:hover{filter:brightness(1.02)}
+.btn.ghost{border:1px solid var(--border);color:var(--muted);background:transparent}
+.btn.ghost:hover{background:var(--glass);color:var(--text)}
+.btn.large{padding:14px 22px;border-radius:12px}
+
+.hero{padding:120px 0 80px;background:var(--bg-1);border-bottom:1px solid var(--border)}
+.hero-content{display:flex;gap:48px;align-items:center}
+.hero-text{flex:1;max-width:720px}
+.hero-text h1{font-size:2.1rem;line-height:1.06;margin:0 0 12px}
+.hero-text .lead{color:var(--muted);margin:0 0 18px;font-size:1.05rem}
+.hero-ctas{display:flex;gap:14px;align-items:center;margin-top:10px}
+.hero-ctas .btn.large{padding:12px 20px}
+.hero-preview{width:min(420px,100%);min-width:240px}
+.card.preview{background:var(--card-2);padding:16px;border-radius:14px;backdrop-filter: blur(6px);box-shadow:0 14px 48px rgba(2,6,23,0.55);border:1px solid var(--border);overflow:hidden}
+
+/* subtle reveal */
+.reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+.reveal.show{opacity:1;transform:none}
+
+/* Hero fade-in helpers */
+.hero-text, .hero-preview{opacity:0;transform:translateY(8px);transition:opacity .6s ease,transform .6s ease}
+.hero-text.visible, .hero-preview.visible{opacity:1;transform:none}
+
+/* Carousel styles */
+.carousel{position:relative;overflow:hidden;border-radius:10px}
+.carousel-slides{display:flex;transition:transform .45s ease}
+.carousel-slide{min-width:100%;padding:18px;box-sizing:border-box;display:flex;align-items:center;justify-content:center}
+.slide-visual{width:100%;min-height:110px;border-radius:8px;background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:600;padding:10px;box-sizing:border-box}
+
+/* Dashboard preview slides: richer mock UI */
+.server-list-slide{padding:12px;display:flex;align-items:center;justify-content:center}
+.mock-server-grid{display:flex;flex-direction:column;gap:8px;width:100%}
+.mock-server-row{display:flex;align-items:center;gap:12px;padding:8px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0.02));border:1px solid var(--border)}
+.mock-server-row.small{opacity:0.9}
+.mock-avatar{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#222,#333);background-size:cover;flex:0 0 44px}
+.mock-avatar.small{width:36px;height:36px;flex:0 0 36px;border-radius:8px}
+.mock-server-meta{flex:1;min-width:0}
+.mock-server-name{font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mock-server-desc{font-size:0.86rem;color:var(--muted)}
+.mock-server-actions{display:flex;gap:8px;align-items:center}
+.badge.access{background:var(--accent);color:var(--on-accent);padding:6px 8px;border-radius:999px;font-weight:700}
+.badge.no-access{background:#ff6b6b;color:#fff;padding:6px 8px;border-radius:999px;font-weight:700}
+
+.settings-slide .mock-settings{display:flex;flex-direction:column;gap:8px;padding:8px;align-items:flex-start}
+.settings-row{display:flex;justify-content:space-between;align-items:center;width:100%}
+.mock-toggle{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);color:var(--muted);font-weight:700}
+.mock-toggle.on{background:linear-gradient(90deg,var(--accent),#6a3ef0);color:var(--on-accent)}
+
+.automod-slide .mock-automod{display:flex;gap:12px;align-items:flex-start;width:100%}
+.automod-rules ul{margin:8px 0;padding-left:18px;color:var(--muted)}
+.mock-logs{width:48%;max-width:260px}
+.mock-logs ul{list-style:none;margin:8px 0;padding:0}
+.mock-log-item{padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px;color:var(--muted);opacity:0;transform:translateY(6px);animation:logIn .6s forwards}
+.mock-log-item:nth-child(1){animation-delay:0.02s}
+.mock-log-item:nth-child(2){animation-delay:0.18s}
+.mock-log-item:nth-child(3){animation-delay:0.34s}
+@keyframes logIn{to{opacity:1;transform:none}}
+
+/* Preview stats row (compact & responsive) using auto-fit grid to prevent overflow */
+.preview-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:12px;padding:6px 2px;align-items:stretch;justify-items:stretch;width:100%;box-sizing:border-box}
+.stat-item{background:var(--card);border:1px solid var(--border);padding:10px;border-radius:12px;text-align:center;box-shadow:0 8px 24px rgba(2,6,23,0.06);transition:transform .12s,box-shadow .12s;min-height:82px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.stat-item.small{grid-column:span 1;max-width:none}
+.stat-value{font-weight:800;font-size:1.15rem;line-height:1;color:var(--text)}
+.stat-label{font-size:0.82rem;color:var(--muted);margin-top:8px}
+.stat-item .mini{font-size:0.72rem;color:var(--muted)}
+.stat-item:hover{transform:translateY(-4px);box-shadow:0 18px 48px rgba(2,6,23,0.08)}
+
+/* subtle hover glow for metrics */
+.stat-item .stat-value{display:inline-block;position:relative}
+.stat-item .stat-value::after{content:'';position:absolute;inset:0;border-radius:8px;box-shadow:0 0 0 rgba(124,92,255,0.0);transition:box-shadow .28s}
+.stat-item:hover .stat-value::after{box-shadow:0 0 36px rgba(124,92,255,0.06)}
+
+/* Sparkline */
+.sparkline{display:block;width:100%;height:24px}
+.sparkline polyline{stroke:var(--accent);stroke-width:2;fill:none;opacity:0.95}
+
+#stats-last-updated{color:var(--muted)}
+
+@media (max-width:900px){
+  .preview-stats{grid-template-columns:repeat(2,1fr);gap:10px}
+  .stat-item{min-height:76px;padding:10px}
+  .stat-value{font-size:1.05rem}
+}
+@media (max-width:600px){
+  .preview-stats{grid-template-columns:1fr}
+  .stat-item{min-height:66px;padding:8px}
+  .stat-value{font-size:0.98rem}
+}
+
+/* small responsive tweak */
+@media (max-width:900px){ .mock-automod{flex-direction:column} }
+.carousel-prev,.carousel-next{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.45);border:0;color:var(--on-accent);width:36px;height:36px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.carousel-prev{left:8px}
+.carousel-next{right:8px}
+.carousel-prev:hover,.carousel-next:hover{background:rgba(0,0,0,0.6)}
+.carousel-dots{position:absolute;left:50%;transform:translateX(-50%);bottom:8px;display:flex;gap:8px}
+.carousel-dot{width:10px;height:10px;border-radius:999px;background:var(--spinner-track);border:0;cursor:pointer}
+.carousel-dot.active{background:var(--accent)}
+
+@media (max-width:900px){
+  .hero-content{flex-direction:column-reverse;gap:24px}
+  .hero-preview{width:100%}
+  .slide-visual{height:120px}
+}
+@media (max-width:600px){
+  .hero-text h1{font-size:1.5rem}
+}
+
+/* Minor button polish */
+.btn.primary{background:var(--accent);border:0;color:var(--on-accent)} .btn.primary:hover{filter:brightness(0.98)}
+.btn.ghost{background:transparent;border:1px solid var(--border)}
+.btn.large{padding:12px 18px;border-radius:12px}
+
+/* Custom switch control */
+.switch{position:relative;display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+/* make the input cover the whole label area so clicks always toggle (unless disabled) */
+.switch input[type="checkbox"]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.switch-ui{width:46px;height:26px;border-radius:999px;background:var(--glass);display:inline-block;position:relative;transition:background .18s ease}
+/* Use fixed left positions so the knob is perfectly centered at either end (nudged slightly left) */
+.switch-ui::after{content:'';position:absolute;top:50%;left:4px;width:20px;height:20px;border-radius:50%;background:var(--on-accent);box-shadow:0 8px 18px rgba(2,6,23,0.35);transform:translateY(-50%);transition:left .18s cubic-bezier(.2,.9,.3,1), transform .18s cubic-bezier(.2,.9,.3,1)}
+.switch input[type="checkbox"]:checked + .switch-ui{background:var(--accent)}
+.switch input[type="checkbox"]:checked + .switch-ui::after{left:calc(100% - 4px - 20px)}
+.switch-label{color:var(--muted);font-weight:600;font-size:0.95rem}
+
+/* Custom number-box for giveaway duration */
+.number-box{display:inline-flex;align-items:center;border:1px solid var(--border);background:var(--card);border-radius:8px;padding:4px}
+.number-box input[type="number"]{width:86px;padding:8px;border:0;background:transparent;color:var(--muted);text-align:center;border-radius:6px}
+/* hide native number spinners while keeping a number input for semantics */
+.number-box input[type="number"]::-webkit-outer-spin-button,
+.number-box input[type="number"]::-webkit-inner-spin-button { appearance: none; -webkit-appearance: none; margin: 0; }
+.number-box input[type="number"]{ appearance: textfield; -moz-appearance: textfield; }
+#giveaway-modal-duration-min{width:86px}
+#giveaway-modal-duration-sec{width:60px}
+.num-btn{background:transparent;border:0;color:var(--muted);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px}
+.num-btn:hover{background:var(--glass)}
+.num-btn:active{transform:translateY(1px)}
+
+/* Preset inline radios (clean & accessible) */
+.preset-inline{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.preset-option{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-weight:600;cursor:pointer;padding:6px 8px;border-radius:8px;border:1px solid transparent;transition:background .12s ease, border-color .12s ease}
+.preset-option input[type="radio"]{appearance:none;-webkit-appearance:none;width:16px;height:16px;border-radius:50%;border:2px solid var(--border);display:inline-block;position:relative;vertical-align:middle;cursor:pointer;background:transparent}
+.preset-option input[type="radio"]:checked{border-color:var(--accent);background:var(--accent);box-shadow:0 8px 24px rgba(var(--accent-rgb),0.06)}
+.preset-option input[type="radio"]:focus{outline:none;box-shadow:0 10px 30px rgba(124,92,255,0.08)}
+.preset-option span{margin-left:6px}
+.preset-option input[type="radio"]:checked + span{color:var(--preset-checked-text)}
+.preset-option:hover{background:var(--glass);border-color:var(--border)}
+
+/* Custom select */
+select.custom-select, select#bg-mode{appearance:none;-webkit-appearance:none;-moz-appearance:none;padding:10px 40px 10px 12px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--muted);min-width:140px;cursor:pointer;transition:border-color .12s,box-shadow .12s}
+select.custom-select:focus, select#bg-mode:focus{outline:none;border-color:var(--accent);box-shadow:0 12px 30px rgba(var(--accent-rgb),0.06)}
+select.custom-select::-ms-expand{display:none}
+/* arrow using two small gradients for subtle chevron */
+select.custom-select{background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 14px) calc(50% - 6px), calc(100% - 8px) calc(50% - 6px); background-size: 8px 8px; background-repeat:no-repeat}
+
+/* Custom dropdown styles */
+.custom-dropdown{position:relative;display:inline-block}
+.custom-dropdown-button{appearance:none;border:1px solid var(--border);background:var(--card);color:var(--muted);padding:8px 12px;border-radius:8px;cursor:pointer;min-width:120px;text-align:left;display:inline-flex;align-items:center;gap:8px}
+.custom-dropdown-button:focus{outline:none;border-color:var(--accent);box-shadow:0 12px 34px rgba(var(--accent-rgb),0.08)}
+.custom-dropdown-list{position:absolute;left:0;top:calc(100% + 8px);min-width:160px;max-width:320px;width:max-content;background:var(--card);border:1px solid var(--border);padding:6px;border-radius:10px;box-shadow:0 8px 24px rgba(2,6,23,0.25);display:none;z-index:40;max-height:240px;overflow:auto}
+.custom-dropdown-item{padding:9px 12px;border-radius:8px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.custom-dropdown-item[aria-selected="true"], .custom-dropdown-item:hover{background:rgba(124,92,255,0.10);color:var(--preset-checked-text)}
+.custom-dropdown-item[aria-selected="true"]{box-shadow:inset 6px 0 0 0 var(--accent);padding-left:8px}
+.custom-dropdown-item:focus{outline:none;box-shadow:0 8px 24px rgba(124,92,255,0.08)}
+
+/* Accent color control + hex input */
+.color-control{display:flex;align-items:center;gap:8px;position:relative}
+.color-control input[type="color"]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border-radius:10px}
+.color-swatch{width:40px;height:40px;border-radius:10px;border:1px solid var(--border);box-shadow:0 10px 30px rgba(2,6,23,0.5);cursor:pointer;background:var(--accent);display:inline-block}
+.color-swatch:focus{outline:none;box-shadow:0 10px 30px rgba(124,92,255,0.12)}
+
+/* Custom inline color picker popup */
+.custom-color-picker{position:absolute;top:calc(100% + 8px);left:0;width:330px;padding:12px;border-radius:10px;background:var(--bg-2);border:1px solid var(--border);box-shadow:0 12px 40px rgba(2,6,23,0.08);display:none;z-index:120}
+.custom-color-picker.open{display:block}
+.custom-color-picker .picker-row{display:flex;align-items:center;gap:10px}
+.custom-color-picker .picker-row .picker-preview{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);background-clip:padding-box}
+.custom-color-picker .picker-controls{margin-top:10px;display:flex;align-items:center;gap:8px}
+.hex-input-picker{border:0;background:var(--card);color:var(--muted);width:120px;padding:8px;border-radius:8px;border:1px solid var(--border)}
+.preset-swatches{display:flex;gap:8px;margin-left:auto}
+.preset-swatches .swatch-preset{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);cursor:pointer}
+.picker-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+.picker-actions .btn{padding:8px 12px}
+
+/* Full custom SV area and Hue strip */
+.sv-area{width:160px;height:120px;border-radius:8px;position:relative;border:1px solid var(--border);background:linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0)), linear-gradient(to right, #fff, hsl(260,100%,50%));overflow:hidden}
+.sv-cursor{position:absolute;width:12px;height:12px;border-radius:999px;border:2px solid #fff;box-shadow:0 6px 16px rgba(2,6,23,0.28);transform:translate(-6px,-6px);pointer-events:none}
+.hue-strip{flex:1;height:12px;border-radius:6px;background:linear-gradient(90deg, #ff0000 0%, #ff9900 14%, #ffff00 28%, #00ff00 42%, #00ffff 56%, #0000ff 70%, #ff00ff 84%, #ff0000 100%);position:relative;border:1px solid var(--border)}
+.hue-cursor{position:absolute;top:50%;width:12px;height:12px;border-radius:6px;border:2px solid #fff;box-shadow:0 6px 16px rgba(2,6,23,0.28);transform:translate(-6px,-50%);pointer-events:none}
+
+/* Hide native color control on server settings — we use custom picker */
+.page-server-settings .color-control input[type="color"]{display:none}
+
+.color-swatch[tabindex]{outline:none}
+.hex-control{display:flex;align-items:center;border:1px solid var(--border);background:var(--card);padding:6px;border-radius:8px}
+.hex-prefix{color:var(--muted);padding:0 6px;font-weight:700}
+.hex-input{border:0;background:transparent;color:var(--muted);width:90px;padding:6px 6px;font-weight:700}
+.hex-input:focus{outline:none}
+.hex-input.invalid{border-radius:6px;box-shadow:0 6px 18px rgba(255,75,75,0.08);border:1px solid rgba(255,75,75,0.85);}
+
+
+/* trust small text below CTAs */
+.trust{color:var(--muted);font-size:0.95rem;margin-top:10px}
+
+.hero-preview{width:min(420px,100%);min-width:240px}
+.card.preview{background:var(--card-2);padding:14px;border-radius:14px;backdrop-filter: blur(6px);box-shadow:0 12px 40px rgba(2,6,23,0.45);border:1px solid var(--border);overflow:hidden} 
+.card-header{font-weight:700;color:var(--accent-1);margin-bottom:8px}
+.card-body{display:flex;flex-direction:column;gap:12px}
+.song{color:var(--muted)}
+.controls{display:flex;gap:8px}
+.icon-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:10px;border-radius:10px;cursor:pointer;min-width:48px;transition:background .15s,color .15s,box-shadow .15s}
+.icon-btn:hover{background:var(--glass);color:var(--on-accent);box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+
+/* Modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);visibility:hidden;opacity:0;transition:opacity .2s,visibility .2s;z-index:2000}
+.modal[aria-hidden="false"]{visibility:visible;opacity:1}
+.modal-content{background:var(--modal-bg);padding:20px;border-radius:12px;width:100%;max-width:920px;position:relative;border:1px solid rgba(255,255,255,0.06);color:var(--text);display:flex;gap:18px;align-items:flex-start;box-shadow:var(--shadow)}
+@media (max-width:800px){ .modal-content{flex-direction:column;max-width:90%;padding:16px} }
+
+/* Light theme modal overrides */
+.theme-light .modal{background:rgba(11,15,18,0.06) !important}
+.theme-light .modal[aria-hidden="false"]{background:rgba(11,15,18,0.06) !important}
+.theme-light .modal-content{background:rgba(255,255,255,0.98);border:1px solid rgba(16,20,24,0.06);box-shadow:0 18px 60px rgba(6,10,20,0.06);color:var(--text)}
+.theme-light .modal-content.modal-config{background:var(--bg-2);border:1px solid rgba(16,20,24,0.06);color:var(--text)}
+.theme-light .modal-close{color:var(--muted)}
+.theme-light .confirm-icon{background:linear-gradient(180deg, rgba(255,75,75,0.08), rgba(255,75,75,0.02));color:var(--danger)}
+
+/* Ensure form controls inside modals are visible on light theme */
+.theme-light .modal input[type="text"],
+.theme-light .modal input[type="number"],
+.theme-light .modal textarea{background:rgba(255,255,255,0.98);color:var(--text);border:1px solid rgba(16,20,24,0.06)}
+.theme-light .modal input::placeholder, .theme-light .modal textarea::placeholder{color:rgba(0,0,0,0.45)}
+
+/* Custom, clean input style for plugin configure modals */
+.modal-content.modal-config input[type="text"],
+.modal-content.modal-config input[type="number"],
+.modal-content.modal-config textarea,
+.modal#plugin-modal input[type="text"],
+.modal#plugin-modal textarea,
+.modal#plugin-modal-giveaway input[type="text"],
+.modal#plugin-modal-giveaway textarea{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);
+  transition:box-shadow .12s, border-color .12s, transform .08s;
+  font-size:0.95rem;
+}
+.modal-content.modal-config input::placeholder,
+.modal#plugin-modal input::placeholder,
+.modal#plugin-modal-giveaway input::placeholder,
+.modal-content.modal-config textarea::placeholder{ color:var(--muted); }
+.modal-content.modal-config input:focus,
+.modal-content.modal-config textarea:focus,
+.modal#plugin-modal input:focus,
+.modal#plugin-modal textarea:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 8px 30px rgba(var(--accent-rgb),0.08);
+  transform:translateY(-1px);
+}
+.modal-content.modal-config input.invalid,
+.modal-content.modal-config textarea.invalid{border-color:rgba(255,75,75,0.85);box-shadow:0 6px 18px rgba(255,75,75,0.08);}
+
+/* Preserve custom input background & text color when browser autofills fields */
+.modal-content.modal-config input:-webkit-autofill,
+.modal-content.modal-config textarea:-webkit-autofill,
+.modal#plugin-modal input:-webkit-autofill,
+.modal#plugin-modal textarea:-webkit-autofill,
+.modal#plugin-modal-giveaway input:-webkit-autofill,
+.modal#plugin-modal-giveaway textarea:-webkit-autofill {
+  -webkit-box-shadow: inset 0 0 0 1000px var(--card) !important;
+  box-shadow: inset 0 0 0 1000px var(--card) !important;
+  -webkit-text-fill-color: var(--text) !important;
+  background-clip: padding-box !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+/* Also ensure focused autofill keeps the same look */
+.modal-content.modal-config input:-webkit-autofill:focus,
+.modal-content.modal-config textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: inset 0 0 0 1000px var(--card) !important;
+  box-shadow: inset 0 0 0 1000px var(--card) !important;
+  -webkit-text-fill-color: var(--text) !important;
+}
+/* Fallback for other engines/internal autofill selected state */
+input:-internal-autofill-selected,
+textarea:-internal-autofill-selected {
+  box-shadow: inset 0 0 0 1000px var(--card) !important;
+  -webkit-text-fill-color: var(--text) !important;
+}
+
+/* Persisted autofill marker - keep custom look when modal reopened */
+.modal-content.modal-config input[data-autofilled],
+.modal-content.modal-config textarea[data-autofilled],
+.modal#plugin-modal input[data-autofilled],
+.modal#plugin-modal textarea[data-autofilled],
+.modal#plugin-modal-giveaway input[data-autofilled],
+.modal#plugin-modal-giveaway textarea[data-autofilled] {
+  -webkit-box-shadow: inset 0 0 0 1000px var(--card) !important;
+  box-shadow: inset 0 0 0 1000px var(--card) !important;
+  -webkit-text-fill-color: var(--text) !important;
+  background-clip: padding-box !important;
+}
+.modal-content.modal-config input[data-autofilled]:focus,
+.modal-content.modal-config textarea[data-autofilled]:focus,
+.modal#plugin-modal input[data-autofilled]:focus,
+.modal#plugin-modal textarea[data-autofilled]:focus {
+  -webkit-box-shadow: inset 0 0 0 1000px var(--card) !important;
+  box-shadow: inset 0 0 0 1000px var(--card) !important;
+  -webkit-text-fill-color: var(--text) !important;
+}
+
+/* Light-mode: preserve autofill look (white background) when marked persisted */
+.theme-light .modal-content.modal-config input[data-autofilled],
+.theme-light .modal-content.modal-config textarea[data-autofilled],
+.theme-light .modal#plugin-modal input[data-autofilled],
+.theme-light .modal#plugin-modal textarea[data-autofilled],
+.theme-light .modal#plugin-modal-giveaway input[data-autofilled],
+.theme-light .modal#plugin-modal-giveaway textarea[data-autofilled] {
+  -webkit-box-shadow: inset 0 0 0 1000px rgba(255,255,255,0.98) !important;
+  box-shadow: inset 0 0 0 1000px rgba(255,255,255,0.98) !important;
+  -webkit-text-fill-color: var(--text) !important;
+  background-clip: padding-box !important;
+}
+
+/* Panel options and buttons inside modal */
+.theme-light .modal .panel-option{color:var(--muted)}
+.theme-light .modal .panel-option.active{background:linear-gradient(90deg, rgba(124,92,255,0.08), rgba(124,92,255,0.03));color:var(--text)}
+.theme-light .modal .btn.ghost{border:1px solid rgba(16,20,24,0.06);color:var(--muted);background:transparent}
+
+/* Dashboard logout button — dark, thick background in light mode */
+.theme-light #logout-btn, .theme-light #header-logout, .theme-light .user-badge #logout-btn {
+  background:rgba(201, 93, 93, 0.16) !important; /* solid dark background */
+  color: #000000 !important;
+  border: 2px solid rgba(0,0,0,0.9) !important;
+  padding: 8px 12px !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(6,10,20,0.06) !important;
+}
+.theme-light #logout-btn:hover, .theme-light #header-logout:hover, .theme-light .user-badge #logout-btn:hover{ transform: translateY(-1px); filter:brightness(1.03); }
+
+/* Make switches visible on light background */
+.theme-light .modal .switch-ui{background:rgba(0,0,0,0.04)}
+/* Light-mode: use a solid black border for toggle switches for stronger contrast */
+.theme-light .switch .switch-ui{ border:1px solid #000 !important; }
+.theme-light .switch .switch-ui::after{ box-shadow:0 8px 24px rgba(6,10,20,0.08); }
+
+/* Ensure shadow and card feel matches site in light mode */
+.theme-light .modal-content{box-shadow:0 12px 40px rgba(6,10,20,0.06)}
+
+/* Modal-specific light-theme class (for dynamically created modals) */
+.modal.light-theme{background:rgba(11,15,18,0.06) !important}
+/* Clean, elevated config modal style for light mode */
+.modal.light-theme .modal-content{background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,252,0.98)) !important;border:1px solid rgba(16,20,24,0.06) !important;color:var(--text) !important;box-shadow:0 24px 80px rgba(6,10,20,0.08) !important;padding:18px;border-radius:14px}
+.modal.light-theme .modal-content.modal-config{display:flex;gap:20px;align-items:flex-start}
+
+/* Side panel (light-mode) - subtle card feel (now with visible border) */
+.modal.light-theme .modal-side{background:linear-gradient(180deg, rgba(248,248,250,0.95), rgba(244,244,246,0.95));border-radius:10px;padding:10px;border:1px solid rgba(0,0,0,0.14);box-shadow:0 10px 30px rgba(6,10,20,0.06), inset 0 1px 0 rgba(255,255,255,0.6)}
+.modal.light-theme .modal-side .panel-option{display:block;margin:6px 4px;padding:10px 12px;border-radius:8px;color:var(--muted) !important;font-weight:700;border-left:4px solid transparent}
+.modal.light-theme .modal-side .panel-option.active{background:linear-gradient(90deg, rgba(124,92,255,0.06), rgba(124,92,255,0.03));color:var(--text) !important;border-left-color:var(--accent);box-shadow:0 6px 18px rgba(10,10,10,0.02)}
+.modal.light-theme .modal-side .panel-option:hover{background:rgba(124,92,255,0.03);color:var(--text) !important}
+
+/* Ensure visible border when document-level theme is used */
+.theme-light .modal[aria-hidden="false"] .modal-side{border:1px solid rgba(0,0,0,0.14);box-shadow:0 10px 30px rgba(6,10,20,0.06) !important;background:linear-gradient(180deg, rgba(248,248,250,0.95), rgba(244,244,246,0.95)) !important}
+
+/* Section blocks: card-like containers with soft borders */
+.modal.light-theme .section-block{background:rgba(255,255,255,0.98);border:1px solid rgba(0,0,0,0.14);border-radius:10px;padding:12px;margin-bottom:12px;box-shadow:0 8px 20px rgba(6,10,20,0.05)}
+.modal.light-theme .section-block:last-child{margin-bottom:0}
+.modal.light-theme .section-block label{color:var(--muted)}
+
+/* Inputs and textarea contrast */
+.modal.light-theme input[type="text"], .modal.light-theme input[type="number"], .modal.light-theme textarea{background:transparent;color:var(--text);border:1px solid rgba(0,0,0,0.18);padding:10px;border-radius:8px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+
+/* Buttons - ghost / primary visual improvements */
+.modal.light-theme .btn.ghost{background:transparent;border:2px solid rgba(0,0,0,0.18);color:rgba(0,0,0,0.85);padding:8px 14px;border-radius:10px;transition:all .12s;box-shadow:inset 0 1px 0 rgba(255,255,255,0.3)}
+.modal.light-theme .btn.ghost:hover{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.28);color:var(--text);transform:translateY(-1px)}
+/* Modal-config specific ghost buttons (footer actions) */
+.modal-content.modal-config .btn.ghost{border:2px solid rgba(0,0,0,0.14);color:rgba(0,0,0,0.8);padding:8px 14px;background:rgba(255,255,255,0.98);box-shadow:0 8px 24px rgba(6,10,20,0.04);border-radius:10px}
+.modal-content.modal-config .btn.ghost:hover{border-color:rgba(0,0,0,0.28);transform:translateY(-2px);box-shadow:0 12px 30px rgba(6,10,20,0.06)}
+/* Ensure global theme-light variant also uses stronger borders */
+.theme-light .modal[aria-hidden="false"] .btn.ghost{border:2px solid rgba(0,0,0,0.16) !important;color:rgba(0,0,0,0.8) !important}
+/* Make inline/secondary buttons in modals more visible in light mode */
+.modal.light-theme .giveaway-item .btn{background:rgba(255,255,255,0.98);border:1px solid rgba(0,0,0,0.12);box-shadow:0 8px 20px rgba(6,10,20,0.04);color:rgba(0,0,0,0.8);padding:8px 12px;border-radius:10px}
+.modal.light-theme .giveaway-item .btn:hover{transform:translateY(-2px);border-color:rgba(0,0,0,0.18)}
+.modal.light-theme #giveaway-activity-list .btn.ghost, .modal.light-theme .section-block .btn.ghost{background:rgba(255,255,255,0.98);border:1px solid rgba(0,0,0,0.12);box-shadow:0 8px 20px rgba(6,10,20,0.04);color:rgba(0,0,0,0.8)}
+.modal.light-theme #giveaway-activity-list .btn.ghost:hover, .modal.light-theme .section-block .btn.ghost:hover{border-color:rgba(0,0,0,0.18);transform:translateY(-1px)}
+
+.modal.light-theme .btn.primary{background:linear-gradient(180deg, var(--accent), #6a3ef0);color:#fff;border:0;padding:10px 14px;border-radius:10px;box-shadow:0 10px 30px rgba(var(--accent-rgb),0.14)}
+
+/* Make the Welcome modal's Save button use a flat solid accent color (no gradient) */
+.modal#plugin-modal-welcome .btn.primary,
+#plugin-modal-welcome .btn.primary { 
+  background: var(--accent) !important; 
+  background-image: none !important; 
+  color: var(--on-accent) !important; 
+  border: 0 !important;
+  padding: 10px 14px; 
+  border-radius: 10px; 
+  box-shadow: 0 10px 30px rgba(var(--accent-rgb),0.06) !important;
+}
+.modal#plugin-modal-welcome .btn.primary:hover, #plugin-modal-welcome .btn.primary:hover { opacity: 0.95; }
+.modal#plugin-modal-welcome .btn.primary:active, #plugin-modal-welcome .btn.primary:active { transform: translateY(1px); }
+
+/* Ensure ALL plugin-config modals use flat, solid primary buttons (no gradient) */
+.modal-content.modal-config .btn.primary,
+.modal#plugin-modal-giveaway .btn.primary,
+#plugin-modal-giveaway .btn.primary {
+  background: var(--accent) !important;
+  background-image: none !important;
+  color: var(--on-accent) !important;
+  border: 0 !important;
+  padding: 10px 14px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(var(--accent-rgb),0.06) !important;
+}
+.modal-content.modal-config .btn.primary:hover, .modal#plugin-modal-giveaway .btn.primary:hover, #plugin-modal-giveaway .btn.primary:hover { opacity: 0.95; }
+.modal-content.modal-config .btn.primary:active, .modal#plugin-modal-giveaway .btn.primary:active, #plugin-modal-giveaway .btn.primary:active { transform: translateY(1px); }
+
+.modal.light-theme .btn.primary:hover{transform:translateY(-2px)}
+.modal.light-theme .btn.primary:active{transform:translateY(0)}
+
+/* Dark-mode modal buttons (Copy ID, Winners, Reroll, Cancel, Reset, Send test) */
+.modal:not(.light-theme) .giveaway-item .btn,
+.modal:not(.light-theme) .modal[aria-hidden="false"] .btn.ghost,
+.modal:not(.light-theme) .modal[aria-hidden="false"] .btn{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:var(--text);box-shadow:none}
+.modal:not(.light-theme) .modal[aria-hidden="false"] .btn.ghost{color:var(--muted)}
+.modal:not(.light-theme) .modal[aria-hidden="false"] .btn:hover{background:rgba(255,255,255,0.04);transform:translateY(-1px)}
+.modal:not(.light-theme) .winners-modal-card .btn{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:var(--text)}
+
+/* Config modal buttons in dark mode: make Cancel / Reset / Send test darker */
+.modal:not(.light-theme) .modal-content.modal-config .btn,
+.modal:not(.light-theme) .modal-content.modal-config .btn.ghost,
+.modal:not(.light-theme) #plugin-modal .btn.ghost,
+.modal:not(.light-theme) #plugin-modal-welcome .btn.ghost,
+.modal:not(.light-theme) #plugin-modal-giveaway .btn.ghost{
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.04);
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:10px;
+}
+.modal:not(.light-theme) .modal-content.modal-config .btn.ghost{color:var(--muted)}
+.modal:not(.light-theme) .modal-content.modal-config .btn:hover{background:rgba(255,255,255,0.04);transform:translateY(-1px)}
+
+/* Close button contrast */
+.modal.light-theme .modal-close{color:rgba(0,0,0,0.6);background:transparent}
+.modal.light-theme .modal-close:hover{color:rgba(0,0,0,0.85)}
+
+/* Ensure panel options remain readable */
+.modal.light-theme .panel-option{color:var(--muted) !important}
+
+/* Accessibility: focus states */
+.modal.light-theme .panel-option:focus, .modal.light-theme .btn:focus, .modal.light-theme input:focus, .modal.light-theme textarea:focus{outline:3px solid rgba(124,92,255,0.12);outline-offset:2px}
+
+/* Additional high-specificity rules when site is in light mode */
+.theme-light .modal[aria-hidden="false"]{background:rgba(11,15,18,0.06) !important}
+.theme-light .modal[aria-hidden="false"] .modal-content{background:rgba(255,255,255,0.98) !important;color:var(--text) !important;border:1px solid rgba(16,20,24,0.06) !important;box-shadow:0 18px 60px rgba(6,10,20,0.06) !important}
+.theme-light .modal[aria-hidden="false"] input[type="text"], .theme-light .modal[aria-hidden="false"] input[type="number"], .theme-light .modal[aria-hidden="false"] textarea{background:transparent !important;color:var(--text) !important;border:1px solid rgba(0,0,0,0.12) !important}
+.theme-light .modal[aria-hidden="false"] .btn.ghost{border:2px solid rgba(0,0,0,0.16) !important;color:rgba(0,0,0,0.8) !important}
+.theme-light .modal[aria-hidden="false"] .giveaway-item{background:rgba(255,255,255,0.98);border:1px solid rgba(0,0,0,0.12);box-shadow:0 10px 28px rgba(6,10,20,0.05)!important}
+.theme-light .modal[aria-hidden="false"] .giveaway-item .btn{background:rgba(255,255,255,0.98);border:1px solid rgba(0,0,0,0.12);box-shadow:0 8px 20px rgba(6,10,20,0.04);color:rgba(0,0,0,0.8)}
+.theme-light .modal[aria-hidden="false"] .giveaway-item .btn:hover{border-color:rgba(0,0,0,0.18)}
+
+
+/* Confirm modal tweaks */
+.confirm-modal{padding:14px 18px;max-width:520px;width:100%;display:block;border-radius:12px}
+.confirm-modal .confirm-icon{width:48px;height:48px;border-radius:999px;background:linear-gradient(180deg, rgba(255,107,107,0.12), rgba(255,107,107,0.04));display:flex;align-items:center;justify-content:center;font-size:22px;flex:0 0 48px}
+#confirm-modal .small-muted{margin-top:6px;color:var(--muted);font-size:0.96rem}
+#confirm-modal .btn.danger{background:var(--danger);color:#fff;border:0;box-shadow:0 8px 28px rgba(255,107,107,0.06)}
+#confirm-modal .btn.ghost{border:1px solid rgba(255,255,255,0.04)}
+
+/* Ensure confirm modal always sits above other modals and is positioned near the top */
+#confirm-modal{ z-index: 11000; display:flex; align-items:flex-start; justify-content:center; padding-top:28px; }
+#confirm-modal .modal-content{ position:relative; z-index:11001; border:3px solid var(--danger); border-radius:12px; box-shadow:0 18px 60px rgba(6,10,20,0.06); }
+.theme-light #confirm-modal .modal-content{ border-color: rgba(255,107,107,0.9); background:#fff; }
+.theme-light #confirm-modal .btn.ghost{ border:1px solid rgba(16,20,24,0.06); color:var(--muted); }
+
+@media (max-width:480px){ #confirm-modal{ padding-top:18px } #confirm-modal .modal-content{ width:calc(100% - 32px); max-width:520px; } }
+
+/* subtle pop animation for confirm */
+@keyframes popIn{0%{transform:translateY(-6px) scale(.98);opacity:0}100%{transform:none;opacity:1}}
+.modal[aria-hidden="false"] .confirm-modal{animation:popIn .16s cubic-bezier(.2,.9,.3,1)}
+
+
+
+/* Modal side panel */
+.modal-side{width:210px;border-right:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:8px;padding:8px}
+
+/* Unified side panel look for configuration modals (Welcome & Giveaway) */
+.modal-content.modal-config .modal-side{
+  background: linear-gradient(180deg, rgba(248,248,250,0.02), rgba(244,244,246,0.02));
+  border-radius:12px;
+  padding:10px;
+  border:1px solid rgba(0,0,0,0.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+}
+.modal-content.modal-config .modal-side > div{padding:8px 6px;color:var(--muted);font-weight:700}
+.modal-content.modal-config .modal-side .panel-option{display:block;margin:8px 4px;padding:12px;border-radius:10px;color:var(--muted);cursor:pointer;font-weight:700;border-left:4px solid transparent;transition:all .12s}
+.modal-content.modal-config .modal-side .panel-option.active{background:linear-gradient(90deg, rgba(124,92,255,0.06), rgba(124,92,255,0.03));color:var(--text);border-left-color:var(--accent);box-shadow:0 6px 18px rgba(10,10,10,0.02)}
+.modal-content.modal-config .modal-side .panel-option:hover{background:rgba(124,92,255,0.03);color:var(--text)}
+
+/* Ensure right divider remains visible and consistent */
+.modal-content.modal-config .modal-side{border-right:1px solid rgba(0,0,0,0.16)}
+.modal.light-theme .modal-content.modal-config .modal-side{border-right:1px solid rgba(0,0,0,0.16) !important}
+.theme-light .modal-content.modal-config .modal-side{border-right:1px solid rgba(0,0,0,0.18) !important}
+
+/* Panel option fallback styles (keep existing selectors working) */
+.panel-option{background:transparent;border:0;padding:10px 12px;text-align:left;border-radius:8px;color:var(--muted);cursor:pointer;font-weight:700}
+
+/* Subtle badge on panel option when new activity is available */
+.panel-option.has-new{position:relative}
+.panel-option.has-new::after{content:'';width:8px;height:8px;border-radius:999px;background:var(--accent);position:absolute;right:10px;top:12px;box-shadow:0 2px 6px rgba(0,0,0,0.35)}
+
+/* Winners modal */
+.winners-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-start;justify-content:center;padding:40px 20px 20px;z-index:9999}
+.winners-modal-card{background:var(--bg);color:var(--text);padding:20px;width:640px;max-width:calc(100% - 40px);border-radius:12px;box-shadow:0 20px 60px rgba(6,10,20,0.6);border:1px solid rgba(255,255,255,0.04);margin-top:0}
+
+/* Small screens: reduce top padding so modal fits */
+@media (max-width:480px){ .winners-modal-overlay{padding:18px 12px 12px; align-items:flex-start} .winners-modal-card{width:100%;max-width:100%;padding:14px} }
+
+/* Winners list styles */
+.winners-modal-list{display:block;max-height:60vh;overflow:auto;margin-top:10px}
+.winner-row{display:flex;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.winner-row:last-child{border-bottom:0}
+.winner-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#222,#333);flex:0 0 56px;overflow:hidden;border:2px solid rgba(255,255,255,0.03);background-size:cover;display:inline-block}
+.winner-avatar.placeholder{background:linear-gradient(135deg,#1f1f1f,#2a2a2a);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1.05rem}
+.winner-meta{flex:1;min-width:0}
+.winner-field{display:block}
+.winner-label{font-weight:700;margin-right:6px}
+.winner-mention{font-weight:700;color:var(--text);display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.winner-id{display:block;color:var(--muted);font-size:0.9rem;margin-top:6px}
+
+.winners-modal-card h4{margin:0 0 8px}
+.winners-resolving-status{color:var(--muted);font-size:0.9rem;margin-bottom:8px}
+.winner-row{display:flex;align-items:flex-start;gap:10px;padding:8px;border-radius:6px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.winner-name{font-weight:700}
+.winner-field{display:flex;align-items:center;gap:8px;margin-top:4px}
+.winner-label{color:var(--muted);font-size:0.86rem;font-weight:600}
+.winner-mention{color:var(--muted);font-size:0.92rem;text-decoration:none}
+.winner-mention:hover{color:var(--text);text-decoration:underline}
+.winner-id{color:var(--muted);font-size:0.9rem;margin-left:4px}
+
+/* resolving/unresolved visuals */
+.winner-resolving{opacity:0.85;font-style:italic}
+.winner-unresolved{opacity:0.7;color:var(--muted);font-style:italic}
+
+/* debug panel */
+.winners-debug-pre{font-size:0.9rem;color:var(--muted);margin-top:6px}
+.winners-resolving-status{color:var(--muted);font-size:0.9rem;margin-bottom:8px}
+
+/* Make winners modal border thicker and whiter in dark mode for better contrast */
+body:not(.theme-light) .winners-modal-card{ border:2px solid rgba(255,255,255,0.12); }
+body:not(.theme-light) .winners-modal-overlay{ background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)); }
+
+/* Optional tweak: slightly increase card shadow in dark mode to help separation */
+body:not(.theme-light) .winners-modal-card{ box-shadow:0 20px 60px rgba(0,0,0,0.6); }
+
+/* Winners modal Close button — red color */
+.winners-modal-card #winners-close{ background:var(--danger); color:var(--on-accent); border:0; padding:8px 12px; border-radius:8px; box-shadow:0 8px 20px rgba(0,0,0,0.4); cursor:pointer }
+.winners-modal-card #winners-close:hover{ filter:brightness(0.95); transform:translateY(-1px) }
+/* Ensure light-theme also shows a red button with good contrast */
+.theme-light .winners-modal-card #winners-close{ background:var(--danger); color:#fff; border:0 }
+
+/* Back button (dashboard) thicker border styling */
+#back-btn{ border-width:2px; border-style:solid; border-color:rgba(255,255,255,0.12); padding:8px 12px; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.12); }
+#back-btn:hover{ transform:translateY(-1px); }
+/* Light theme: subtler border */
+.theme-light #back-btn{ border-color:rgba(16,20,24,0.12); box-shadow:0 6px 18px rgba(6,10,20,0.06); color:var(--text); background:rgba(255,255,255,0.02) }
+
+
+/* Buttons inside winners modal: dark theme (default) */
+.winners-modal-card .btn{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:var(--text);padding:8px 12px;border-radius:10px}
+.winners-modal-card .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+.winners-modal-card .btn:hover{transform:translateY(-1px)}
+
+/* Global giveaway-item buttons (dark mode) */
+.giveaway-item .btn{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:var(--text);padding:8px 12px;border-radius:10px}
+.giveaway-item .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+.giveaway-item .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,0.04)}
+
+/* Light theme overrides — make buttons white with soft shadow */
+.theme-light .winners-modal-card .btn{background:rgba(255,255,255,0.98);border:1px solid rgba(0,0,0,0.12);box-shadow:0 8px 20px rgba(6,10,20,0.04);color:rgba(0,0,0,0.8)}
+.theme-light .winners-modal-card .btn.ghost{background:rgba(255,255,255,0.98);border:1px solid rgba(0,0,0,0.12);color:rgba(0,0,0,0.8)}
+
+/* Light-mode winners modal: brighter card and overlay */
+.theme-light .winners-modal-overlay{ background: rgba(255,255,255,0.65); }
+.theme-light .winners-modal-card{ background: #ffffff; color: #0c0c0c; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 12px 40px rgba(6,10,20,0.06); }
+.theme-light .winners-modal-card h4{ color: #0b0b0b }
+.theme-light .winners-resolving-status{ color: rgba(0,0,0,0.5) }
+.theme-light .winner-mention{ color: rgba(0,0,0,0.8) }
+.theme-light .winner-id{ color: rgba(0,0,0,0.45) }
+.theme-light .winner-avatar{ border:1px solid rgba(0,0,0,0.06); box-shadow: 0 4px 14px rgba(6,10,20,0.04); }
+.theme-light .winner-avatar.placeholder{ background: linear-gradient(135deg,#f4f6f8,#eef0f2); color: #6b6f75 }
+.theme-light .winners-modal-card #winners-close{ background:var(--danger); color:#fff; border:0 }
+
+/* Slightly reduce dark-mode thick border to keep subtlety consistent */
+body.theme-light .winners-modal-card{ border-width:1px }
+
+/* Giveaway modal: light-mode primary button gets a thicker border to emphasize Create/Save */
+.theme-light #plugin-modal-giveaway .btn.primary#giveaway-modal-save {
+  border: 2px solid rgba(0,0,0,0.12);
+  box-shadow: 0 6px 18px rgba(6,10,20,0.06);
+  padding: 8px 14px; border-radius:8px;
+}
+
+/* Reset button: final style — semi-transparent with subtle border */
+#giveaway-modal-reset{ background: rgba(255,107,107,0.12); color: var(--danger); border:1px solid rgba(255,107,107,0.14); box-shadow:none; transition:transform .12s, filter .12s, background .12s; }
+#giveaway-modal-reset:hover{ background: rgba(255,107,107,0.18); transform:translateY(-2px); filter:brightness(1.02); }
+/* Light theme tweak: slightly lighter background and darker text for contrast */
+.theme-light #giveaway-modal-reset{ background: rgba(255,107,107,0.08); color: var(--danger); border:1px solid rgba(255,107,107,0.12); }
+
+.theme-light .winners-modal-card .btn:hover{transform:translateY(-1px);border-color:rgba(0,0,0,0.18)}
+.winner-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg, #222, #333);flex:0 0 40px;overflow:hidden;border:2px solid rgba(255,255,255,0.03);background-size:cover;display:inline-block}
+.winner-avatar.placeholder{background:linear-gradient(135deg,#1f1f1f,#2a2a2a);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.85rem}
+.winner-meta{flex:1}
+.winner-id{font-size:0.85rem;color:var(--muted)}
+.winners-modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+.winners-empty{padding:12px;color:var(--muted)}
+.panel-option.active{background:linear-gradient(90deg,rgba(124,92,255,0.08),rgba(124,92,255,0.03));color:var(--text)}
+
+/* Theme selector button active state */
+.theme-btn.active{background:var(--accent);color:var(--on-accent);border-color:transparent}
+
+/* Giveaway list items */
+.giveaway-item{padding:8px;border-radius:8px;margin-bottom:6px;background:transparent;border:1px solid rgba(255,255,255,0.02)}
+
+/* Recent highlight for giveaways that started or ended within the last few seconds */
+.giveaway-item.recent-start{ box-shadow: 0 8px 30px rgba(58,211,127,0.12); border-color: rgba(58,211,127,0.2); transform: translateY(-2px); }
+.giveaway-item.recent-end{ box-shadow: 0 8px 30px rgba(230,76,60,0.12); border-color: rgba(231,76,60,0.18); opacity: 0.98; }
+.giveaway-item .meta-row{ display:flex; gap:8px; align-items:center; }
+.giveaway-item .dot { width:12px; height:12px; border-radius:999px; flex:0 0 12px; margin-top:6px; }
+
+.giveaway-item .small-muted{font-size:0.85rem;color:var(--muted)}
+
+/* Darker, card-like giveaway items in light-mode */
+.modal.light-theme .giveaway-item{background:rgba(255,255,255,0.98);border:1px solid rgba(0,0,0,0.12);box-shadow:0 10px 28px rgba(6,10,20,0.05)}
+.modal.light-theme .giveaway-item .small-muted{color:rgba(0,0,0,0.6)}
+
+/* Activity feed container (giveaway list) — stronger border/contrast in light mode */
+.modal.light-theme #giveaway-activity-list, .modal.light-theme .card.preview#giveaway-activity-list{
+  background: rgba(255,255,255,0.98);
+  border: 1px solid rgba(0,0,0,0.14);
+  box-shadow: 0 16px 40px rgba(6,10,20,0.06);
+  border-radius: 12px;
+  padding: 12px;
+}
+/* Ensure global .theme-light variant also applies */
+.theme-light .modal[aria-hidden="false"] #giveaway-activity-list{
+  background: rgba(255,255,255,0.98) !important;
+  border: 1px solid rgba(0,0,0,0.14) !important;
+  box-shadow: 0 16px 40px rgba(6,10,20,0.06) !important;
+  border-radius: 12px !important;
+}
+
+/* Visual badge for test-created giveaways */
+.test-badge{display:inline-block;background:rgba(124,92,255,0.12);color:var(--accent);padding:2px 6px;border-radius:6px;font-size:0.72rem;margin-left:8px;font-weight:700}
+
+.modal-section{flex:1;min-width:0}
+/* Add visible separators between section blocks */
+.section-block{margin-top:8px;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid rgba(0,0,0,0.08)}
+.section-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+
+/* Stronger separators for light theme */
+.theme-light .modal-content.modal-config .section-block{border-bottom:1px solid rgba(0,0,0,0.12)}
+.section-block label{display:block;margin-bottom:6px}
+.section-block input[type="text"], .section-block textarea{width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text)}
+
+.modal-close{position:absolute;right:12px;top:12px;background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:16px}
+.modal input[type="text"]{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text)}
+
+/* Switch control (visual) */
+.switch{display:inline-flex;align-items:center;gap:12px}
+
+/* Giveaway modal: layout for mention toggle — switch and text are separate and aligned */
+.switch-giveaway-mention{display:flex;align-items:center;gap:12px;margin-top:6px;}
+
+/* ensure input covers full label so clicks toggle the state */
+.switch input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.switch .switch-ui{
+  width:46px;height:26px;border-radius:999px;background:rgba(0,0,0,0.06);position:relative;
+  transition:background .14s,left .18s,box-shadow .12s,border-color .12s;
+  border:1px solid #000;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.switch .switch-ui::after{
+  content:'';position:absolute;top:50%;left:4px;width:20px;height:20px;border-radius:50%;background:#fff;
+  box-shadow:0 6px 18px rgba(6,10,20,0.08);transform:translateY(-50%);transition:left .18s cubic-bezier(.2,.9,.3,1),box-shadow .12s;
+}
+.switch input:checked + .switch-ui{
+  background:linear-gradient(90deg,var(--accent),#6a3ef0); /* gradient still uses fallback stop */
+  border-color:#000;
+  box-shadow:0 8px 26px rgba(106,62,240,0.08);
+}
+.switch input:checked + .switch-ui::after{left:calc(100% - 4px - 20px);box-shadow:0 8px 24px rgba(106,62,240,0.12)}
+.switch .switch-ui:hover{box-shadow:0 8px 20px rgba(0,0,0,0.08)}
+.switch input:focus + .switch-ui{outline:none;box-shadow:0 0 0 4px rgba(124,92,255,0.12)}
+.switch .switch-label{margin-left:16px;cursor:default}
+
+/* Make switches slightly larger in light-theme for better visibility */
+.modal.light-theme .switch .switch-ui{width:48px;height:28px;border:1px solid #000}
+.modal.light-theme .switch .switch-ui::after{width:22px;height:22px;top:3px;left:3px;box-shadow:0 8px 24px rgba(6,10,20,0.06)}
+.modal.light-theme .switch input:checked + .switch-ui::after{transform:translateX(22px);box-shadow:0 10px 28px rgba(106,62,240,0.12)}
+.small-muted{color:var(--muted);font-size:0.85rem;margin-top:10px}
+
+  /* Preview text respects theme text color */
+  #theme-preview{color:var(--text)}
+  #theme-preview .small-muted{color:var(--muted)}
+/* Toast (modern, flat in dark mode, elevated, always-on-top) */
+:root:not(.theme-light) .toast{position:fixed;right:20px;top:20px;bottom:auto;z-index:20000;display:flex;align-items:center;gap:14px;min-width:220px;max-width:440px;padding:12px 18px;border-radius:12px;color:var(--on-accent);background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);box-shadow:0 12px 40px rgba(3,6,12,0.18);opacity:0;transform:translateY(-10px) scale(.995);transition:opacity .26s cubic-bezier(.2,.9,.2,1),transform .26s,box-shadow .18s;backdrop-filter:blur(8px) saturate(120%);-webkit-backdrop-filter:blur(8px) saturate(120%);pointer-events:auto}
+:root:not(.theme-light) .toast::after{display:none}
+:root:not(.theme-light) .toast.show{opacity:1;transform:translateY(0) scale(1);box-shadow:0 22px 80px rgba(3,6,12,0.28)}
+:root:not(.theme-light) .toast .toast-icon{width:14px;height:14px;border-radius:999px;flex:0 0 14px;box-shadow:inset 0 -2px 6px rgba(0,0,0,0.18)}
+
+/* Server Settings: thicker toast border for better prominence */
+.page-server-settings .toast{border:3px solid var(--border);border-radius:14px;box-shadow:0 12px 40px rgba(3,6,12,0.12)}
+.page-server-settings.theme-light .toast{border:3px solid rgba(0,0,0,0.95);border-radius:14px} 
+
+/* Server Settings: make the Back button have a thicker border for emphasis */
+.page-server-settings nav.container .btn.ghost{ border-width:1.5px; border-style:solid; border-color:var(--border); padding:8px 12px; border-radius:10px; }
+/* Light-mode tweak: darker border color for better contrast */
+.theme-light .page-server-settings nav.container .btn.ghost{ border-color: rgba(0,0,0,0.14); }
+:root:not(.theme-light) .toast.toast-info{background:rgba(124,92,255,0.12);color:var(--on-accent);border-left:4px solid var(--accent)}
+:root:not(.theme-light) .toast.toast-info .toast-icon{background:var(--accent)}
+:root:not(.theme-light) .toast.toast-error{background:rgba(255,75,75,0.12);color:var(--on-accent);border-left:4px solid var(--danger)}
+:root:not(.theme-light) .toast.toast-error .toast-icon{background:var(--danger)}
+.toast .toast-text{flex:1;font-size:0.95rem;padding-left:2px}
+.toast .toast-close{margin-left:8px;background:transparent;border:0;color:inherit;cursor:pointer;padding:6px;border-radius:6px}
+.toast .toast-close:hover{background:rgba(255,255,255,0.06)}
+
+/* ensure toast sits above modals */
+body .toast{z-index:20000 !important}
+
+/* Light-mode toast overrides: compact, fixed-position, flat white background and compact accent */
+.theme-light .toast{
+  position:fixed;
+  right:20px;
+  top:20px;
+  bottom:auto;
+  z-index:20000;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-width:220px;
+  max-width:440px;
+  padding:12px 18px;
+  border-radius:12px;
+  color:#0b0b0b !important;
+  background:rgba(255,255,255,0.98);
+  border:1px solid rgba(0,0,0,0.95); /* thick black border */
+  box-shadow:0 12px 40px rgba(6,10,20,0.06) !important;
+  pointer-events:auto;
+  /* hidden by default so removing .show hides toast */
+  opacity:0;
+  transform:translateY(-10px) scale(.995);
+  transition:opacity .26s cubic-bezier(.2,.9,.2,1), transform .26s, box-shadow .18s;
+}
+.theme-light .toast::after{display:none}
+.theme-light .toast.show{opacity:1;transform:translateY(0) scale(1);box-shadow:0 22px 80px rgba(3,6,12,0.06)}
+.theme-light .toast.toast-info{background:rgba(255,255,255,0.98);color:#0b0b0b;border-left:4px solid var(--accent);box-shadow:0 10px 30px rgba(6,10,20,0.05)}
+.theme-light .toast.toast-info .toast-icon{background:var(--accent);width:10px;height:10px;box-shadow:none}
+.theme-light .toast.toast-error{background:rgba(255,255,255,0.98);color:#0b0b0b;border-left:4px solid var(--danger);box-shadow:0 10px 30px rgba(6,10,20,0.05)}
+.theme-light .toast.toast-error .toast-icon{background:var(--danger);width:10px;height:10px;box-shadow:none}
+.theme-light .toast .toast-close:hover{background:rgba(0,0,0,0.04)}
+
+.section-title{font-size:1.9rem;margin-bottom:18px}
+.section-lead{color:var(--muted);margin-bottom:26px;line-height:1.5}
+section{padding-top:26px;padding-bottom:26px}
+/* Add spacing to move the team section slightly down */
+.team{margin-top:36px}
+
+
+.feature-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:32px;perspective:1200px;-webkit-perspective:1200px;align-items:stretch} 
+.card.feature{background:var(--card);padding:32px;border-radius:16px;transition:transform .35s cubic-bezier(.2,.9,.3,1), box-shadow .35s cubic-bezier(.2,.9,.3,1);border:1px solid var(--border);min-height:140px;transform-style:preserve-3d;will-change:transform;position:relative;display:flex;flex-direction:column;justify-content:flex-start;gap:14px}
+.card.feature h3{margin:0 0 10px;font-size:1.05rem;display:flex;align-items:center;gap:10px}
+.card.feature h3 .icon-line-graph{width:20px;height:20px;flex:0 0 20px;opacity:0.9;display:inline-block}
+.card.feature h3 .icon-line-graph polyline{stroke:var(--danger);stroke-opacity:0.95;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.card.feature p{margin:0;color:var(--muted);flex:1 1 auto;line-height:1.6;font-size:0.995rem}
+.card.feature .small-muted{margin-top:6px;color:var(--muted)}
+.card.feature ul{margin:8px 0 0 18px;padding:0}
+.card.feature li{margin:8px 0;line-height:1.5}
+.card.feature blockquote{margin:8px 0 0;color:var(--muted);font-style:italic;line-height:1.35;font-size:0.98rem}
+.card.feature::after{content:'';position:absolute;inset:0;border-radius:16px;pointer-events:none;transition:box-shadow .35s cubic-bezier(.2,.9,.3,1)}
+@media (hover: hover) and (pointer: fine){
+  .card.feature:hover{transform:translateY(-8px) translateZ(18px) rotateX(6deg) rotateY(0deg);box-shadow:0 30px 80px rgba(2,6,23,0.7),0 6px 18px rgba(124,92,255,0.06);border-color:rgba(124,92,255,0.12)}
+}
+.card.feature.tilt-active{transition:transform .08s linear}
+
+/* Helper to distribute content vertically for long cards */
+.space-equal{justify-content:space-between}
+
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;justify-items:center;align-items:start}
+.team-member.card{padding:18px;text-align:center;max-width:320px;width:100%}
+.team-member img{width:96px;height:96px;border-radius:999px;margin-bottom:12px;object-fit:cover;border:1px solid var(--border);box-shadow:0 8px 20px rgba(0,0,0,0.28)}
+
+/* Team section card wrapper */
+.team .team-wrap{background:var(--card);padding:22px;border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow);max-width:340px;margin:0}
+.team .team-wrap .team-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;margin-top:0;justify-items:center;align-items:start}
+.team .section-title{margin-top:0;margin-bottom:14px}
+@media (max-width:900px){
+  .team .team-wrap{padding:18px;margin:0 12px;max-width:none}
+}
+
+
+.invite{padding:50px 0}
+.invite-ctas{display:flex;gap:12px;justify-content:center;margin-top:14px}
+
+.footer{border-top:1px solid var(--border);padding:18px 0;margin-top:40px}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted)}
+
+/* Social buttons in footer */
+.social{display:flex;gap:10px;align-items:center}
+.social .btn{padding:8px 12px;font-size:0.95rem;border-radius:10px;color:var(--muted);display:inline-flex;align-items:center;gap:8px}
+.social .btn:hover{background:var(--glass);color:var(--text)}
+.social .btn svg{width:16px;height:16px;display:inline-block;vertical-align:middle;fill:currentColor}
+
+/* Responsive */
+@media (max-width:900px){
+  .hero-content{flex-direction:column-reverse;gap:24px}
+  .hero-preview{width:100%}
+  .feature-cards{grid-template-columns:repeat(2,1fr);gap:20px}
+}
+@media (max-width:600px){
+  #nav-toggle{display:block}
+  .nav-menu{position:absolute;top:70px;right:20px;background:rgba(11,15,18,0.95);padding:14px;border-radius:10px;flex-direction:column;display:none;border:1px solid var(--border)}
+  .nav-menu.show{display:flex}
+  .team-grid{grid-template-columns:1fr}
+  .feature-cards{grid-template-columns:1fr;gap:14px}
+  .hero-text h2{font-size:1.6rem}
+}
+
+/* Dashboard layout */
+.dashboard-main{min-height:calc(100vh - 120px);display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding-top:120px;padding-bottom:40px;text-align:left}
+.dashboard-main .section-lead{margin-bottom:18px}
+
+/* Auth info (login / user badge) */
+.auth-info{width:100%;max-width:1100px;margin:0 auto 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.user-badge{display:flex;align-items:center;gap:12px}
+.user-avatar{width:44px;height:44px;border-radius:999px;object-fit:cover;border:1px solid var(--border)}
+.img-fallback{opacity:0.96;filter:saturate(0.95);}
+
+/* Header small badge */
+.header-badge{display:flex;align-items:center;gap:8px}
+.header-badge .user-meta{color:var(--muted);font-size:0.95rem}
+.user-meta{color:var(--muted);font-size:0.95rem}
+.login-cta{text-align:center;padding:12px;border-radius:12px;background:transparent}
+
+/* Server list grid */
+.server-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:28px;margin:24px auto 0;padding:18px;width:100%;max-width:1200px;transition:opacity .36s ease}
+
+/* Server item layout, icons and actions (roomier) */
+.server-row{display:flex;align-items:center;gap:16px;width:100%}
+.guild-icon{width:72px;height:72px;border-radius:12px;object-fit:cover;border:1px solid var(--border)}
+.server-meta{flex:1;min-width:0}
+.server-meta h3{margin:0;font-size:1.08rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.server-meta p{margin:10px 0 0;color:var(--muted);font-size:0.94rem} /* move badge down slightly for spacing */
+
+/* Hide empty actions area when no buttons */
+.server-actions:empty{display:none}
+
+/* Hide empty meta paragraph (when no badge) */
+.server-meta p:empty{display:none}
+.server-actions{display:flex;gap:10px}
+
+.server-item .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;font-size:0.85rem}
+.server-item .badge.access{background:#7c5cff;color:var(--on-accent)}
+.server-item .badge.no-access{background:#ff6b6b;color:var(--on-accent)}
+
+/* Buttons: solid colors (no gradient) */
+.server-item .btn.primary{background:#7c5cff;border:0;color:var(--on-accent);padding:8px 12px;border-radius:8px}
+.server-item .btn.no-access-btn{background:#ff6b6b;border:0;color:var(--on-accent);padding:8px 12px;border-radius:8px}
+.server-item .btn[disabled]{opacity:0.8;cursor:not-allowed}
+
+/* Debug visuals when something unexpected happens */
+.server-list.debug-empty{border:1px dashed var(--border);padding:20px;background:var(--card-2)}
+
+/* Loader */
+.loader{display:flex;align-items:center;gap:12px;justify-content:center;margin:8px auto 14px}
+.spinner{width:34px;height:34px;border-radius:50%;border:4px solid var(--spinner-track);border-top-color:var(--accent);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-label{color:var(--muted);font-size:0.95rem}
+
+/* Page loader overlay */
+.page-loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(11,15,18,0.9);z-index:9999;transition:opacity .28s ease}
+.page-loader.hidden{opacity:0;pointer-events:none}
+.page-loader .spinner{width:44px;height:44px;border-width:5px}
+
+
+/* Skeleton placeholders while loading */
+.skeletons .server-item{background:var(--card);height:128px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:12px;opacity:0.9;border-radius:12px}
+.skeleton-line{height:14px;border-radius:6px;background:var(--glass);width:78%}
+.skeleton-sub{height:12px;border-radius:6px;background:var(--glass);width:48%}
+
+.server-item{background:var(--card);padding:20px;border-radius:14px;border:1px solid var(--border);box-shadow:0 10px 36px rgba(2,6,23,0.45);display:flex;flex-direction:column;align-items:flex-start;gap:14px;min-height:120px;transition:transform .16s ease,box-shadow .16s ease,opacity .32s ease;opacity:0;transform:translateY(8px)}
+.server-item:hover{transform:translateY(-6px);box-shadow:0 22px 48px rgba(2,6,23,0.5)}
+.server-item.show{opacity:1;transform:none}
+.server-item h3{margin:0;font-size:1.05rem}
+.server-item p{margin:0;color:var(--muted);font-size:0.92rem}
+.server-item .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;font-size:0.85rem}
+.server-item .badge.access{background:#7c5cff;color:var(--on-accent)}
+.server-item .badge.no-access{background:#ff6b6b;color:var(--on-accent)}
+.server-item .btn{align-self:stretch;justify-content:center}
+.server-item .btn.primary{padding:10px;border-radius:10px}
+.server-item.disabled{opacity:0.6;filter:grayscale(0.08)}
+
+/* Plugin card status dot */
+.plugin-card{position:relative}
+.plugin-card-status{position:absolute;top:10px;right:12px;width:12px;height:12px;border-radius:999px;border:2px solid rgba(7,10,12,0.94);box-shadow:0 8px 22px rgba(2,6,23,0.45);z-index:5}
+.plugin-card-status.enabled{background:#3ad37f}
+.plugin-card-status.disabled{background:var(--danger)}
+.plugin-card-status[title]{cursor:default}
+@media (max-width:800px){ .plugin-card-status{top:8px;right:10px} }
+
+/* Keep existing guild-grid styles as fallback */
+.dashboard-main .guild-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px;margin:18px auto 0;padding:0 12px;width:100%;max-width:1100px;justify-items:center}
+.dashboard-main .guild-grid .guild-card{background:var(--card);padding:18px;border-radius:12px;text-align:center;max-width:360px;width:100%;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+
+/* Server Dashboard plugin cards */
+.server-dashboard-header{display:flex;align-items:center;gap:14px;align-items:center;margin:20px 0}
+.server-dashboard-header .server-avatar{width:72px;height:72px;border-radius:12px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center}
+.server-dashboard-header .server-meta{display:flex;flex-direction:column}
+
+/* Server info cards added by dashboard */
+.server-info-card{background:var(--card);padding:12px;border-radius:10px;border:1px solid var(--border);min-width:240px;max-width:340px}
+
+/* Activity feed */
+.activity-item{padding:8px;border-bottom:1px dashed rgba(255,255,255,0.02)}
+
+/* Member list */
+.member-list{display:flex;flex-direction:column;gap:8px}
+.member-item{background:transparent;padding:10px;border-radius:10px;display:flex;align-items:center;gap:12px;transition:background .12s,transform .12s}
+.member-item:hover{background:var(--glass);transform:translateY(-2px)}
+.avatar-wrap{position:relative;width:48px;height:48px}
+.member-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid rgba(0,0,0,0.45)}
+.status-dot{position:absolute;right:-2px;bottom:-2px;width:12px;height:12px;border-radius:50%;border:2px solid var(--card);box-shadow:0 4px 10px rgba(0,0,0,0.35)}
+.status-online{background:#3ad37f}
+.status-idle{background:#ffb74d}
+.status-dnd{background:#ff6b6b}
+.status-offline{background:#6b7280}
+.status-unknown{background:#9aa0a6}
+.member-item strong{font-size:0.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.member-item .small-muted{color:var(--muted);font-size:0.82rem;margin-top:4px}
+
+/* Global, modern scrollbars (page-level: html/body + theme-aware) */
+/* Dark theme (default) */
+html, body { scrollbar-width: thin; }
+html:not(.theme-light), body:not(.theme-light){
+  scrollbar-color: rgba(255,255,255,0.08) rgba(0,0,0,0.12);
+}
+html:not(.theme-light)::-webkit-scrollbar, body:not(.theme-light)::-webkit-scrollbar{ width:12px; height:12px; }
+html:not(.theme-light)::-webkit-scrollbar-track, body:not(.theme-light)::-webkit-scrollbar-track{ background: rgba(255,255,255,0.015); border-radius:12px; }
+html:not(.theme-light)::-webkit-scrollbar-thumb, body:not(.theme-light)::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.06); border-radius:12px; border:3px solid rgba(0,0,0,0.18); box-shadow: inset 0 1px 0 rgba(255,255,255,0.02); }
+html:not(.theme-light)::-webkit-scrollbar-thumb:hover, body:not(.theme-light)::-webkit-scrollbar-thumb:hover{ background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)); }
+html:not(.theme-light)::-webkit-scrollbar-thumb:active, body:not(.theme-light)::-webkit-scrollbar-thumb:active{ background: linear-gradient(180deg, var(--accent), rgba(124,92,255,0.5)); }
+/* hide native scrollbar arrow buttons for a modern look */
+html:not(.theme-light)::-webkit-scrollbar-button, body:not(.theme-light)::-webkit-scrollbar-button{ display:none; width:0; height:0; }
+html:not(.theme-light)::-webkit-scrollbar-corner, body:not(.theme-light)::-webkit-scrollbar-corner{ background: transparent; }
+
+/* Light theme (requested: thumb #eeeeee, track #252525) */
+html.theme-light, body.theme-light { scrollbar-width: thin; }
+html.theme-light, body.theme-light{
+  /* thumb: #eeeeee, track: #252525 */
+  scrollbar-color: #eeeeee #252525;
+}
+html.theme-light::-webkit-scrollbar, body.theme-light::-webkit-scrollbar{ width:12px; height:12px; }
+html.theme-light::-webkit-scrollbar-track, body.theme-light::-webkit-scrollbar-track{ background: #252525; border-radius:12px; }
+html.theme-light::-webkit-scrollbar-thumb, body.theme-light::-webkit-scrollbar-thumb{ background: #eeeeee; border-radius:12px; border:3px solid #252525; box-shadow:none; }
+html.theme-light::-webkit-scrollbar-thumb:hover, body.theme-light::-webkit-scrollbar-thumb:hover{ background: #eeeeee; opacity:0.95; }
+html.theme-light::-webkit-scrollbar-thumb:active, body.theme-light::-webkit-scrollbar-thumb:active{ background: #eeeeee; opacity:0.9; }
+html.theme-light::-webkit-scrollbar-button, body.theme-light::-webkit-scrollbar-button{ display:none; width:0; height:0; }
+html.theme-light::-webkit-scrollbar-corner, body.theme-light::-webkit-scrollbar-corner{ background: transparent; }
+
+/* Keep compact card scrollbars styled for consistency (light mode uses black thumbs) */
+.card.preview, #members-list{ scrollbar-width: thin; }
+.card.preview::-webkit-scrollbar, #members-list::-webkit-scrollbar{ height:10px; width:10px }
+.card.preview::-webkit-scrollbar-track, #members-list::-webkit-scrollbar-track{ background: #252525; border-radius:10px }
+.card.preview::-webkit-scrollbar-thumb, #members-list::-webkit-scrollbar-thumb{ background: #eeeeee; border-radius:10px; border:2px solid #252525 }
+.card.preview::-webkit-scrollbar-thumb:hover, #members-list::-webkit-scrollbar-thumb:hover{ opacity:0.95 }
+
+/* Ensure ALL scrollable elements follow the light-mode scrollbar colors */
+html.theme-light * { scrollbar-color: #eeeeee #252525 !important; }
+html.theme-light *::-webkit-scrollbar{ width:12px; height:12px; }
+html.theme-light *::-webkit-scrollbar-track{ background: #252525; border-radius:12px; }
+html.theme-light *::-webkit-scrollbar-thumb{ background: #eeeeee; border-radius:12px; border:3px solid #252525; }
+html.theme-light *::-webkit-scrollbar-thumb:hover{ opacity:0.95; }
+html.theme-light *::-webkit-scrollbar-button{ display:none; width:0; height:0; }
+html.theme-light *::-webkit-scrollbar-corner{ background: transparent; }
+
+
+/* plugin card icon */
+.plugin-icon{width:56px;height:56px;border-radius:10px;background:linear-gradient(180deg, rgba(124,92,255,0.12), rgba(124,92,255,0.04));display:flex;align-items:center;justify-content:center;font-size:28px}
+
+.plugin-card{background:var(--card);padding:18px;border-radius:12px;text-align:left;max-width:480px;width:100%;box-shadow:0 6px 18px rgba(0,0,0,0.6);display:flex;flex-direction:column;gap:12px;min-height:110px}
+.plugin-actions{display:flex;align-items:center}
+
+.server-dashboard-header h2{margin:0}
+.plugin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;margin-top:18px}
+.plugin-card{background:var(--card);border:1px solid var(--border);padding:18px;border-radius:12px;display:flex;flex-direction:column;gap:12px;min-height:140px}
+.plugin-card h4{margin:0}
+.plugin-card p{margin:0;color:var(--muted);font-size:0.95rem}
+.plugin-actions{margin-top:auto;display:flex;gap:8px;align-items:center}
+.plugin-actions .btn{padding:8px 12px}
+.plugin-badge{display:inline-flex;padding:6px 8px;border-radius:8px;font-weight:700;font-size:0.85rem}
+.plugin-badge.new{background:#2b9cff;color:#fff}
+
+
+/* Responsive tweaks */
+@media (max-width:900px){
+  .server-list{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+}
+@media (max-width:600px){
+  .server-list{grid-template-columns:1fr;padding:8px}
+  .auth-info{padding:0 10px}
+  .dashboard-main{text-align:center}
+}
+
+
+/* Setup page spacing */
+.settings-main{padding-top:120px}
+.settings-wrap{margin-top:20px}
+
+/* Reveal animations */
+.reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+.reveal.show{opacity:1;transform:none}

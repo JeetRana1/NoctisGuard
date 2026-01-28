@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoctisGuard - Moderation & Utilities Bot</title>
+  <!-- Removed external Google Fonts to avoid network DNS errors; using system fonts -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.svg" sizes="any">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon.svg">
+</head>
+<body>
+  <!-- Page loader overlay (visible while site is loading) -->
+  <div id="page-loader" class="page-loader" aria-hidden="false">
+    <div class="spinner" aria-hidden="true"></div>
+  </div>
+
+  <header>
+    <nav class="container">
+      <a class="brand" href="#home">
+        <img src="Site-Logo.svg" alt="NoctisGuard" class="site-logo">
+        <span>NoctisGuard</span>
+      </a> 
+
+      <ul id="nav-menu" class="nav-menu">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#team">Team</a></li>
+        <li><a href="#invite">Invite</a></li>
+      </ul>
+
+      <div class="actions">
+        <a id="invite-btn" href="/invite-now" class="btn ghost" title="Invite bot">Invite</a>
+        <a id="login-btn" href="/auth" class="btn primary" title="Login with Discord">Login with Discord</a>
+      </div>
+    </nav>
+  </header>
+
+  <section id="home" class="hero">
+    <div class="hero-content container">
+      <div class="hero-text">
+        <h1>NoctisGuard — Smart moderation, effortless control</h1>
+        <p class="lead">Keep your community safe with automated moderation, clear logs, and an intuitive dashboard built for server owners.</p>
+
+        <div class="hero-ctas">
+          <a id="hero-invite" href="/invite-now" class="btn primary large">Invite Now</a>
+          <a id="hero-login" href="/auth" class="btn ghost large">Login with Discord</a>
+        </div>
+
+        <div class="trust small-muted" style="margin-top:14px">Trusted by communities of all sizes • Lightweight • Privacy-first</div>
+      </div>
+
+      <div class="hero-preview">
+        <div class="card preview">
+          <div class="card-header">Dashboard Preview</div>
+          <div class="card-body">
+            <div class="preview-stats" aria-hidden="true">
+              <div class="stat-item">
+                <div class="stat-value" id="stat-servers">—</div>
+                <div class="stat-label">Servers</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="stat-members">—</div>
+                <div class="stat-label">Total Members</div>
+              </div>
+              <div class="stat-item">
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <div class="stat-value" id="stat-commands">—</div>
+                  <svg id="stat-sparkline" class="sparkline" viewBox="0 0 100 22" preserveAspectRatio="none"><polyline fill="none" stroke="var(--accent)" stroke-width="2" points="" /></svg>
+                </div>
+                <div class="stat-label">Commands Today</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="stat-uptime">—</div>
+                <div class="stat-label">Uptime (hrs)</div>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;margin-top:6px;gap:10px;align-items:center"><div id="stats-last-updated" class="small-muted" style="font-size:0.78rem">Updated: —</div><button id="stats-refresh" class="btn ghost" style="padding:6px 8px;font-size:0.78rem">Refresh</button></div>
+
+  </section>
+
+  <section id="features" class="features container">
+    <h2 class="section-title">Features</h2>
+    <p class="section-lead">Powerful tools built with simplicity and safety in mind.</p>
+
+    <div class="feature-cards">
+      <div class="card feature reveal">
+        <h3>🛡️ Moderation</h3>
+        <p>Ban, kick, mute, and keep detailed logs with robust permission checks and quick actions.</p>
+      </div>
+      <div class="card feature reveal">
+        <h3>🤖 Automod</h3>
+        <p>Proactive filters for profanity, spam, invites and more — configurable per-server.</p>
+      </div>
+      <div class="card feature reveal">
+        <h3>⚙️ Dashboard</h3>
+        <p>Intuitive dashboard for settings, quick actions, and queued moderation tasks.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:20px;align-items:stretch;margin-top:24px;flex-wrap:wrap">
+      <div class="card feature reveal space-equal" style="flex:1;min-width:240px">
+        <h3>⭐ Why choose NoctisGuard?</h3>
+        <ul style="margin:8px 0 0;padding-left:18px;color:var(--muted)">
+          <li><strong>Quick to set up:</strong> install and configure within minutes.</li>
+          <li><strong>Reliable:</strong> careful queuing and retrying for permissions and command updates.</li>
+          <li><strong>Privacy-first:</strong> limited data collection only for function.</li>
+        </ul>
+      </div>
+      <div class="card feature reveal" style="flex:1;min-width:240px">
+        <h3><svg class="icon-line-graph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-hidden="true"><title>Line graph</title><polyline points="3,17 8,11 13,14 18,7 21,9" fill="none"/></svg> Quick snapshot</h3>
+        <p style="margin:8px 0 0;color:var(--muted)">Configurable commands, automated moderation, and a responsive web dashboard for server owners.</p>
+      </div>
+      <div class="card feature reveal" style="flex:1;min-width:240px">
+        <h3>💬 What users say</h3>
+        <blockquote style="margin:8px 0 0;color:var(--muted);font-style:italic">“NoctisGuard made moderating our community so much easier — the dashboard is simple and powerful.” — a server admin</blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section id="team" class="team container">
+    <h2 class="section-title">Meet the Team</h2>
+    <div class="card team-wrap reveal">
+      <div class="team-grid">
+        <div class="team-member card reveal">
+          <img src="Profile-Pic.svg" alt="Developer" class="team-avatar">
+          <h3>Developer</h3>
+          <p>Lead Developer & Maintainer</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="invite" class="invite container">
+    <h2 class="section-title">Ready to upgrade your server?</h2>
+    <p class="section-lead">Invite NoctisGuard today and get access to robust moderation tools and a clean dashboard — for free.</p>
+    <div class="invite-ctas reveal">
+      <a id="invite-bottom" href="/invite-now" class="btn primary large">Invite NoctisGuard</a>
+      <a id="invite-login" href="/auth" class="btn ghost large">Login with Discord</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>&copy; NoctisGuard 2026. Developed by Jeet.</p>
+      <div class="social">
+        <a href="https://discord.gg/KZAVdvZ9jx" class="btn ghost" role="button" title="Join our Discord" target="_blank" rel="noopener noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-discord" viewBox="0 0 16 16"><path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"/></svg>
+          Discord
+        </a>
+        <a href="https://github.com/JeetRana1" class="btn ghost" role="button" title="View on GitHub" target="_blank" rel="noopener noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.66-.22.66-.48 0-.24-.01-.87-.01-1.71-2.78.6-3.37-1.17-3.37-1.17-.45-1.15-1.11-1.46-1.11-1.46-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.36 1.09 2.94.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.93 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.6 9.6 0 0112 6.8c.85.004 1.71.115 2.5.34 1.9-1.29 2.73-1.02 2.73-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.83-2.34 4.68-4.57 4.93.36.31.68.92.68 1.86 0 1.34-.012 2.42-.012 2.75 0 .27.16.59.67.49C19.14 20.17 22 16.42 22 12c0-5.52-4.48-10-10-10z" fill="currentColor"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      var API_BASE = window.location.origin;
+      (async function(){
+        try {
+          const res = await fetch(API_BASE + '/socket.io/socket.io.js', { method: 'HEAD' });
+          if (res.ok) {
+            var s = document.createElement('script');
+            s.src = API_BASE + '/socket.io/socket.io.js';
+            s.crossOrigin = 'anonymous';
+            document.head.appendChild(s);
+          } else {
+            console.info('socket.io endpoint not present, skipping client load');
+          }
+        } catch (e) {
+          console.info('socket.io check failed, skipping client load', e);
+        }
+      })();
+    })();
+  </script>
+  <script src="script.js"></script>
+</body>
+  <script>
+    // Fetch and display public stats for the hero preview
+    async function fetchAndRenderStats(){
+      try{
+        const res = await fetch('/api/stats');
+        if (!res.ok) return;
+        const jb = await res.json();
+        const fmt = (n)=>{ if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
+        if (jb.guildCount !== undefined) document.getElementById('stat-servers').textContent = fmt(jb.guildCount);
+        if (jb.totalMembers !== undefined) document.getElementById('stat-members').textContent = fmt(jb.totalMembers);
+        if (jb.commandsToday !== undefined) document.getElementById('stat-commands').textContent = fmt(jb.commandsToday);
+        if (jb.uptimeHours !== undefined) document.getElementById('stat-uptime').textContent = String(jb.uptimeHours);
+      }catch(e){ /* ignore */ }
+    }
+    // Render sparkline from history points (array of {t,v})
+    function renderSparkline(points){
+      try{
+        if (!points || !points.length) { document.querySelector('#stat-sparkline polyline').setAttribute('points',''); return; }
+        const values = points.map(p => Number(p.v) || 0);
+        const max = Math.max.apply(null, values);
+        const min = Math.min.apply(null, values);
+        const w = 100, h = 22; const len = values.length;
+        const pad = 4; const innerW = w - pad*2; const innerH = h - pad*2;
+        const pts = values.map((v, i)=>{
+          const x = pad + (i/(Math.max(1,len-1))) * innerW;
+          const y = pad + (max === min ? innerH/2 : (1 - (v - min)/(max - min)) * innerH);
+          return x.toFixed(2)+','+y.toFixed(2);
+        }).join(' ');
+        document.querySelector('#stat-sparkline polyline').setAttribute('points', pts);
+      }catch(e){}
+    }
+
+    async function fetchAndRenderStats(){
+      try{
+        const res = await fetch('/api/stats');
+        if (!res.ok){ console.error('/api/stats not ok', res.status); document.getElementById('stats-last-updated').textContent = 'Updated: failed'; return; }
+        const jb = await res.json();
+        console.debug('stats response', jb);
+        const fmt = (n)=>{ if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
+        // show values or 0 for numeric fields
+        document.getElementById('stat-servers').textContent = (typeof jb.guildCount === 'number') ? fmt(jb.guildCount) : '0';
+        document.getElementById('stat-members').textContent = (typeof jb.totalMembers === 'number') ? fmt(jb.totalMembers) : '0';
+        document.getElementById('stat-commands').textContent = (typeof jb.commandsToday === 'number') ? fmt(jb.commandsToday) : '0';
+        document.getElementById('stat-uptime').textContent = (typeof jb.uptimeHours === 'number') ? String(jb.uptimeHours) : '—';
+        if (jb.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Updated: ' + new Date(jb.lastUpdated).toLocaleString(); else document.getElementById('stats-last-updated').textContent = 'Updated: —';
+        // history
+        try{ const hr = await fetch('/api/stats-history'); if (hr.ok){ const hj = await hr.json(); renderSparkline(hj.history || []); } }catch(e){ console.error('Failed to fetch history', e); }
+      }catch(e){ console.error('fetchAndRenderStats error', e); document.getElementById('stats-last-updated').textContent = 'Updated: failed'; }
+    }
+    // Initial load and periodic refresh
+    fetchAndRenderStats();
+    setInterval(fetchAndRenderStats, 30000); // refresh every 30s
+    const refreshBtn = document.getElementById('stats-refresh'); if (refreshBtn){ refreshBtn.addEventListener('click', ()=>{ fetchAndRenderStats(); try{ if (typeof showToast === 'function') showToast('Stats refreshed','info'); }catch(e){} }); }
+
+    // Live updates via socket.io (with retry in case the client script loads slightly later)
+    (function(){
+      function setupSocket(){
+        try{
+          const socket = io();
+          socket.on('bot-stats', (payload)=>{
+            try{
+              const jb = payload && payload.stats ? payload.stats : payload;
+              const fmt = (n)=>{ if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
+              if (jb.guildCount !== undefined) document.getElementById('stat-servers').textContent = (typeof jb.guildCount === 'number') ? fmt(jb.guildCount) : '0';
+              if (jb.totalMembers !== undefined) document.getElementById('stat-members').textContent = (typeof jb.totalMembers === 'number') ? fmt(jb.totalMembers) : '0';
+              if (jb.commandsToday !== undefined) document.getElementById('stat-commands').textContent = (typeof jb.commandsToday === 'number') ? fmt(jb.commandsToday) : '0';
+              if (jb.uptimeHours !== undefined) document.getElementById('stat-uptime').textContent = (typeof jb.uptimeHours === 'number') ? String(jb.uptimeHours) : '—';
+              if (jb.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Updated: ' + new Date(jb.lastUpdated).toLocaleString();
+            }catch(e){}
+          });
+          socket.on('bot-stats-history', (payload)=>{ try{ renderSparkline(payload && payload.history ? payload.history : []); }catch(e){} });
+        }catch(e){ /* ignore */ }
+      }
+      function tryConnect(retries){
+        if (typeof io !== 'undefined') { setupSocket(); return; }
+        if (retries && retries > 0){ setTimeout(()=> tryConnect(retries-1), 400); }
+      }
+      tryConnect(15); // try for ~6 seconds
+    })();
+  </script>
+</html>

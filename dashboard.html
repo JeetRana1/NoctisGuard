@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - NoctisGuard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.svg" sizes="any">
+    <link rel="shortcut icon" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/favicon.svg">
+</head>
+<body>
+    <header>
+      <nav class="container" aria-label="Main navigation">
+        <a class="brand" href="index.html">
+          <img src="/Site-Logo.svg" alt="NoctisGuard" width="40" height="40">
+          <span>NoctisGuard</span>
+        </a>
+
+        <h2 class="dashboard-title">Dashboard</h2>
+
+        <ul class="nav-menu">
+          <li><a href="dashboard.html" aria-current="page">Home</a></li>
+          <li><a href="server-settings.html">Settings</a></li>
+        </ul>
+
+      </nav>
+    </header>
+
+    <section id="dashboard">
+        <!-- Page loader overlay (visible while page loads) -->
+        <div id="page-loader" class="page-loader" aria-hidden="false">
+          <div class="spinner" aria-hidden="true"></div>
+        </div>
+
+        <div class="container dashboard-main">
+            <div id="auth-info" class="auth-info" aria-live="polite"></div>
+            <h1>Your Servers</h1>
+            <p class="section-lead">Select a server to manage:</p>
+
+            <div id="debug-info" class="small-muted" style="margin-bottom:8px;display:block"></div>
+
+            <div id="loader" class="loader" aria-hidden="true" style="display:none">
+              <div class="spinner" aria-hidden="true"></div>
+              <div class="loader-label small-muted">Loading your servers…</div>
+            </div>
+
+            <div id="skeletons" class="server-skeletons skeletons" aria-hidden="true"></div>
+
+            <div id="server-list" class="server-list"></div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mock OAuth Callback - NoctisGuard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.svg" sizes="any">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon.svg">
+  <style>body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px} .auth-card{max-width:560px;width:100%;padding:28px;border-radius:14px;background:var(--card);border:1px solid var(--border);text-align:center}</style>
+</head>
+<body>
+  <div class="auth-card">
+    <h2>Processing authorization…</h2>
+    <p id="status" class="small-muted">Exchanging code for a session token (mock)…</p>
+    <div id="actions" style="margin-top:18px"></div>
+  </div>
+
+  <script>
+    // Parse URL params (code/state) and simulate token exchange
+    (function(){
+      const params = new URLSearchParams(location.search);
+      const code = params.get('code');
+      const statusEl = document.getElementById('status');
+      const actions = document.getElementById('actions');
+
+      if (!code) {
+        statusEl.textContent = 'No authorization code present. Please retry.';
+        actions.innerHTML = '<a href="mock-auth.html" class="btn ghost">Back to authorize</a>';
+        return;
+      }
+
+      // Simulate network delay and token creation
+      setTimeout(() => {
+        // create mock token and user
+        const token = 'mock_token_' + Date.now();
+        const user = { id: 'local-1', username: 'LocalTester#0001', avatar: '' };
+        localStorage.setItem('ng_token', token);
+        localStorage.setItem('ng_user', JSON.stringify(user));
+
+        statusEl.textContent = 'Authorization successful. Redirecting to dashboard…';
+        actions.innerHTML = '<a href="dashboard.html" class="btn primary">Continue to Dashboard</a>';
+
+        // show page loader and auto-redirect after a short pause
+        const pl = document.createElement('div'); pl.id='page-loader'; pl.className='page-loader'; pl.innerHTML='<div class="spinner" aria-hidden="true"></div>'; document.body.appendChild(pl);
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 900);
+      }, 750);
+    })();
+  </script>
+</body>
+</html>

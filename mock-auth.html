@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mock Discord Authorization - NoctisGuard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.svg" sizes="any">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon.svg">
+  <style>body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px} .auth-card{max-width:520px;width:100%;padding:28px;border-radius:14px;background:var(--card);border:1px solid var(--border);text-align:center}</style>
+</head>
+<body>
+  <div class="auth-card">
+    <h2>Authorize NoctisGuard</h2>
+    <p class="small-muted">This is a local mock of the Discord OAuth authorization page for testing only. No real Discord data is used.</p>
+    <div style="margin-top:18px;display:flex;gap:10px;justify-content:center">
+      <button id="authorize" class="btn primary">Authorize</button>
+      <a href="index.html" class="btn ghost">Cancel</a>
+    </div>
+    <p class="small-muted" style="margin-top:18px">After authorizing you will be redirected back to the local callback which will create a mock session and send you to the dashboard.</p>
+  </div>
+
+  <script>
+    document.getElementById('authorize').addEventListener('click', function(){
+      // simulate an authorization response and redirect to mock callback
+      const redirect = 'mock-callback.html?code=mock_code_123&state=local';
+      window.location.href = redirect;
+    });
+  </script>
+  <script>
+    document.getElementById('authorize').addEventListener('click', function(){
+      // simulate an authorization response and redirect to mock callback
+      const redirect = 'mock-callback.html?code=mock_code_123&state=local';
+      // show page loader briefly for better UX
+      const pl = document.createElement('div'); pl.id='page-loader'; pl.className='page-loader'; pl.innerHTML='<div class="spinner" aria-hidden="true"></div>'; document.body.appendChild(pl);
+      setTimeout(()=> window.location.href = redirect, 250);
+    });
+  </script>
+</body>
+</html>
