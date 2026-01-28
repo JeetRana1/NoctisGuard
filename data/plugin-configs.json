@@ -1,20 +1,10 @@
 {
   "1336111006644047964": {
-    "welcome": {
-      "welcome": {
-        "channel": "1465101377704427683",
-        "message": "Welcome {user} to our server enjoy your stay!"
-      },
-      "bye": {
-        "channel": "1465101721079644322",
-        "message": "Goodbye {user}! CYA"
-      }
-    },
     "giveaway": {
       "giveaway": {
-        "duration": 60,
+        "duration": 1,
         "channel": "1464390485136244747",
-        "prize": "Ta\\estqffef",
+        "prize": "%JTNKENqwr",
         "mention": true
       }
     }

@@ -10,7 +10,7 @@ let io = null;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const BASE_URL = process.env.BASE_URL || 'https://noctis-guard.vercel.app';
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 
@@ -20,7 +20,7 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
 
 app.use(express.static(path.join(__dirname)));
 app.use(cookieParser());
-app.use(express.json()); // parse JSON bodie's for API endpoints
+app.use(express.json()); // parse JSON bodies for API endpoints
 
 // Simple API to return the logged-in user (from cookie)
 app.get('/api/me', (req, res) => {
@@ -913,7 +913,7 @@ app.get('/api/guild-channel/:guildId/:channelId', async (req, res) => {
 });
 
 // Presence proxy: ask bot for presence cache if bot exposes such an endpoint
-// Set BOT_PRESENCE_URL in .env to the bot base URL (e.g., https://noctis-guard.vercel.app)
+// Set BOT_PRESENCE_URL in .env to the bot base URL (e.g., http://localhost:4000)
 app.get('/api/guild-presences/:guildId', async (req, res) => {
   const guildId = req.params.guildId;
   const presenceBase = process.env.BOT_PRESENCE_URL;
