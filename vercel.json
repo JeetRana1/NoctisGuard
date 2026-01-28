@@ -8,6 +8,7 @@
     { "handle": "filesystem" },
     { "src": "^/callback/?$", "dest": "/api/index.js" },
     { "src": "^/invite-callback/?$", "dest": "/api/index.js" },
+    { "src": "^/bot-event/?$", "dest": "/api/index.js" },
     { "src": "^/api/(.*)$", "dest": "/api/index.js" },
     { "src": "^/.*$", "dest": "/index.html" }
   ]

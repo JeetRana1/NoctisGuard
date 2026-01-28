@@ -13,8 +13,11 @@ const handlers = new Map([
   ['/stats-history', require('../serverless-handlers/stats-history')],
   ['/stats', require('../serverless-handlers/stats')],
   ['/recent-guild-events', require('../serverless-handlers/recent-guild-events')],
+  ['/guild-presences', require('../serverless-handlers/guild-presences')],
+  ['/server-plugin-test', require('../serverless-handlers/server-plugin-test')],
   ['/callback', require('../serverless-handlers/callback')],
   ['/invite-callback', require('../serverless-handlers/invite-callback')],
+  ['/bot-event', require('../serverless-handlers/bot-event')],
 ]);
 
 module.exports = async (req, res) => {
