@@ -5,6 +5,9 @@
   ],
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/index.html" }
+    { "src": "^/callback/?$", "dest": "/api/callback.js" },
+    { "src": "^/invite-callback/?$", "dest": "/api/invite-callback.js" },
+    { "src": "^/api/(.*)$", "dest": "/api/$1.js" },
+    { "src": "^/.*$", "dest": "/index.html" }
   ]
 }
