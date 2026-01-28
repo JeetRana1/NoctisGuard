@@ -3,8 +3,7 @@
   "builds": [
     { "src": "index.html", "use": "@vercel/static" }
   ],
-  "routes": [
-    // SPA fallback — serve index.html for all frontend routes
-    { "src": "^/(.*)$", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "^/(.*)$", "destination": "/index.html" }
   ]
 }
