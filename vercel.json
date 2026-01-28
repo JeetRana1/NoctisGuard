@@ -1,14 +1,14 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/**/*.js", "use": "@vercel/node" },
+    { "src": "api/index.js", "use": "@vercel/node" },
     { "src": "**", "use": "@vercel/static" }
   ],
   "routes": [
     { "handle": "filesystem" },
     { "src": "^/callback/?$", "dest": "/api/callback.js" },
     { "src": "^/invite-callback/?$", "dest": "/api/invite-callback.js" },
-    { "src": "^/api/(.*)$", "dest": "/api/$1.js" },
+    { "src": "^/api/(.*)$", "dest": "/api/index.js" },
     { "src": "^/.*$", "dest": "/index.html" }
   ]
 }
