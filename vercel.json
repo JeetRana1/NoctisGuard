@@ -22,6 +22,7 @@
     { "src": "^/api/server-activity/([^/]+)$", "dest": "/api/server-proxy.js?op=server-activity&guildId=$1" },
     { "src": "^/api/server-giveaways/([^/]+)$", "dest": "/api/server-proxy.js?op=server-giveaways&guildId=$1" },
     { "src": "^/api/guild-members/([^/]+)$", "dest": "/api/server-proxy.js?op=guild-members&guildId=$1" },
+    { "src": "^/api/server-plugin-test/([^/]+)$", "dest": "/api/server-proxy.js?op=server-plugin-test&guildId=$1" },
     { "src": "^/api/guild/([^/]+)$", "dest": "/api/server-proxy.js?op=guild&guildId=$1" },
 
     { "src": "^/logout$", "dest": "/api/logout.js" },
