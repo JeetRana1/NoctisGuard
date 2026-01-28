@@ -20,9 +20,14 @@ const handlers = new Map([
 module.exports = async (req, res) => {
   try{
     const url = req.url || '/';
+    // Normalize incoming path: if Vercel routes to /api/index.js the path may include /api prefix
+    let path = url;
+    if (path.startsWith('/api/')) path = path.slice(4); // '/api/me' -> '/me'
+    if (path === '/api') path = '/';
+
     // Try to find a handler whose prefix matches the start of the path
     for (const [prefix, fn] of handlers.entries()){
-      if (url === prefix || url.startsWith(prefix + '/') || url.startsWith(prefix + '?')){
+      if (path === prefix || path.startsWith(prefix + '/') || path.startsWith(prefix + '?')){
         return fn(req, res);
       }
     }
