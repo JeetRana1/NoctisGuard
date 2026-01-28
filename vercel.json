@@ -14,6 +14,16 @@
     { "src": "^/invite-now$", "dest": "/api/invite-now.js" },
     { "src": "^/invite-callback$", "dest": "/api/invite-callback.js" },
     { "src": "^/api/stats-history$", "dest": "/api/stats.js" },
+    { "src": "^/api/recent-guild-events$", "dest": "/api/stats.js?op=recent-guild-events" },
+
+    { "src": "^/api/server-plugins/([^/]+)$", "dest": "/api/server-proxy.js?op=server-plugins&guildId=$1" },
+    { "src": "^/api/server-plugin-config/([^/]+)$", "dest": "/api/server-proxy.js?op=server-plugin-config&guildId=$1" },
+    { "src": "^/api/guild-presences/([^/]+)$", "dest": "/api/server-proxy.js?op=guild-presences&guildId=$1" },
+    { "src": "^/api/server-activity/([^/]+)$", "dest": "/api/server-proxy.js?op=server-activity&guildId=$1" },
+    { "src": "^/api/server-giveaways/([^/]+)$", "dest": "/api/server-proxy.js?op=server-giveaways&guildId=$1" },
+    { "src": "^/api/guild-members/([^/]+)$", "dest": "/api/server-proxy.js?op=guild-members&guildId=$1" },
+    { "src": "^/api/guild/([^/]+)$", "dest": "/api/server-proxy.js?op=guild&guildId=$1" },
+
     { "src": "^/logout$", "dest": "/api/logout.js" },
     { "src": "^/api/(.*)$", "dest": "/api/$1.js" },
     { "src": "^/$", "dest": "/index.html" },
