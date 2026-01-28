@@ -1052,9 +1052,12 @@ app.get('/favicon.ico', (req, res) => {
 // - If ENABLE_INVITE_REDIRECT=true (and you've added `${BASE_URL}/invite-callback` to your app's redirect URIs), Discord will redirect back to `/invite-callback` after invite.
 // - Otherwise we use the simple bot invite URL (no redirect) to avoid "Invalid Redirect" errors. The client will open this invite in a new tab and poll for bot presence to auto-redirect the user when the bot joins.
 app.get('/invite-now', (req, res) => {
-  const botId = process.env.DISCORD_CLIENT_ID;
+  const botId = process.env.DISCORD_CLIENT_ID || process.env.CLIENT_ID;
   const perms = process.env.DISCORD_PERMISSIONS || '8';
-  if (!botId) return res.status(500).send('Server not configured with Discord client ID for invites. Set DISCORD_CLIENT_ID in .env');
+  if (!botId) {
+    console.error('invite-now called but DISCORD_CLIENT_ID/CLIENT_ID is not configured');
+    return res.status(500).send('Invite not configured: Discord client ID not set on the server. Please set DISCORD_CLIENT_ID in your environment variables.');
+  }
   const enableRedirect = process.env.ENABLE_INVITE_REDIRECT === 'true';
 
   const paramsObj = { client_id: botId, permissions: perms, scope: 'bot' };
