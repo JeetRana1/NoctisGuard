@@ -41,9 +41,20 @@ module.exports = async (req, res) => {
     cookies.push(`ng_token=${encodeURIComponent(access_token)}; ${cookieOpts}`);
     cookies.push(`ng_user=${encodeURIComponent(JSON.stringify(user))}; ${cookieOpts}`);
 
+    // Set cookies server-side (best-effort)
     res.setHeader('Set-Cookie', cookies);
-    res.writeHead(302, { Location: '/dashboard.html' });
-    return res.end();
+    // Also return a small HTML + JS fallback to set cookies client-side and redirect — helps when Set-Cookie is blocked
+    const safeToken = encodeURIComponent(access_token);
+    const safeUser = encodeURIComponent(JSON.stringify(user));
+    const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Signing you in…</title></head><body><script>
+try{
+  document.cookie = "ng_token=${safeToken}; Max-Age=${24*60*60}; Path=/; SameSite=None; Secure";
+  document.cookie = "ng_user=${safeUser}; Max-Age=${24*60*60}; Path=/; SameSite=None; Secure";
+}catch(e){}
+location.replace('/dashboard.html');
+</script><p>Signing you in… If you are not redirected, <a href="/dashboard.html">click here</a>.</p></body></html>`;
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(200).end(html);
   } catch (err) {
     console.error('OAuth callback error', err.response?.data || err.message || err);
     res.statusCode = 500; res.setHeader('content-type','text/plain; charset=utf-8');
