@@ -20,7 +20,7 @@ async function handleWebhook(payload, headers){
       const entry = { guildId: String(guildId), type: 'plugin_test', pluginId, payload: pl || null, user: headers && headers['x-sim-user'] ? { username: headers['x-sim-user'] } : null, ts: Date.now() };
       arr.unshift(entry);
       if (arr.length > 1000) arr.length = 1000;
-      writeJson(actPath, arr);
+      try{ writeJson(actPath, arr); }catch(e){ console.warn('fake webhook: failed to write activity.json', e); return { ok: true, handled: true, warning: 'write failed' }; }
       return { ok: true, handled: true };
     }
 
@@ -37,7 +37,7 @@ async function handleWebhook(payload, headers){
       const entry = { guildId: String(guildId), type: 'plugin_config_update', pluginId, config, user: headers && headers['x-sim-user'] ? { username: headers['x-sim-user'] } : null, ts: Date.now() };
       arr.unshift(entry);
       if (arr.length > 1000) arr.length = 1000;
-      writeJson(actPath, arr);
+      try{ writeJson(actPath, arr); }catch(e){ console.warn('fake webhook: failed to write activity.json', e); return { ok: true, updated: true, warning: 'write failed' }; }
       return { ok: true, updated: true };
     }
 
