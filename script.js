@@ -1,10 +1,41 @@
 // Local mock OAuth + UI helpers
-// For invites we'll use the server-side redirect /invite-now so the client ID stays secret
-const INVITE_LINK = '/invite-now';
+// When running as a static site, build OAuth URLs on the client using the public CLIENT_ID
 const USE_MOCK = true; // toggle to false when testing with real OAuth flow
 
-function openInvite() { window.open(INVITE_LINK, '_blank'); }
-function login() { showPageLoader(); if (USE_MOCK) { window.location.href = 'mock-auth.html'; } else { window.location.href = '/auth'; } }
+function buildInviteUrl(guildId){
+  try{
+    const cfg = window.NG_CONFIG || {};
+    const client = cfg.CLIENT_ID;
+    const perms = cfg.DEFAULT_PERMISSIONS || '8';
+    const params = new URLSearchParams({ client_id: client, permissions: perms, scope: 'bot' });
+    if (guildId){ params.set('guild_id', guildId); params.set('disable_guild_select', 'true'); }
+    return 'https://discord.com/api/oauth2/authorize?' + params.toString();
+  }catch(e){ return '/'; }
+}
+function openInvite(guildId){ const url = buildInviteUrl(guildId); window.open(url, '_blank'); }
+
+function buildAuthUrl(){
+  try{
+    const cfg = window.NG_CONFIG || {};
+    const client = cfg.CLIENT_ID;
+    const base = cfg.BASE_URL || window.location.origin;
+    const redirect = encodeURIComponent((base.replace(/\/$/, '')) + '/callback');
+    const params = new URLSearchParams({ client_id: client, redirect_uri: (base.replace(/\/$/, '') + '/callback'), response_type: 'code', scope: 'identify guilds' });
+    return 'https://discord.com/api/oauth2/authorize?' + params.toString();
+  }catch(e){ return '/'; }
+}
+
+function login(){ showPageLoader(); if (USE_MOCK) { window.location.href = 'mock-auth.html'; } else { window.location.href = buildAuthUrl(); } }
+
+// Attach click handlers to invite/login anchors to prevent navigation to /invite-now or /auth (which are not available on static deploys)
+document.addEventListener('DOMContentLoaded', ()=>{
+  try{
+    const inviteEls = document.querySelectorAll('#invite-btn, #hero-invite, #invite-bottom');
+    inviteEls.forEach(el => { el.addEventListener('click', (e)=>{ e.preventDefault(); openInvite(); }); el.setAttribute('href','#'); });
+    const loginEls = document.querySelectorAll('#login-btn, #hero-login, #invite-login');
+    loginEls.forEach(el => { el.addEventListener('click', (e)=>{ e.preventDefault(); login(); }); el.setAttribute('href','#'); });
+  }catch(e){}
+});
 
 // Image fallback helpers 🔧
 function setImageFallback(img){
