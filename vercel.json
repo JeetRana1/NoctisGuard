@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
+    { "source": "/", "destination": "/api/root" },
     { "source": "/(.*)", "destination": "/$1" }
   ],
   "cleanUrls": true
