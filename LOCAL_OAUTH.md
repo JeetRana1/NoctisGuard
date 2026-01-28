@@ -1,7 +1,7 @@
 Local OAuth setup (real Discord OAuth)
 
 1. Copy `.env.example` to `.env` and fill `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET`.
-2. Make sure `BASE_URL` matches where you'll run the server (default `http://localhost:3000`).
+2. Make sure `BASE_URL` matches where you'll run the server (default `http://localhost:3000`). If you deploy to Vercel, set `BASE_URL` (or rely on `VERCEL_URL`) to `https://<your-vercel-domain>` in your project Environment Variables (e.g., `https://noctis-guard.vercel.app`). Note: Vercel's static deployments won't run `server.js` — you must either deploy this project to a Node-capable host (Render, Railway, Heroku, etc.) or refactor the Express routes into Vercel Serverless Functions for full OAuth/API functionality.
 3. In the Discord Developer Portal, open your application -> OAuth2 -> Redirects and add:
    - `http://localhost:3000/callback`   - `http://localhost:3000/invite-callback` (optional, required if you want the "Setup" flow to return the user back to the per-server dashboard after inviting the bot)4. Install dependencies and start the server:
    - `npm install`
