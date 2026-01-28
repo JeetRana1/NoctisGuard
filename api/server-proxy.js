@@ -131,6 +131,13 @@ module.exports = async (req, res) => {
           const r = await axios.post(BOT_NOTIFY_URL, { type: 'plugin_test', guildId, pluginId, payload }, { headers, timeout: 8000, validateStatus: () => true });
           result = { status: r.status, body: r.data };
         }catch(e){ console.warn('Failed to notify bot of plugin_test', e?.message || e); }
+      } else {
+        // No external BOT_NOTIFY_URL configured — use local fake-bot-webhook to simulate the bot so the dashboard can still test plugins
+        try{
+          const fake = require('./fake-bot-webhook');
+          const r = await fake.handleWebhook({ type: 'plugin_test', guildId, pluginId, payload }, headers);
+          result = { status: 200, body: r };
+        }catch(e){ console.warn('Fake webhook failed', e); }
       }
 
       return res.json({ ok: true, result });
