@@ -1,3 +1,4 @@
+const axios = require('axios');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -30,6 +31,16 @@ module.exports = async (req, res) => {
     if (typeof body.pluginId === 'string') { current[body.pluginId] = !!body.enabled; }
     else if (body.state && typeof body.state === 'object'){ Object.assign(current, body.state); }
     else if (typeof body === 'object'){ Object.assign(current, body); }
+
+    // If BOT_NOTIFY_URL is set, forward the plugin update to the bot
+    const BOT_URL = (process.env.BOT_NOTIFY_URL || '').replace(/\/$/, '');
+    const headers = {};
+    if (process.env.BOT_NOTIFY_SECRET) headers['x-dashboard-secret'] = process.env.BOT_NOTIFY_SECRET;
+    if (BOT_URL){
+      try{
+        await axios.post(BOT_URL, { type: 'plugin_update', guildId, state: current }, { headers, timeout: 8000, validateStatus: () => true });
+      }catch(e){ console.warn('Failed to forward plugin update to bot', e?.message || e); }
+    }
 
     all[guildId] = current;
     await save(all);

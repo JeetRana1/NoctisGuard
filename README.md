@@ -10,6 +10,7 @@ Web frontend for NoctisGuard.
 - Quick fix (static-only site on Vercel — fixes "Cannot GET /"):
   - This repo now includes `vercel.json` which forces a static deployment and an SPA fallback (serves `index.html` at `/`). If you want just the frontend (no server endpoints), deploy to Vercel and the site root will work after deployment.
   - After deploying on Vercel, add environment variables in **Project Settings → Environment Variables**. You can import values from the provided `.env.vercel` as a guide (do not commit secrets publicly).
+  - Note: Vercel serverless functions are stateless. To get the full dashboard experience (live stats, plugin config, presence), set `BOT_NOTIFY_URL` and `BOT_PRESENCE_URL` to your bot's public endpoints so the serverless API can proxy and forward updates to your bot.
 
 - Full-featured option (recommended if you need OAuth / server APIs):
   - Host `server.js` on a Node-capable host (Render, Railway, Fly, Heroku, etc.) and set `BASE_URL` to that host (e.g., `https://your-dashboard.example.com`). This allows `/auth`, `/callback`, and the API endpoints to work.
