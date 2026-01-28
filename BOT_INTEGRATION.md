@@ -11,12 +11,12 @@ This guide shows how to integrate your bot with the dashboard plugin updates (we
 - Set these in your bot's `.env`:
   - `WEBHOOK_SECRET` — secret string the bot expects in `x-dashboard-secret` header on incoming webhook requests.
   - `BOT_WEBHOOK_PORT` — port for the webhook listener (default: `4000`).
-  - `DASHBOARD_BASE` — URL of the dashboard server (default: `http://localhost:3000`).
+  - `DASHBOARD_BASE` — URL of the dashboard server (default: `https://noctis-guard.vercel.app`).
 
 - Set these in the dashboard `.env`:
   - `BOT_NOTIFY_URL` — the public URL the bot exposes for webhook POSTs (e.g. `https://<host>.ngrok.io/webhook`).
   - `BOT_NOTIFY_SECRET` — the same secret value as the bot's `WEBHOOK_SECRET` so the dashboard includes it in `x-dashboard-secret` when notifying.
-  - `BOT_PRESENCE_URL` — (optional) the base URL of your bot server that exposes a presence endpoint (e.g. `http://localhost:4000`). If configured, the dashboard will query `/presences/:guildId` on that host to retrieve member presence (online/idle/dnd/offline) and show status dots in the Members list.
+  - `BOT_PRESENCE_URL` — (optional) the base URL of your bot server that exposes a presence endpoint (e.g. `https://noctis-guard.vercel.app`). If configured, the dashboard will query `/presences/:guildId` on that host to retrieve member presence (online/idle/dnd/offline) and show status dots in the Members list.
 
 ## Minimal example
 Use `bot-webhook-example.js` (in this repo) as a copy-paste starter: it contains:

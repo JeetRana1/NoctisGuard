@@ -13,7 +13,7 @@ app.use(express.json()); // parse json body
 
 const PORT = process.env.BOT_WEBHOOK_PORT || 4000;
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || 'change-me-to-a-secret';
-const DASHBOARD_BASE = process.env.DASHBOARD_BASE || 'http://localhost:3000';
+const DASHBOARD_BASE = process.env.DASHBOARD_BASE || 'https://noctis-guard.vercel.app';
 const PLUGINS_FILE = path.join(__dirname, 'data', 'bot-guild-config.json');
 
 // Simple in-memory config (persisted to disk)
@@ -191,8 +191,8 @@ function startWebhookListener(client){
       ok: true,
       info: 'POST /webhook expects JSON body { type:"plugin_update", guildId, state } and header x-dashboard-secret',
       examples: {
-        curl: `curl -X POST http://localhost:${PORT}/webhook -H "x-dashboard-secret: ${WEBHOOK_SECRET}" -H "Content-Type: application/json" -d '{"type":"plugin_update","guildId":"123","state":{"moderation":false}}'`,
-        powershell: `curl -Method POST -Uri http://localhost:${PORT}/webhook -Headers @{"x-dashboard-secret"="${WEBHOOK_SECRET}"} -Body '{"type":"plugin_update","guildId":"123","state":{"moderation":false}}' -ContentType 'application/json'`
+        curl: `curl -X POST https://noctis-guard.vercel.app/webhook -H "x-dashboard-secret: ${WEBHOOK_SECRET}" -H "Content-Type: application/json" -d '{"type":"plugin_update","guildId":"123","state":{"moderation":false}}'`,
+        powershell: `curl -Method POST -Uri https://noctis-guard.vercel.app/webhook -Headers @{"x-dashboard-secret"="${WEBHOOK_SECRET}"} -Body '{"type":"plugin_update","guildId":"123","state":{"moderation":false}}' -ContentType 'application/json'`
       }
     });
   });
@@ -248,8 +248,8 @@ app.get('/webhook', (req, res) => {
     ok: true,
     info: 'POST /webhook expects JSON body { type:"plugin_update", guildId, state } and header x-dashboard-secret',
     examples: {
-      curl: `curl -X POST http://localhost:${PORT}/webhook -H "x-dashboard-secret: ${WEBHOOK_SECRET}" -H "Content-Type: application/json" -d '{"type":"plugin_update","guildId":"123","state":{"moderation":false}}'`,
-      powershell: `curl -Method POST -Uri http://localhost:${PORT}/webhook -Headers @{"x-dashboard-secret"="${WEBHOOK_SECRET}"} -Body '{"type":"plugin_update","guildId":"123","state":{"moderation":false}}' -ContentType 'application/json'`
+      curl: `curl -X POST https://noctis-guard.vercel.app/webhook -H "x-dashboard-secret: ${WEBHOOK_SECRET}" -H "Content-Type: application/json" -d '{"type":"plugin_update","guildId":"123","state":{"moderation":false}}'`,
+        powershell: `curl -Method POST -Uri https://noctis-guard.vercel.app/webhook -Headers @{"x-dashboard-secret"="${WEBHOOK_SECRET}"} -Body '{"type":"plugin_update","guildId":"123","state":{"moderation":false}}' -ContentType 'application/json'`
     }
   });
 });

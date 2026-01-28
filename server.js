@@ -10,7 +10,7 @@ let io = null;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+const BASE_URL = process.env.BASE_URL || 'https://noctis-guard.vercel.app';
 const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 
@@ -913,7 +913,7 @@ app.get('/api/guild-channel/:guildId/:channelId', async (req, res) => {
 });
 
 // Presence proxy: ask bot for presence cache if bot exposes such an endpoint
-// Set BOT_PRESENCE_URL in .env to the bot base URL (e.g., http://localhost:4000)
+// Set BOT_PRESENCE_URL in .env to the bot base URL (e.g., https://noctis-guard.vercel.app)
 app.get('/api/guild-presences/:guildId', async (req, res) => {
   const guildId = req.params.guildId;
   const presenceBase = process.env.BOT_PRESENCE_URL;

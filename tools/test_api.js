@@ -1,6 +1,6 @@
 const axios = require('axios');
 (async ()=>{
-  const base = 'http://localhost:3000';
+  const base = 'https://noctis-guard.vercel.app';
   const endpoints = [
     '/api/guild-member/1/1',
     '/api/guild-members/1?limit=1',
