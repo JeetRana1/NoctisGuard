@@ -97,7 +97,10 @@ module.exports = async (req, res) => {
     if (op === 'server-plugin-test'){
       if (String(req.method || 'GET').toUpperCase() !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
       const cookies = parseCookies(req.headers && req.headers.cookie);
-      const token = cookies && cookies.ng_token;
+      // Accept token either from ng_token cookie or Authorization header (Bearer)
+      let token = null;
+      if (cookies && cookies.ng_token){ token = decodeURIComponent(cookies.ng_token); }
+      else if (req.headers && req.headers.authorization){ token = req.headers.authorization.replace(/^Bearer\s+/i, '').trim(); }
       if (!token) return res.status(401).json({ error: 'Not authenticated' });
 
       // parse JSON body (try req.body or fallback to raw)
