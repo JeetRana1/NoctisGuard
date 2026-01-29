@@ -517,7 +517,7 @@ async function setPluginState(guildId, pluginName, enabled){
   guildConfig[guildId].disabled = Object.keys(guildConfig[guildId].plugins || {}).filter(k => !guildConfig[guildId].plugins[k]);
   await saveGuildConfig();
 
-  // Queue and attempt a guild command update
+  // Queue and attempt a guild command update (testung) TODO: test
   try {
     const gcu = require('./guildCommandUpdater');
     gcu.queueUpdate(guildId, guildConfig[guildId].disabled);
