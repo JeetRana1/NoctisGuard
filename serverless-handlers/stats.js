@@ -1,6 +1,5 @@
 const axios = require('axios');
-const fs = require('fs').promises;
-const path = require('path');
+const { readJSON } = require('./storage-utils');
 
 module.exports = async (req, res) => {
   try{
@@ -20,10 +19,7 @@ module.exports = async (req, res) => {
     }
 
     // Fallback to stored stats file (useful for local / ephemeral setups)
-    const f = path.join(process.cwd(), 'data', 'stats.json');
-    const raw = await fs.readFile(f, 'utf8').catch(()=>null);
-    if (!raw) return res.status(200).json({ guildCount: 0, totalMembers: 0, commandsToday: 0, uptimeHours: 0, lastUpdated: null });
-    const obj = JSON.parse(raw);
+    const obj = await readJSON('stats.json', { guildCount: 0, totalMembers: 0, commandsToday: 0, uptimeHours: 0, lastUpdated: null });
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
     return res.json(obj);

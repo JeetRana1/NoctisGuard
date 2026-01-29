@@ -2,7 +2,7 @@ const axios = require('axios');
 
 module.exports = async (req, res) => {
   try{
-    const guildId = req.query.guildId || (req.url && req.url.split('/').pop()) || null;
+    const guildId = req.query.guildId || (req.url && req.url.split('/').pop().split('?')[0]) || null;
     if (!guildId) return res.status(400).json({ error: 'Missing guildId' });
 
     // Try bot presence URL first

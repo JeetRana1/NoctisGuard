@@ -1,12 +1,8 @@
-const fs = require('fs').promises;
-const path = require('path');
+const { readJSON } = require('./storage-utils');
 
 module.exports = async (req, res) => {
   try{
-    const f = path.join(process.cwd(), 'data', 'activity.json');
-    const raw = await fs.readFile(f, 'utf8').catch(()=>null);
-    if (!raw) return res.json({ events: [] });
-    const arr = JSON.parse(raw || '[]');
+    const arr = await readJSON('activity.json', []);
     // Map activity entries to a minimal event: { type, guildId, at }
     const events = (arr || []).slice(-50).reverse().map(x => ({ type: x.type, guildId: x.guildId || x.guild_id || null, at: x.ts || x.t || Date.now() }));
     return res.json({ events });

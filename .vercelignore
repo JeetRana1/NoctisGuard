@@ -1,0 +1,44 @@
+# Development files
+node_modules
+.env
+.env.local
+.git
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# Test files
+test
+tests
+__tests__
+*.test.js
+*.spec.js
+
+# Scripts
+scripts/
+
+# Local data (will use /tmp on Vercel)
+data/
+
+# Development tools
+nodemon.json
+.vscode
+.idea
+
+# Temporary files
+tmp/
+temp/
+*.log
+*.tmp
+
+# Mock files (for local development only)
+mock-*.html
+
+# Example files
+*-example.js
+
+# Build artifacts
+dist/
+build/

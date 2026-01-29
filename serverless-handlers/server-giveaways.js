@@ -1,10 +1,9 @@
 const axios = require('axios');
-const fs = require('fs').promises;
-const path = require('path');
+const { readJSON } = require('./storage-utils');
 
 module.exports = async (req, res) => {
   try{
-    const guildId = req.query.guildId || (req.url && req.url.split('/').pop()) || null;
+    const guildId = req.query.guildId || (req.url && req.url.split('/').pop().split('?')[0]) || null;
     if (!guildId) return res.status(400).json({ error: 'Missing guildId' });
 
     // Try to ask bot for giveaways via BOT_NOTIFY_URL (type: giveaway_action list)
@@ -19,9 +18,7 @@ module.exports = async (req, res) => {
 
     // Fallback: local data file
     try{
-      const f = path.join(process.cwd(), 'data', 'giveaways.json');
-      const raw = await fs.readFile(f, 'utf8').catch(()=>null);
-      const arr = raw ? JSON.parse(raw) : [];
+      const arr = await readJSON('giveaways.json', []);
       const g = (arr||[]).filter(x => String(x.guildId) === String(guildId));
       return res.json({ ok: true, giveaways: g });
     }catch(e){ console.warn('server-giveaways fallback failed', e); }

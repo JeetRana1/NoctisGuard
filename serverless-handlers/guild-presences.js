@@ -1,10 +1,9 @@
 const axios = require('axios');
-const fs = require('fs').promises;
-const path = require('path');
+const { readJSON } = require('./storage-utils');
 
 module.exports = async (req, res) => {
   try{
-    const guildId = (req.url || '').split('/').pop() || null;
+    const guildId = (req.url || '').split('/').pop().split('?')[0] || null;
     if (!guildId) return res.status(400).json({ error: 'Missing guildId' });
 
     const presenceBase = process.env.BOT_PRESENCE_URL;
@@ -21,9 +20,7 @@ module.exports = async (req, res) => {
 
     // Fallback to stored presences
     try{
-      const pf = path.join(process.cwd(), 'data', 'presences.json');
-      const raw = await fs.readFile(pf, 'utf8').catch(()=>null);
-      const all = raw ? JSON.parse(raw) : {};
+      const all = await readJSON('presences.json', {});
       const pres = all[guildId] || [];
       return res.json({ guildId, presences: pres });
     }catch(e){ /* ignore */ }

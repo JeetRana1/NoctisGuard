@@ -1,15 +1,19 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/index.js", "use": "@vercel/node" },
-    { "src": "**", "use": "@vercel/static" }
+    { "src": "api/index.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "handle": "filesystem" },
-    { "src": "^/callback/?$", "dest": "/api/index.js" },
-    { "src": "^/invite-callback/?$", "dest": "/api/index.js" },
-    { "src": "^/bot-event/?$", "dest": "/api/index.js" },
-    { "src": "^/api/(.*)$", "dest": "/api/index.js" },
-    { "src": "^/.*$", "dest": "/index.html" }
-  ]
+    { "src": "/callback", "dest": "/api/index.js" },
+    { "src": "/invite-callback", "dest": "/api/index.js" },
+    { "src": "/bot-event", "dest": "/api/index.js" },
+    { "src": "/api/(.*)", "dest": "/api/index.js" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ],
+  "functions": {
+    "api/index.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
 }

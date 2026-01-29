@@ -1,6 +1,5 @@
 const axios = require('axios');
-const fs = require('fs').promises;
-const path = require('path');
+const { appendActivity } = require('./storage-utils');
 
 module.exports = async (req, res) => {
   try{
@@ -14,7 +13,7 @@ module.exports = async (req, res) => {
 
     const token = decodeURIComponent(rawToken);
     const parts = req.url.split('/');
-    const guildId = parts.pop() || null;
+    const guildId = parts.pop().split('?')[0] || null;
     if (!guildId) return res.status(400).json({ error: 'Missing guildId' });
 
     const body = req.body || {};
@@ -24,14 +23,8 @@ module.exports = async (req, res) => {
 
     // record activity
     try{
-      const ACTIVITY_FILE = path.join(process.cwd(), 'data', 'activity.json');
-      const raw = await fs.readFile(ACTIVITY_FILE, 'utf8').catch(()=>null);
-      const arr = raw ? JSON.parse(raw) : [];
       const user = (() => { try{ const userRaw = req.headers.cookie && req.headers.cookie.split(';').map(s=>s.trim()).find(x => x.startsWith('ng_user=')); if (userRaw){ return JSON.parse(decodeURIComponent(userRaw.slice(8))); } }catch(e){} return null; })();
-      arr.unshift({ guildId, type: 'plugin_test', pluginId, payload, user: (user ? { id: user.id, username: user.username+'#'+user.discriminator } : null), ts: Date.now() });
-      if (arr.length > 300) arr.splice(300);
-      await fs.mkdir(path.dirname(ACTIVITY_FILE), { recursive: true });
-      await fs.writeFile(ACTIVITY_FILE, JSON.stringify(arr, null, 2));
+      await appendActivity({ guildId, type: 'plugin_test', pluginId, payload, user: (user ? { id: user.id, username: user.username+'#'+user.discriminator } : null), ts: Date.now() }, 300);
     }catch(e){ console.warn('server-plugin-test: failed to append activity', e); }
 
     // Forward test to bot webhook

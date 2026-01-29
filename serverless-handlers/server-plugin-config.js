@@ -1,16 +1,14 @@
-const fs = require('fs').promises;
-const path = require('path');
+const { readJSON, writeJSON } = require('./storage-utils');
 
-const CFG = path.join(process.cwd(), 'data', 'plugin-configs.json');
-async function load(){ try{ const raw = await fs.readFile(CFG, 'utf8'); return JSON.parse(raw || '{}'); }catch(e){ return {}; } }
-async function save(obj){ try{ await fs.mkdir(path.dirname(CFG), { recursive: true }); await fs.writeFile(CFG, JSON.stringify(obj, null, 2), 'utf8'); }catch(e){ console.warn('Failed to save plugin-configs', e); } }
+async function load(){ return await readJSON('plugin-configs.json', {}); }
+async function save(obj){ return await writeJSON('plugin-configs.json', obj); }
 
 module.exports = async (req, res) => {
   try{
     const cookieHeader = req.headers.cookie || '';
     const cookies = {}; cookieHeader.split(';').map(s=>s.trim()).forEach(p => { const idx = p.indexOf('='); if (idx>-1){ cookies[p.slice(0,idx)] = p.slice(idx+1); }});
     const token = cookies['ng_token'];
-    const guildId = req.query.guildId || (req.url && req.url.split('/').pop()) || null;
+    const guildId = req.query.guildId || (req.url && req.url.split('/').pop().split('?')[0]) || null;
     if (!guildId) return res.status(400).json({ error: 'Missing guildId' });
 
     // If a BOT_NOTIFY_URL is configured, try to proxy GET/POST to the bot instead of relying on ephemeral local files

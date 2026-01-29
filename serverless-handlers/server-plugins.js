@@ -1,11 +1,8 @@
 const axios = require('axios');
-const fs = require('fs').promises;
-const path = require('path');
+const { readJSON, writeJSON } = require('./storage-utils');
 
-const PLUGINS_FILE = path.join(process.cwd(), 'data', 'plugins.json');
-
-async function load(){ try{ const raw = await fs.readFile(PLUGINS_FILE, 'utf8'); return JSON.parse(raw || '{}'); }catch(e){ return {}; } }
-async function save(obj){ try{ await fs.mkdir(path.dirname(PLUGINS_FILE), { recursive: true }); await fs.writeFile(PLUGINS_FILE, JSON.stringify(obj, null, 2), 'utf8'); }catch(e){ console.warn('Failed to save plugins file', e); } }
+async function load(){ return await readJSON('plugins.json', {}); }
+async function save(obj){ return await writeJSON('plugins.json', obj); }
 
 module.exports = async (req, res) => {
   try{
