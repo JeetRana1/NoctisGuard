@@ -27,18 +27,70 @@ module.exports = async (req, res) => {
       await appendActivity({ guildId, type: 'plugin_test', pluginId, payload, user: (user ? { id: user.id, username: user.username+'#'+user.discriminator } : null), ts: Date.now() }, 300);
     }catch(e){ console.warn('server-plugin-test: failed to append activity', e); }
 
+    // Check if bot webhook is configured
+    if (!process.env.BOT_NOTIFY_URL) {
+      console.warn('BOT_NOTIFY_URL not configured - plugin test cannot be forwarded to bot');
+      return res.json({ 
+        ok: false, 
+        error: 'bot_not_configured',
+        message: 'Bot webhook URL is not configured. Please set BOT_NOTIFY_URL environment variable in Vercel.',
+        suggestion: 'Deploy your bot to a public server and set BOT_NOTIFY_URL to point to it (e.g., https://your-bot.railway.app/webhook)'
+      });
+    }
+
     // Forward test to bot webhook
     try{
-      if (!process.env.BOT_NOTIFY_URL) return res.status(502).json({ error: 'BOT_NOTIFY_URL not configured' });
       const base = process.env.BOT_NOTIFY_URL.replace(/\/$/, '');
-      const url = base + '/webhook';
+      const url = base.includes('/webhook') ? base : base + '/webhook';
       const headers = { 'Content-Type': 'application/json' };
       if (process.env.BOT_NOTIFY_SECRET) headers['x-dashboard-secret'] = process.env.BOT_NOTIFY_SECRET;
+      
+      console.log('Forwarding plugin test to bot:', url, 'guildId:', guildId, 'pluginId:', pluginId);
       const resp = await axios.post(url, { type: 'plugin_test', guildId, pluginId, payload }, { headers, timeout: 10000, validateStatus: () => true });
-      if (resp && resp.status >= 200 && resp.status < 300) return res.json({ ok: true, result: resp.data });
+      
+      if (resp && resp.status >= 200 && resp.status < 300) {
+        console.log('Plugin test successful:', resp.status);
+        return res.json({ ok: true, result: resp.data });
+      }
+      
       console.warn('server-plugin-test: bot returned non-2xx', resp && resp.status, resp && resp.data);
-      return res.status(502).json({ ok: false, error: 'bot_failure', status: resp && resp.status, data: resp && resp.data });
-    }catch(e){ console.warn('server-plugin-test: failed to contact bot', e && e.message ? e.message : e); return res.status(502).json({ ok: false, error: 'bot_unreachable', message: String(e) }); }
+      return res.json({ 
+        ok: false, 
+        error: 'bot_failure', 
+        status: resp && resp.status, 
+        message: `Bot returned status ${resp.status}`,
+        data: resp && resp.data 
+      });
+    }catch(e){ 
+      console.warn('server-plugin-test: failed to contact bot', e && e.message ? e.message : e);
+      
+      // Provide helpful error messages based on error type
+      let message = 'Failed to contact bot';
+      let suggestion = '';
+      
+      if (e.code === 'ECONNREFUSED') {
+        message = 'Bot server refused connection';
+        suggestion = 'Make sure your bot is running and the BOT_NOTIFY_URL is correct';
+      } else if (e.code === 'ENOTFOUND') {
+        message = 'Bot server not found';
+        suggestion = 'Check that BOT_NOTIFY_URL points to a valid, publicly accessible URL';
+      } else if (e.code === 'ETIMEDOUT' || e.code === 'ECONNABORTED') {
+        message = 'Connection to bot timed out';
+        suggestion = 'Bot may be slow to respond or unreachable';
+      }
+      
+      return res.json({ 
+        ok: false, 
+        error: 'bot_unreachable', 
+        message,
+        suggestion,
+        code: e.code,
+        details: String(e.message || e)
+      });
+    }
 
-  }catch(e){ console.error('server-plugin-test failed', e); return res.status(500).json({ error: 'failed', message: String(e) }); }
+  }catch(e){ 
+    console.error('server-plugin-test failed', e); 
+    return res.status(500).json({ error: 'failed', message: String(e) }); 
+  }
 };
