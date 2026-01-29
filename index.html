@@ -158,7 +158,6 @@
     </div>
   </footer>
 
-  <script src="/public-config.js"></script>
   <script>
     (function(){
       var API_BASE = window.location.origin;
@@ -166,16 +165,10 @@
         try {
           const res = await fetch(API_BASE + '/socket.io/socket.io.js', { method: 'HEAD' });
           if (res.ok) {
-            const ct = (res.headers.get('content-type') || '').toLowerCase();
-            // Only load the socket.io client if the endpoint returns JS
-            if (ct.includes('javascript') || ct.includes('application/javascript') || ct.includes('text/javascript')){
-              var s = document.createElement('script');
-              s.src = API_BASE + '/socket.io/socket.io.js';
-              s.crossOrigin = 'anonymous';
-              document.head.appendChild(s);
-            } else {
-              console.info('socket.io endpoint not a JS file (content-type=' + ct + '), skipping client load');
-            }
+            var s = document.createElement('script');
+            s.src = API_BASE + '/socket.io/socket.io.js';
+            s.crossOrigin = 'anonymous';
+            document.head.appendChild(s);
           } else {
             console.info('socket.io endpoint not present, skipping client load');
           }
@@ -193,12 +186,7 @@
       try{
         const res = await fetch('/api/stats');
         if (!res.ok) return;
-        const ct = (res.headers.get('content-type') || '').toLowerCase();
-        if (!ct.includes('json')){
-          console.warn('/api/stats returned non-JSON content-type', ct);
-          return;
-        }
-        const jb = await res.json().catch(async (err)=>{ const text = await res.text().catch(()=>null); console.error('/api/stats parse failed, response snippet:', String(text).slice(0,200)); throw err; });
+        const jb = await res.json();
         const fmt = (n)=>{ if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
         if (jb.guildCount !== undefined) document.getElementById('stat-servers').textContent = fmt(jb.guildCount);
         if (jb.totalMembers !== undefined) document.getElementById('stat-members').textContent = fmt(jb.totalMembers);
@@ -228,13 +216,6 @@
       try{
         const res = await fetch('/api/stats');
         if (!res.ok){ console.error('/api/stats not ok', res.status); document.getElementById('stats-last-updated').textContent = 'Updated: failed'; return; }
-        const ct = (res.headers.get('content-type') || '').toLowerCase();
-        if (!ct.includes('json')){
-          console.error('/api/stats returned non-JSON content-type', ct);
-          document.getElementById('stats-last-updated').textContent = 'Updated: failed';
-          // avoid trying to parse HTML (likely index.html) and bail
-          return;
-        }
         const jb = await res.json();
         console.debug('stats response', jb);
         const fmt = (n)=>{ if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
@@ -245,7 +226,7 @@
         document.getElementById('stat-uptime').textContent = (typeof jb.uptimeHours === 'number') ? String(jb.uptimeHours) : '—';
         if (jb.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Updated: ' + new Date(jb.lastUpdated).toLocaleString(); else document.getElementById('stats-last-updated').textContent = 'Updated: —';
         // history
-        try{ const hr = await fetch('/api/stats-history'); if (hr.ok){ const ct2 = (hr.headers.get('content-type')||'').toLowerCase(); if (ct2.includes('json')){ const hj = await hr.json(); renderSparkline(hj.history || []); } } }catch(e){ console.error('Failed to fetch history', e); }
+        try{ const hr = await fetch('/api/stats-history'); if (hr.ok){ const hj = await hr.json(); renderSparkline(hj.history || []); } }catch(e){ console.error('Failed to fetch history', e); }
       }catch(e){ console.error('fetchAndRenderStats error', e); document.getElementById('stats-last-updated').textContent = 'Updated: failed'; }
     }
     // Initial load and periodic refresh

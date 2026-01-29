@@ -9,14 +9,10 @@ const { Server: SocketIOServer } = require('socket.io');
 let io = null;
 
 const app = express();
-// trust proxy headers when deployed behind a reverse-proxy (e.g., Vercel)
-app.set('trust proxy', true);
 const PORT = process.env.PORT || 3000;
-// Prefer an explicit BASE_URL, fall back to VERCEL_URL (auto-set on Vercel) or localhost for dev
-const BASE_URL = process.env.BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${PORT}`);
-// Accept multiple common env names for Discord app creds (ease local/.env vs hosting providers)
-const CLIENT_ID = process.env.DISCORD_CLIENT_ID || process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET || process.env.CLIENT_SECRET;
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.warn('Warning: DISCORD_CLIENT_ID or DISCORD_CLIENT_SECRET not set. OAuth /auth will fail until you set them in .env');
@@ -68,8 +64,8 @@ const CACHE_TTL_MS = 45_000; // 45 seconds
 // Cache to store whether bot is present in a guild to avoid repeated API calls
 const botPresenceCache = new Map(); // key -> { present, expiresAt }
 const BOT_PRESENCE_TTL_MS = 60_000; // 60 seconds
-const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN || process.env.DISCORD_TOKEN;
-const BOT_ID = process.env.DISCORD_BOT_ID || process.env.DISCORD_CLIENT_ID || process.env.CLIENT_ID;
+const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
+const BOT_ID = process.env.DISCORD_BOT_ID || process.env.DISCORD_CLIENT_ID;
 const BOT_NOTIFY_URL = process.env.BOT_NOTIFY_URL || null; // optional webhook on the bot to notify of changes
 const BOT_NOTIFY_SECRET = process.env.BOT_NOTIFY_SECRET || null; // optional shared secret sent as x-dashboard-secret header
 // Bot notify timing and retry settings
@@ -1052,12 +1048,9 @@ app.get('/favicon.ico', (req, res) => {
 // - If ENABLE_INVITE_REDIRECT=true (and you've added `${BASE_URL}/invite-callback` to your app's redirect URIs), Discord will redirect back to `/invite-callback` after invite.
 // - Otherwise we use the simple bot invite URL (no redirect) to avoid "Invalid Redirect" errors. The client will open this invite in a new tab and poll for bot presence to auto-redirect the user when the bot joins.
 app.get('/invite-now', (req, res) => {
-  const botId = process.env.DISCORD_CLIENT_ID || process.env.CLIENT_ID;
+  const botId = process.env.DISCORD_CLIENT_ID;
   const perms = process.env.DISCORD_PERMISSIONS || '8';
-  if (!botId) {
-    console.error('invite-now called but DISCORD_CLIENT_ID/CLIENT_ID is not configured');
-    return res.status(500).send('Invite not configured: Discord client ID not set on the server. Please set DISCORD_CLIENT_ID in your environment variables.');
-  }
+  if (!botId) return res.status(500).send('Server not configured with Discord client ID for invites. Set DISCORD_CLIENT_ID in .env');
   const enableRedirect = process.env.ENABLE_INVITE_REDIRECT === 'true';
 
   const paramsObj = { client_id: botId, permissions: perms, scope: 'bot' };
@@ -1120,8 +1113,7 @@ app.get('/invite-callback', async (req, res) => {
 // Redirect user to Discord authorize page (server-side redirect)
 app.get('/auth', (req, res) => {
   if (!CLIENT_ID) return res.status(500).send('Server not configured with Discord client ID. See .env.example');
-  // Build redirect URI dynamically based on incoming request when BASE_URL is not explicitly set
-  const redirect = process.env.BASE_URL ? `${process.env.BASE_URL.replace(/\/$/, '')}/callback` : `${req.protocol}://${req.get('host')}/callback`;
+  const redirect = `${BASE_URL}/callback`;
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
     redirect_uri: redirect,
@@ -1136,14 +1128,12 @@ app.get('/callback', async (req, res) => {
   const code = req.query.code;
   if (!code) return res.status(400).send('Missing code');
   try {
-    // When exchanging the code, ensure the redirect_uri matches what was used for /auth. Derive dynamically if BASE_URL isn't set.
-    const redirectUri = process.env.BASE_URL ? `${process.env.BASE_URL.replace(/\/$/, '')}/callback` : `${req.protocol}://${req.get('host')}/callback`;
     const tokenResp = await axios.post('https://discord.com/api/oauth2/token', qs.stringify({
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
       grant_type: 'authorization_code',
       code,
-      redirect_uri: redirectUri
+      redirect_uri: `${BASE_URL}/callback`
     }), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
 
     const access_token = tokenResp.data.access_token;
@@ -1151,12 +1141,10 @@ app.get('/callback', async (req, res) => {
     const userResp = await axios.get('https://discord.com/api/users/@me', { headers: { Authorization: `Bearer ${access_token}` } });
     const user = userResp.data;
 
-    // Set a simple cookie with token. Use secure cookies when on HTTPS and be slightly stricter in production.
-    const cookieOptions = { maxAge: 24*60*60*1000, httpOnly: false, secure: (req.secure || req.protocol === 'https' || process.env.NODE_ENV === 'production'), sameSite: 'lax' };
-    res.cookie('ng_token', access_token, cookieOptions);
-    res.cookie('ng_user', JSON.stringify(user), cookieOptions);
+    // Set a simple cookie with token (not secure; for local testing only)
+    res.cookie('ng_token', access_token, { maxAge: 24*60*60*1000 });
+    res.cookie('ng_user', JSON.stringify(user), { maxAge: 24*60*60*1000 });
 
-    // Redirect back to the dashboard UI
     return res.redirect('/dashboard.html');
   } catch (err) {
     console.error('OAuth callback error', err.response?.data || err.message || err);
@@ -1213,6 +1201,4 @@ try{
 server.listen(PORT, () => {
   console.log(`Server running on ${BASE_URL}`);
   console.log('Endpoints: /auth -> redirect to Discord, /callback -> OAuth callback');
-  console.log('BASE_URL resolved to:', process.env.BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${PORT}`));
-  console.log('Tip: If running on Vercel, set BASE_URL in your Environment Variables to the site URL (e.g., https://noctis-guard.vercel.app) so Discord OAuth redirect URIs match.');
 });

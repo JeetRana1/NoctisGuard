@@ -14,7 +14,6 @@
     "socket.io": "^4.7.2"
   },
   "devDependencies": {
-    "node-mocks-http": "^1.17.2",
     "nodemon": "^2.0.0"
   }
 }

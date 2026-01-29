@@ -1,42 +1,10 @@
 // Local mock OAuth + UI helpers
-// When running as a static site, build OAuth URLs on the client using the public CLIENT_ID
-// Decide whether to use mock auth: explicit config (NG_CONFIG.USE_MOCK) or default to local dev
-const USE_MOCK = (window.NG_CONFIG && !!window.NG_CONFIG.USE_MOCK) || (location.hostname === 'localhost' || location.hostname === '127.0.0.1'); // set NG_CONFIG.USE_MOCK=true for dev previews if needed
+// For invites we'll use the server-side redirect /invite-now so the client ID stays secret
+const INVITE_LINK = '/invite-now';
+const USE_MOCK = true; // toggle to false when testing with real OAuth flow
 
-function buildInviteUrl(guildId){
-  try{
-    const cfg = window.NG_CONFIG || {};
-    const client = cfg.CLIENT_ID;
-    const perms = cfg.DEFAULT_PERMISSIONS || '8';
-    const params = new URLSearchParams({ client_id: client, permissions: perms, scope: 'bot' });
-    if (guildId){ params.set('guild_id', guildId); params.set('disable_guild_select', 'true'); }
-    return 'https://discord.com/api/oauth2/authorize?' + params.toString();
-  }catch(e){ return '/'; }
-}
-function openInvite(guildId){ const url = buildInviteUrl(guildId); window.open(url, '_blank'); }
-
-function buildAuthUrl(){
-  try{
-    const cfg = window.NG_CONFIG || {};
-    const client = cfg.CLIENT_ID;
-    const base = cfg.BASE_URL || window.location.origin;
-    const redirect = encodeURIComponent((base.replace(/\/$/, '')) + '/callback');
-    const params = new URLSearchParams({ client_id: client, redirect_uri: (base.replace(/\/$/, '') + '/callback'), response_type: 'code', scope: 'identify guilds' });
-    return 'https://discord.com/api/oauth2/authorize?' + params.toString();
-  }catch(e){ return '/'; }
-}
-
-function login(){ showPageLoader(); if (USE_MOCK) { window.location.href = 'mock-auth.html'; } else { window.location.href = buildAuthUrl(); } }
-
-// Attach click handlers to invite/login anchors to prevent navigation to /invite-now or /auth (which are not available on static deploys)
-document.addEventListener('DOMContentLoaded', ()=>{
-  try{
-    const inviteEls = document.querySelectorAll('#invite-btn, #hero-invite, #invite-bottom');
-    inviteEls.forEach(el => { el.addEventListener('click', (e)=>{ e.preventDefault(); openInvite(); }); el.setAttribute('href','#'); });
-    const loginEls = document.querySelectorAll('#login-btn, #hero-login, #invite-login');
-    loginEls.forEach(el => { el.addEventListener('click', (e)=>{ e.preventDefault(); login(); }); el.setAttribute('href','#'); });
-  }catch(e){}
-});
+function openInvite() { window.open(INVITE_LINK, '_blank'); }
+function login() { showPageLoader(); if (USE_MOCK) { window.location.href = 'mock-auth.html'; } else { window.location.href = '/auth'; } }
 
 // Image fallback helpers 🔧
 function setImageFallback(img){
@@ -269,8 +237,7 @@ async function waitForBotInGuild(guildId, timeout = 180000, interval = 3000){
 // Open the invite page in a new tab and wait for the bot to be added to `guildId`.
 // When detected, redirect the current page to the server dashboard for that guild.
 function startInviteAndWait(guildId, serverName, btn){
-  // Open the Discord invite URL generated client-side — avoids hitting /invite-now on static deployments
-  const url = buildInviteUrl(guildId);
+  const url = `/invite-now?guild_id=${encodeURIComponent(guildId)}`;
   const win = window.open(url, '_blank');
   if (btn){ btn.disabled = true; btn.textContent = 'Waiting for invite…'; }
 
