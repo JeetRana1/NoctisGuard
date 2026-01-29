@@ -10,6 +10,7 @@ const handlers = new Map([
   ['/server-plugin-config', require('../serverless-handlers/server-plugin-config')],
   ['/server-activity', require('../serverless-handlers/server-activity')],
   ['/server-giveaways', require('../serverless-handlers/server-giveaways')],
+  ['/server-giveaway-reroll', require('../serverless-handlers/server-giveaway-reroll')],
   ['/stats-history', require('../serverless-handlers/stats-history')],
   ['/stats', require('../serverless-handlers/stats')],
   ['/recent-guild-events', require('../serverless-handlers/recent-guild-events')],
