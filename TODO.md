@@ -4,4 +4,4 @@
 - [x] Create dashboard.html: Dashboard page with mocked server list.
 - [x] Create style.css: Modern CSS styling inspired by Mee6/Carlbot/Dyno.
 - [x] Create script.js: JavaScript for button interactions and OAuth mock redirect.
-- [x] Test locally: Open index.html in browser to verify functionality.
+- [x] Test locally: Open index.html in browser to verify functionality. - Tsringyuguy
