@@ -57,8 +57,8 @@
     // Add `icon` property (emoji or inline SVG) for a nicer UI
     const PLUGINS = [
       { id: 'moderation', title: 'Moderation', description: 'Auto moderation and moderation tools', icon: '🛡️' },
-      { id: 'level', title: 'Levels', description: 'XP and level rewards for active members', icon: '⭐' },
-      { id: 'giveaway', title: 'giveaway', titleNice: 'Giveaways', description: 'Create and manage giveaways', icon: '🎉' },
+      { id: 'leveling', title: 'Levels', description: 'XP and level rewards for active members', icon: '⭐' },
+      { id: 'giveaways', title: 'Giveaways', description: 'Create and manage giveaways', icon: '🎉' },
       { id: 'misc', title: 'Misc', description: 'Utility commands and helpers (timers, reminders, etc.)', icon: '🧰' },
       { id: 'info', title: 'Info', description: 'Server and bot information commands (stats, uptime, version)', icon: 'ℹ️' },
       { id: 'welcome', title: 'Welcome', description: 'Welcome messages, auto-roles and greeting configuration', icon: '🎊' }
@@ -1103,29 +1103,66 @@
       grid.querySelectorAll('.toggle-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = btn.dataset.id;
-          const st = await loadPluginState();
-          const current = (id in st) ? !!st[id] : true;
-          st[id] = !current;
-          // optimistic UI update
-          const enabled = !!st[id];
-          btn.classList.toggle('primary', !enabled);
-          btn.classList.toggle('ghost', enabled);
-          btn.textContent = enabled ? 'Disable' : 'Enable';
-          const plugin = PLUGINS.find(x => (x.id === id) || (x.title && x.title.toLowerCase() === id));
-          // update status dot on card
-          const card = btn.closest('.plugin-card'); if (card) { const dot = card.querySelector('.plugin-card-status'); if (dot) { dot.classList.toggle('enabled', !!enabled); dot.classList.toggle('disabled', !enabled); dot.title = enabled ? 'Status: Enabled' : 'Status: Disabled'; } }
-          // save change (server or local) - try sending only the delta for efficiency
-          if (serverAuth) {
-            try {
-              const res = await fetch(`/api/server-plugins/${encodeURIComponent(serverId)}`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pluginId: id, enabled }) });
-              if (res.ok) { showToast(`${enabled ? 'Enabled' : 'Disabled'} plugin: ${plugin ? (plugin.title || plugin.titleNice) : id}`, 'info'); return; }
-              if (res.status === 401) { serverAuth = false; showToast('Not authenticated; changes will be saved locally', 'error'); }
-            } catch (e) { showToast('Failed to save to server; change saved locally', 'error'); }
-          }
+          btn.disabled = true;
+          const originalText = btn.textContent;
+          btn.textContent = '...';
 
-          // fallback to local save
-          savePluginState(st);
-          showToast(`${enabled ? 'Enabled' : 'Disabled'} plugin: ${plugin ? (plugin.title || plugin.titleNice) : id}`, 'info');
+          try {
+            const st = await loadPluginState();
+            const current = (id in st) ? !!st[id] : true;
+            const targetEnabled = !current;
+
+            // optimistic UI update
+            btn.classList.toggle('primary', !targetEnabled);
+            btn.classList.toggle('ghost', targetEnabled);
+            btn.textContent = targetEnabled ? 'Disable' : 'Enable';
+
+            const plugin = PLUGINS.find(x => (x.id === id) || (x.title && x.title.toLowerCase() === id));
+            // update status dot on card
+            const card = btn.closest('.plugin-card');
+            if (card) {
+              const dot = card.querySelector('.plugin-card-status');
+              if (dot) {
+                dot.classList.toggle('enabled', targetEnabled);
+                dot.classList.toggle('disabled', !targetEnabled);
+                dot.title = targetEnabled ? 'Status: Enabled' : 'Status: Disabled';
+              }
+              const statusText = card.querySelector('strong');
+              if (statusText) statusText.textContent = targetEnabled ? 'Enabled' : 'Disabled';
+            }
+
+            if (serverAuth) {
+              const res = await fetch(`/api/server-plugins/${encodeURIComponent(serverId)}`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pluginId: id, enabled: targetEnabled })
+              });
+
+              if (res.ok) {
+                showToast(`${targetEnabled ? 'Enabled' : 'Disabled'} plugin: ${plugin ? (plugin.title || plugin.titleNice) : id}`, 'info');
+                return;
+              }
+
+              if (res.status === 401) {
+                serverAuth = false;
+                showToast('Not authenticated; changes will be saved locally', 'error');
+              } else {
+                showToast('Failed to save to server; change saved locally', 'error');
+              }
+            }
+
+            // fallback to local save
+            st[id] = targetEnabled;
+            savePluginState(st);
+            showToast(`${targetEnabled ? 'Enabled' : 'Disabled'} plugin: ${plugin ? (plugin.title || plugin.titleNice) : id}`, 'info');
+          } catch (e) {
+            console.error('Plugin toggle failed', e);
+            showToast('An error occurred while toggling the plugin', 'error');
+            btn.textContent = originalText;
+          } finally {
+            btn.disabled = false;
+          }
         });
       });
 
@@ -1142,7 +1179,7 @@
       // Dispatcher to open plugin-specific modals
       window.openPluginConfig = function (id) {
         if (id === 'welcome') return (typeof window.openWelcomeConfig === 'function') ? window.openWelcomeConfig(id) : showToast('Welcome modal not ready', 'error');
-        if (id === 'giveaway') {
+        if (id === 'giveaway' || id === 'giveaways') {
           if (typeof window.openGiveawayConfig === 'function') return window.openGiveawayConfig(id);
           const gm = document.getElementById('plugin-modal-giveaway'); if (gm) { gm.setAttribute('aria-hidden', 'false'); gm.style.display = 'flex'; syncAutofillInModal(gm); return; }
           return showToast('Giveaway modal not ready', 'error');
@@ -2112,7 +2149,7 @@
                 if (created && typeof window.addImmediateGiveawayToActivity === 'function') { try { created._isTest = true; window.addImmediateGiveawayToActivity(created); } catch (e) { console.warn('failed to add immediate giveaway', e); } }
                 // Also synthesize a lightweight plugin_test activity so the Recent Activity shows the test immediately
                 try {
-                  const activityEntry = { type: 'plugin_test', pluginId: 'giveaway', payload: { testType: 'giveaway', config: data }, user: { username: 'You' }, ts: Date.now() };
+                  const activityEntry = { type: 'plugin_test', pluginId: id, payload: { testType: 'giveaway', config: data }, user: { username: 'You' }, ts: Date.now() };
                   activityEntry._isTest = true;
                   if (typeof window.addImmediateActivityEntry === 'function') { try { window.addImmediateActivityEntry(activityEntry); } catch (e) { console.warn('failed to add immediate activity', e); } }
                 } catch (e) { console.warn('failed to synthesize immediate activity', e); }
@@ -2166,7 +2203,7 @@
                     try {
                       const tRes = await fetch(`/api/server-plugin-test/${encodeURIComponent(serverId)}`, {
                         method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ pluginId: 'giveaway', testType: 'giveaway', config: data })
+                        body: JSON.stringify({ pluginId: id, testType: 'giveaway', config: data })
                       });
                       if (tRes && tRes.ok) {
                         showToast('Test created on bot', 'info');
@@ -2186,7 +2223,7 @@
                             }
 
                             // also add a lightweight activity entry
-                            const activityEntry = { type: 'plugin_test', pluginId: 'giveaway', payload: { testType: 'giveaway', config: data }, user: { username: 'You' }, ts: Date.now() };
+                            const activityEntry = { type: 'plugin_test', pluginId: id, payload: { testType: 'giveaway', config: data }, user: { username: 'You' }, ts: Date.now() };
                             activityEntry._isTest = true;
                             if (typeof window.addImmediateActivityEntry === 'function') {
                               try { window.addImmediateActivityEntry(activityEntry); } catch (e) { console.warn('failed to add immediate activity from saveHandler', e); }

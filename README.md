@@ -15,6 +15,6 @@ Web frontend for NoctisGuard.
 - `server.js` — optional Node server
 - `package.json` — project metadata
 
----
+----
 
 _Added by GitHub Copilot to help with initial repository setup._

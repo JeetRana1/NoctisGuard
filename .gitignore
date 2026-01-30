@@ -1,19 +1,5 @@
-# Node
-node_modules/
+node_modules
 .env
-npm-debug.log*
-package-lock.json
-
-# Build outputs
-dist/
-build/
-
-# OS files
-.DS_Store
-
-# VSCode
-.vscode/
-
-# logs
-logs/
+data/stats.json
+data/settings.json
 *.log

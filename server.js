@@ -147,10 +147,10 @@ async function loadBotStatsFile() {
     if (!raw) return;
     const obj = JSON.parse(raw);
     if (obj && typeof obj === 'object') {
-      if (typeof obj.guildCount === 'number') botStats.guildCount = obj.guildCount;
-      if (typeof obj.totalMembers === 'number') botStats.totalMembers = obj.totalMembers;
-      if (typeof obj.commandsToday === 'number') botStats.commandsToday = obj.commandsToday;
-      if (Array.isArray(obj.history)) botStats.history = obj.history.slice(-48);
+      if (typeof obj.guildCount === 'number' && obj.guildCount > 0) botStats.guildCount = obj.guildCount;
+      if (typeof obj.totalMembers === 'number' && obj.totalMembers > 0) botStats.totalMembers = obj.totalMembers;
+      if (typeof obj.commandsToday === 'number' && obj.commandsToday > 0) botStats.commandsToday = obj.commandsToday;
+      if (Array.isArray(obj.history) && obj.history.length > 0) botStats.history = obj.history.slice(-48);
       if (obj.uptimeStart) botStats.uptimeStart = obj.uptimeStart;
       botStats.lastUpdated = obj.lastUpdated || botStats.lastUpdated;
       console.log('Loaded bot stats from', BOT_STATS_FILE);
@@ -743,16 +743,36 @@ app.get('/api/recent-guild-events', (req, res) => {
 // Public stats endpoint for landing page preview
 app.get('/api/stats', (req, res) => {
   try {
-    // If stats are empty and we have no data, return demo values for the public landing preview
-    const isEmpty = (!botStats.guildCount && !botStats.totalMembers && !botStats.commandsToday);
     const uptimeMs = Date.now() - (botStats.uptimeStart || Date.now());
     const uptimeHours = Math.floor(uptimeMs / (1000 * 60 * 60));
-    if (isEmpty && (!botStats.lastUpdated || (Date.now() - botStats.lastUpdated) > (24 * 60 * 60 * 1000))) {
-      // Demo (non-persistent) values
-      return res.json({ guildCount: 1234, totalMembers: 98432, commandsToday: 3200, uptimeHours, lastUpdated: Date.now() });
+
+    // If stats are empty and we have no data, return demo values for the public landing preview
+    const isEmpty = (!botStats.guildCount && !botStats.totalMembers && !botStats.commandsToday);
+    const hasBeenUpdatedRecently = botStats.lastUpdated && (Date.now() - botStats.lastUpdated) < (24 * 60 * 60 * 1000);
+
+    if (isEmpty && !hasBeenUpdatedRecently) {
+      // Demo (non-persistent) values for landing page if no bot has connected
+      return res.json({
+        guildCount: 124,
+        totalMembers: 45670,
+        commandsToday: 890,
+        uptimeHours: uptimeHours || 24,
+        lastUpdated: Date.now(),
+        isDemo: true
+      });
     }
-    return res.json({ guildCount: botStats.guildCount, totalMembers: botStats.totalMembers, commandsToday: botStats.commandsToday, uptimeHours, lastUpdated: botStats.lastUpdated });
-  } catch (e) { return res.status(500).json({ error: 'Failed to get stats' }); }
+
+    return res.json({
+      guildCount: botStats.guildCount || 0,
+      totalMembers: botStats.totalMembers || 0,
+      commandsToday: botStats.commandsToday || 0,
+      uptimeHours: uptimeHours,
+      lastUpdated: botStats.lastUpdated,
+      history: botStats.history || []
+    });
+  } catch (e) {
+    return res.status(500).json({ error: 'Failed to get stats' });
+  }
 });
 
 // Return a compact history suitable for a sparkline (array of numbers)
@@ -1078,8 +1098,8 @@ app.post('/api/server-plugins/:guildId', async (req, res) => {
   try {
     const changes = [];
     for (const k of new Set([...Object.keys(prev), ...Object.keys(current)])) {
-      const before = !!prev[k];
-      const after = !!current[k];
+      const before = k in prev ? !!prev[k] : true;
+      const after = k in current ? !!current[k] : true;
       if (before !== after) {
         changes.push({ pluginId: k, from: before, to: after });
       }
