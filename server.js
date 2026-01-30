@@ -115,6 +115,7 @@ async function loadBotStatsFile() {
 }
 
 async function saveBotStatsFile() {
+  if (process.env.VERCEL) return; // Read-only FS on Vercel
   try {
     await fs.mkdir(path.dirname(BOT_STATS_FILE), { recursive: true });
     const out = { guildCount: botStats.guildCount, totalMembers: botStats.totalMembers, commandsToday: botStats.commandsToday, history: botStats.history, uptimeStart: botStats.uptimeStart, lastUpdated: botStats.lastUpdated };
@@ -153,11 +154,11 @@ function updateBotStats(newStats) {
 
 // Simple file-backed storage for per-guild plugin state
 const PLUGINS_FILE = path.join(__dirname, 'data', 'plugins.json');
-const fs = require('fs').promises;
 async function loadPluginsFile() {
   try { const raw = await fs.readFile(PLUGINS_FILE, 'utf8'); return JSON.parse(raw || '{}'); } catch (e) { return {}; }
 }
 async function savePluginsFile(obj) {
+  if (process.env.VERCEL) return; // Read-only FS on Vercel
   try { await fs.mkdir(path.dirname(PLUGINS_FILE), { recursive: true }); await fs.writeFile(PLUGINS_FILE, JSON.stringify(obj, null, 2), 'utf8'); } catch (e) { console.warn('Failed to save plugins file', e); }
 }
 async function notifyBotOfPluginChange(guildId, state) {
@@ -192,6 +193,7 @@ async function loadPluginConfigsFile() {
   try { const raw = await fs.readFile(PLUGIN_CONFIG_FILE, 'utf8'); return JSON.parse(raw || '{}'); } catch (e) { return {}; }
 }
 async function savePluginConfigsFile(obj) {
+  if (process.env.VERCEL) return; // Read-only FS on Vercel
   try { await fs.mkdir(path.dirname(PLUGIN_CONFIG_FILE), { recursive: true }); await fs.writeFile(PLUGIN_CONFIG_FILE, JSON.stringify(obj, null, 2), 'utf8'); } catch (e) { console.warn('Failed to save plugin-configs file', e); }
 }
 
@@ -965,6 +967,7 @@ async function loadActivityFile() {
   try { const raw = await fs.readFile(ACTIVITY_FILE, 'utf8'); return JSON.parse(raw || '[]'); } catch (e) { return []; }
 }
 async function saveActivityFile(arr) {
+  if (process.env.VERCEL) return; // Read-only FS on Vercel
   try { await fs.mkdir(path.dirname(ACTIVITY_FILE), { recursive: true }); await fs.writeFile(ACTIVITY_FILE, JSON.stringify(arr, null, 2)); } catch (e) { console.warn('Failed to save activity file', e); }
 }
 async function appendActivity(entry) {
