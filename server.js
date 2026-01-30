@@ -30,10 +30,30 @@ app.get('/public-config.js', (req, res) => res.sendFile(path.join(__dirname, 'pu
 app.get('/favicon.svg', (req, res) => res.sendFile(path.join(__dirname, 'favicon.svg')));
 app.get('/placeholder.svg', (req, res) => res.sendFile(path.join(__dirname, 'placeholder.svg')));
 app.get('/Site-Logo.svg', (req, res) => res.sendFile(path.join(__dirname, 'Site-Logo.svg')));
+app.get('/Profile-Pic.svg', (req, res) => res.sendFile(path.join(__dirname, 'Profile-Pic.svg')));
+
+// Public stats endpoint for the home page preview
+app.get('/api/stats', (req, res) => {
+  const uptimeHours = Math.floor((Date.now() - (botStats.uptimeStart || Date.now())) / (1000 * 60 * 60));
+  return res.json({
+    guildCount: botStats.guildCount,
+    totalMembers: botStats.totalMembers,
+    commandsToday: botStats.commandsToday,
+    uptimeHours: uptimeHours,
+    lastUpdated: botStats.lastUpdated,
+    history: botStats.history || []
+  });
+});
 
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
+
+app.get('/api/stats-history', (req, res) => {
+  return res.json({ history: botStats.history || [] });
+});
+
+app.get('/Profile-Pic.svg', (req, res) => res.sendFile(path.join(__dirname, 'Profile-Pic.svg')));
 
 app.get('/server-dashboard.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'server-dashboard.html'));
@@ -952,29 +972,36 @@ app.get('/api/guild-channel/:guildId/:channelId', async (req, res) => {
 // Set BOT_PRESENCE_URL in .env to the bot base URL (e.g., http://localhost:4000)
 app.get('/api/guild-presences/:guildId', async (req, res) => {
   const guildId = req.params.guildId;
-  const presenceBase = process.env.BOT_PRESENCE_URL;
+  const presenceBase = process.env.BOT_PRESENCE_URL || process.env.BOT_URL; // Try both
   const headers = {};
   if (BOT_NOTIFY_SECRET) headers['x-dashboard-secret'] = BOT_NOTIFY_SECRET;
+
   if (presenceBase) {
     try {
       const url = `${presenceBase.replace(/\/$/, '')}/presences/${encodeURIComponent(guildId)}`;
-      console.log('Proxying presence request to', url);
+      console.log('Proxying presence request to:', url);
       const resp = await axios.get(url, { headers, timeout: 5000, validateStatus: () => true });
       if (resp.status >= 200 && resp.status < 300) { return res.json(resp.data); }
-      console.warn('Presence proxy returned non-2xx', resp.status, resp.data);
-    } catch (e) { console.warn('Failed to proxy presence request to bot', e?.message || e); }
+      console.warn('Presence proxy returned non-2xx:', resp.status, resp.data);
+    } catch (e) {
+      console.warn('Failed to proxy presence request to bot:', e?.message || e);
+    }
   }
 
-  // Fallback: read cached presences written when notifyBotOfPluginChange receives them
+  // Fallback: read cached presences if they exist
   try {
     const pFile = path.join(__dirname, 'data', 'presences.json');
     const raw = await fs.readFile(pFile, 'utf8');
     const all = JSON.parse(raw || '{}');
     const pres = all[guildId] || [];
     return res.json({ guildId, presences: pres });
-  } catch (e) { /* ignore */ }
-
-  return res.status(501).json({ error: 'No presence source configured. Please set BOT_PRESENCE_URL in your environment variables.' });
+  } catch (e) {
+    // If no data and no bot URL, suggest configuration
+    if (!presenceBase) {
+      return res.status(501).json({ error: 'Presence proxy not configured. Set BOT_PRESENCE_URL to your Koyeb bot link (e.g. https://your-bot.koyeb.app)' });
+    }
+    return res.status(502).json({ error: 'Bot unreachable for presence data' });
+  }
 });
 
 // Per-guild plugin state API (persistent)
@@ -987,11 +1014,19 @@ app.get('/api/server-plugins/:guildId', async (req, res) => {
 
 // Simple activity log file for recent events
 const ACTIVITY_FILE = path.join(__dirname, 'data', 'activity.json');
+const vercelActivityCache = []; // In-memory fallback for Vercel (newest first)
+
 async function loadActivityFile() {
+  if (process.env.VERCEL) return vercelActivityCache;
   try { const raw = await fs.readFile(ACTIVITY_FILE, 'utf8'); return JSON.parse(raw || '[]'); } catch (e) { return []; }
 }
 async function saveActivityFile(arr) {
-  if (process.env.VERCEL) return; // Read-only FS on Vercel
+  if (process.env.VERCEL) {
+    // Sync cache
+    vercelActivityCache.length = 0;
+    vercelActivityCache.push(...arr.slice(0, 50)); // Keep only 50 in memory on Vercel
+    return;
+  }
   try { await fs.mkdir(path.dirname(ACTIVITY_FILE), { recursive: true }); await fs.writeFile(ACTIVITY_FILE, JSON.stringify(arr, null, 2)); } catch (e) { console.warn('Failed to save activity file', e); }
 }
 async function appendActivity(entry) {
@@ -1065,6 +1100,32 @@ app.post('/api/server-plugins/:guildId', async (req, res) => {
   } catch (e) { console.warn('notifyBotOfPluginChange error', e?.message || e); }
 
   return res.json({ ok: true, state: all[guildId] });
+});
+
+app.post('/bot-event', express.json(), async (req, res) => {
+  const secret = req.header('x-dashboard-secret') || '';
+  if (BOT_NOTIFY_SECRET && secret !== BOT_NOTIFY_SECRET) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const payload = req.body || {};
+  console.log('Received bot event:', payload.type);
+
+  try {
+    if (payload.type === 'stats_update') {
+      updateBotStats(payload.stats);
+    } else if (payload.type === 'guild_joined' || payload.type === 'guild_left') {
+      addRecentGuildEvent({ type: payload.type, guildId: payload.guildId });
+      // If stat changes are included, update them
+      if (payload.stats) updateBotStats(payload.stats);
+    } else if (payload.type === 'activity') {
+      await appendActivity(payload.entry);
+    }
+  } catch (e) {
+    console.warn('Error processing bot event:', e);
+  }
+
+  return res.json({ ok: true });
 });
 
 // Logout - clears cookies set by OAuth callback
