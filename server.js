@@ -974,7 +974,7 @@ app.get('/api/guild-presences/:guildId', async (req, res) => {
     return res.json({ guildId, presences: pres });
   } catch (e) { /* ignore */ }
 
-  return res.status(501).json({ error: 'No presence source configured' });
+  return res.status(501).json({ error: 'No presence source configured. Please set BOT_PRESENCE_URL in your environment variables.' });
 });
 
 // Per-guild plugin state API (persistent)
