@@ -23,12 +23,24 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/style.css', (req, res) => {
-  res.sendFile(path.join(__dirname, 'style.css'));
-});
+// Explicit asset routes to bypass Vercel static serving issues
+app.get('/style.css', (req, res) => res.sendFile(path.join(__dirname, 'style.css')));
+app.get('/script.js', (req, res) => res.sendFile(path.join(__dirname, 'script.js')));
+app.get('/public-config.js', (req, res) => res.sendFile(path.join(__dirname, 'public-config.js')));
+app.get('/favicon.svg', (req, res) => res.sendFile(path.join(__dirname, 'favicon.svg')));
+app.get('/placeholder.svg', (req, res) => res.sendFile(path.join(__dirname, 'placeholder.svg')));
+app.get('/Site-Logo.svg', (req, res) => res.sendFile(path.join(__dirname, 'Site-Logo.svg')));
 
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'dashboard.html'));
+});
+
+app.get('/server-dashboard.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'server-dashboard.html'));
+});
+
+app.get('/server-settings.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'server-settings.html'));
 });
 
 app.use(express.static(path.join(__dirname)));
