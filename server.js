@@ -10,7 +10,6 @@ const { Server: SocketIOServer } = require('socket.io');
 let io = null;
 
 const app = express();
-module.exports = app;
 const PORT = process.env.PORT || 3000;
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
@@ -1190,8 +1189,8 @@ async function pollBotStatsOnce() {
   }
 }
 
-if (BOT_NOTIFY_URL) {
-  // Warm-up poll shortly after start, then schedule regular polls
+if (BOT_NOTIFY_URL && !process.env.VERCEL) {
+  // Warm-up poll shortly after start, then schedule regular polls (Disabled on Vercel)
   setTimeout(() => { try { pollBotStatsOnce(); } catch (e) { } setInterval(() => { try { pollBotStatsOnce(); } catch (e) { } }, BOT_STATS_POLL_INTERVAL_MS); }, 2500);
 }
 
@@ -1215,3 +1214,6 @@ if (require.main === module) {
     console.log('Endpoints: /auth -> redirect to Discord, /callback -> OAuth callback');
   });
 }
+
+// Export for Vercel
+module.exports = app;
