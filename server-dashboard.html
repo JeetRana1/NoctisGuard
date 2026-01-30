@@ -1141,10 +1141,7 @@
 
               if (res.ok) {
                 showToast(`${targetEnabled ? 'Enabled' : 'Disabled'} plugin: ${plugin ? (plugin.title || plugin.titleNice) : id}`, 'info');
-                return;
-              }
-
-              if (res.status === 401) {
+              } else if (res.status === 401) {
                 serverAuth = false;
                 showToast('Not authenticated; changes will be saved locally', 'error');
               } else {
@@ -1152,10 +1149,12 @@
               }
             }
 
-            // fallback to local save
+            // always update local state as a fast-cache
             st[id] = targetEnabled;
             savePluginState(st);
-            showToast(`${targetEnabled ? 'Enabled' : 'Disabled'} plugin: ${plugin ? (plugin.title || plugin.titleNice) : id}`, 'info');
+            if (!serverAuth) {
+              showToast(`${targetEnabled ? 'Enabled' : 'Disabled'} plugin: ${plugin ? (plugin.title || plugin.titleNice) : id}`, 'info');
+            }
           } catch (e) {
             console.error('Plugin toggle failed', e);
             showToast('An error occurred while toggling the plugin', 'error');
