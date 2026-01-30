@@ -1115,6 +1115,14 @@ app.post('/bot-event', express.json(), async (req, res) => {
       updateBotStats(payload.stats);
     } else if (payload.type === 'guild_joined' || payload.type === 'guild_left') {
       addRecentGuildEvent({ type: payload.type, guildId: payload.guildId });
+      // Record as activity for the dashboard feed too
+      await appendActivity({
+        guildId: payload.guildId,
+        type: payload.type,
+        pluginId: 'System',
+        description: payload.type === 'guild_joined' ? 'Bot joined the server' : 'Bot left the server',
+        ts: Date.now()
+      });
       // If stat changes are included, update them
       if (payload.stats) updateBotStats(payload.stats);
     } else if (payload.type === 'activity') {
