@@ -904,12 +904,14 @@ app.get('/api/guild-members/:guildId', async (req, res) => {
     if (presenceBase) {
       try {
         const r = await axios.get(`${presenceBase.replace(/\/$/, '')}/guild-members/${encodeURIComponent(guildId)}?limit=${limit}`, { headers, timeout: 5000, validateStatus: () => true });
-        if (r && r.status >= 200 && r.status < 300) { return res.json(r.data); }
-        console.warn('Presence proxy returned non-2xx', r.status, r.data);
-        return res.status(r.status || 500).json({ error: 'Failed to fetch members from bot', details: r.data });
-      } catch (e) { console.warn('Failed to proxy to bot presence for guild-members', e && e.message ? e.message : e); return res.status(500).json({ error: 'Failed to fetch members from bot' }); }
+        if (r && r.status >= 200 && r.status < 300) return res.json(r.data);
+      } catch (e) {
+        console.warn('Failed to proxy to bot presence for guild-members', e?.message || e);
+      }
+      return res.json({ guildId, members: [] });
     }
-    console.warn('BOT_TOKEN missing, cannot fetch guild members'); return res.status(501).json({ error: 'Bot token not configured on server' });
+    console.warn('BOT_TOKEN missing, cannot fetch guild members');
+    return res.json({ guildId, members: [] });
   }
   try {
     // limit to 25 members for display
@@ -988,7 +990,7 @@ app.get('/api/guild-presences/:guildId', async (req, res) => {
     }
   }
 
-  // Fallback: read cached presences if they exist
+  // Fallback: read cached presences if they exist, or return empty list
   try {
     const pFile = path.join(__dirname, 'data', 'presences.json');
     const raw = await fs.readFile(pFile, 'utf8');
@@ -996,11 +998,8 @@ app.get('/api/guild-presences/:guildId', async (req, res) => {
     const pres = all[guildId] || [];
     return res.json({ guildId, presences: pres });
   } catch (e) {
-    // If no data and no bot URL, suggest configuration
-    if (!presenceBase) {
-      return res.status(501).json({ error: 'Presence proxy not configured. Set BOT_PRESENCE_URL to your Koyeb bot link (e.g. https://your-bot.koyeb.app)' });
-    }
-    return res.status(502).json({ error: 'Bot unreachable for presence data' });
+    // If no data and bot URL failed, return empty to keep UI clean
+    return res.json({ guildId, presences: [] });
   }
 });
 
