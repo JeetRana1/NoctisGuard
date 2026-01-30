@@ -1031,18 +1031,23 @@ app.get('/api/server-plugins/:guildId', async (req, res) => {
   let state = all[guildId] || {};
 
   // If state is empty and we have a bot URL, try fetching from bot as a fallback (helpful on Vercel)
-  if (Object.keys(state).length === 0 && (process.env.BOT_NOTIFY_URL || process.env.BOT_PRESENCE_URL)) {
+  const notifyUrl = BOT_NOTIFY_URL || process.env.BOT_NOTIFY_URL || process.env.BOT_PRESENCE_URL;
+  if (Object.keys(state).length === 0 && notifyUrl) {
     try {
-      const base = (process.env.BOT_PRESENCE_URL || process.env.BOT_NOTIFY_URL).replace(/\/webhook\/?$/i, '').replace(/\/$/, '');
+      const base = notifyUrl.replace(/\/webhook\/?$/i, '').replace(/\/$/, '');
       const url = `${base}/internal/server-plugins/${encodeURIComponent(guildId)}`;
       const headers = {};
       if (BOT_NOTIFY_SECRET) headers['x-dashboard-secret'] = BOT_NOTIFY_SECRET;
-      const resp = await axios.get(url, { headers, timeout: 3000, validateStatus: () => true });
+
+      console.log(`[server] Attempting bot state fallback for ${guildId} at ${url}`);
+      const resp = await axios.get(url, { headers, timeout: 3500, validateStatus: () => true });
       if (resp.status >= 200 && resp.status < 300 && resp.data?.state) {
         state = resp.data.state;
-        console.log('Fetched fallback plugin state from bot for', guildId);
+        console.log(`[server] Successfully fetched fallback state from bot for ${guildId}. Count:`, Object.keys(state).length);
+      } else {
+        console.log(`[server] Bot fallback failed for ${guildId}. Status: ${resp.status}`);
       }
-    } catch (e) { /* ignore fallback failures */ }
+    } catch (e) { console.warn(`[server] Bot fallback error for ${guildId}:`, e.message); }
   }
 
   return res.json({ guildId, state });

@@ -1026,22 +1026,34 @@
       serverAuth = false;
     }
     async function loadPluginState(forceRefresh = false) {
+      let serverState = null;
       if (serverAuth) {
         try {
           const res = await fetch(`/api/server-plugins/${encodeURIComponent(serverId)}`, { credentials: 'include' });
           if (res.ok) {
             const body = await res.json();
-            cachedPluginState = body.state || {};
-            return cachedPluginState;
+            serverState = body.state || null;
           }
           if (res.status === 401) { serverAuth = false; }
-        } catch (e) { showToast('Failed to fetch plugin state from server; using local values', 'error'); }
+        } catch (e) { }
       }
-      try {
-        const raw = localStorage.getItem(getPluginKey(serverId));
-        cachedPluginState = raw ? JSON.parse(raw) : {};
-        return cachedPluginState;
-      } catch (e) { return {}; }
+
+      // Load from local storage
+      let localState = {};
+      try { const raw = localStorage.getItem(getPluginKey(serverId)); if (raw) localState = JSON.parse(raw) || {}; } catch (e) { }
+
+      // Merge Strategy: Prefer server if non-empty, otherwise fallback to local cache
+      if (serverState && Object.keys(serverState).length > 0) {
+        cachedPluginState = serverState;
+        localStorage.setItem(getPluginKey(serverId), JSON.stringify(serverState));
+      } else if (Object.keys(localState).length > 0) {
+        // We have local data but either server fetch failed or server returned empty (likely Vercel file loss)
+        cachedPluginState = localState;
+        // If server was empty but we have local, don't overwrite server yet, let the next toggle handle it
+      } else {
+        cachedPluginState = serverState || {};
+      }
+      return cachedPluginState;
     }
     async function savePluginState(state) {
       // Update local cache first
