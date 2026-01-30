@@ -186,40 +186,16 @@
 
   <script>
     (function () {
-      var API_BASE = window.location.origin;
-      (async function () {
-        try {
-          const res = await fetch(API_BASE + '/socket.io/socket.io.js', { method: 'HEAD' });
-          if (res.ok) {
-            var s = document.createElement('script');
-            s.src = API_BASE + '/socket.io/socket.io.js';
-            s.crossOrigin = 'anonymous';
-            document.head.appendChild(s);
-          } else {
-            console.info('socket.io endpoint not present, skipping client load');
-          }
-        } catch (e) {
-          console.info('socket.io check failed, skipping client load', e);
-        }
-      })();
+      const s = document.createElement('script');
+      s.src = 'https://cdn.socket.io/4.7.2/socket.io.min.js';
+      s.async = true;
+      s.crossOrigin = 'anonymous';
+      document.head.appendChild(s);
     })();
   </script>
   <script src="script.js"></script>
 </body>
 <script>
-  // Fetch and display public stats for the hero preview
-  async function fetchAndRenderStats() {
-    try {
-      const res = await fetch('/api/stats');
-      if (!res.ok) return;
-      const jb = await res.json();
-      const fmt = (n) => { if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
-      if (jb.guildCount !== undefined) document.getElementById('stat-servers').textContent = fmt(jb.guildCount);
-      if (jb.totalMembers !== undefined) document.getElementById('stat-members').textContent = fmt(jb.totalMembers);
-      if (jb.commandsToday !== undefined) document.getElementById('stat-commands').textContent = fmt(jb.commandsToday);
-      if (jb.uptimeHours !== undefined) document.getElementById('stat-uptime').textContent = String(jb.uptimeHours);
-    } catch (e) { /* ignore */ }
-  }
   // Render sparkline from history points (array of {t,v})
   function renderSparkline(points) {
     try {
@@ -243,24 +219,35 @@
       const res = await fetch('/api/stats');
       if (!res.ok) { console.error('/api/stats not ok', res.status); document.getElementById('stats-last-updated').textContent = 'Updated: failed'; return; }
       const jb = await res.json();
-      console.debug('stats response', jb);
       const fmt = (n) => { if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
-      // show values or 0 for numeric fields
+
       document.getElementById('stat-servers').textContent = (typeof jb.guildCount === 'number') ? fmt(jb.guildCount) : '0';
       document.getElementById('stat-members').textContent = (typeof jb.totalMembers === 'number') ? fmt(jb.totalMembers) : '0';
       document.getElementById('stat-commands').textContent = (typeof jb.commandsToday === 'number') ? fmt(jb.commandsToday) : '0';
       document.getElementById('stat-uptime').textContent = (typeof jb.uptimeHours === 'number') ? String(jb.uptimeHours) : '—';
-      if (jb.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Updated: ' + new Date(jb.lastUpdated).toLocaleString(); else document.getElementById('stats-last-updated').textContent = 'Updated: —';
-      // history
-      try { const hr = await fetch('/api/stats-history'); if (hr.ok) { const hj = await hr.json(); renderSparkline(hj.history || []); } } catch (e) { console.error('Failed to fetch history', e); }
+
+      if (jb.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Updated: ' + new Date(jb.lastUpdated).toLocaleString();
+      else document.getElementById('stats-last-updated').textContent = 'Updated: —';
+
+      try {
+        const hr = await fetch('/api/stats-history');
+        if (hr.ok) {
+          const hj = await hr.json();
+          renderSparkline(hj.history || []);
+        }
+      } catch (e) { console.error('Failed to fetch history', e); }
     } catch (e) { console.error('fetchAndRenderStats error', e); document.getElementById('stats-last-updated').textContent = 'Updated: failed'; }
   }
-  // Initial load and periodic refresh
-  fetchAndRenderStats();
-  setInterval(fetchAndRenderStats, 30000); // refresh every 30s
-  const refreshBtn = document.getElementById('stats-refresh'); if (refreshBtn) { refreshBtn.addEventListener('click', () => { fetchAndRenderStats(); try { if (typeof showToast === 'function') showToast('Stats refreshed', 'info'); } catch (e) { } }); }
 
-  // Live updates via socket.io (with retry in case the client script loads slightly later)
+  fetchAndRenderStats();
+  setInterval(fetchAndRenderStats, 30000);
+
+  const refreshBtn = document.getElementById('stats-refresh');
+  if (refreshBtn) refreshBtn.addEventListener('click', () => {
+    fetchAndRenderStats();
+    if (typeof showToast === 'function') showToast('Stats refreshed', 'info');
+  });
+
   (function () {
     function setupSocket() {
       try {
@@ -269,21 +256,23 @@
           try {
             const jb = payload && payload.stats ? payload.stats : payload;
             const fmt = (n) => { if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
-            if (jb.guildCount !== undefined) document.getElementById('stat-servers').textContent = (typeof jb.guildCount === 'number') ? fmt(jb.guildCount) : '0';
-            if (jb.totalMembers !== undefined) document.getElementById('stat-members').textContent = (typeof jb.totalMembers === 'number') ? fmt(jb.totalMembers) : '0';
-            if (jb.commandsToday !== undefined) document.getElementById('stat-commands').textContent = (typeof jb.commandsToday === 'number') ? fmt(jb.commandsToday) : '0';
-            if (jb.uptimeHours !== undefined) document.getElementById('stat-uptime').textContent = (typeof jb.uptimeHours === 'number') ? String(jb.uptimeHours) : '—';
+            if (jb.guildCount !== undefined) document.getElementById('stat-servers').textContent = fmt(jb.guildCount);
+            if (jb.totalMembers !== undefined) document.getElementById('stat-members').textContent = fmt(jb.totalMembers);
+            if (jb.commandsToday !== undefined) document.getElementById('stat-commands').textContent = fmt(jb.commandsToday);
+            if (jb.uptimeHours !== undefined) document.getElementById('stat-uptime').textContent = String(jb.uptimeHours);
             if (jb.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Updated: ' + new Date(jb.lastUpdated).toLocaleString();
           } catch (e) { }
         });
-        socket.on('bot-stats-history', (payload) => { try { renderSparkline(payload && payload.history ? payload.history : []); } catch (e) { } });
-      } catch (e) { /* ignore */ }
+        socket.on('bot-stats-history', (payload) => {
+          try { renderSparkline(payload && payload.history ? payload.history : []); } catch (e) { }
+        });
+      } catch (e) { }
     }
     function tryConnect(retries) {
       if (typeof io !== 'undefined') { setupSocket(); return; }
-      if (retries && retries > 0) { setTimeout(() => tryConnect(retries - 1), 400); }
+      if (retries && retries > 0) setTimeout(() => tryConnect(retries - 1), 500);
     }
-    tryConnect(15); // try for ~6 seconds
+    tryConnect(15);
   })();
 </script>
 
