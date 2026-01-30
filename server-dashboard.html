@@ -1015,7 +1015,9 @@
 
     // load plugin state: prefer server-side if authenticated, otherwise localStorage
     let serverAuth = false;
+    let cachedPluginState = {};
     function getPluginKey(id) { return `ng_plugins_${serverId}`; }
+
     async function detectServerAuth() {
       try {
         const res = await fetch('/api/me', { credentials: 'include' });
@@ -1023,26 +1025,38 @@
       } catch (e) { /* ignore */ }
       serverAuth = false;
     }
-    async function loadPluginState() {
+    async function loadPluginState(forceRefresh = false) {
       if (serverAuth) {
         try {
           const res = await fetch(`/api/server-plugins/${encodeURIComponent(serverId)}`, { credentials: 'include' });
-          if (res.ok) { const body = await res.json(); return body.state || {}; }
+          if (res.ok) {
+            const body = await res.json();
+            cachedPluginState = body.state || {};
+            return cachedPluginState;
+          }
           if (res.status === 401) { serverAuth = false; }
         } catch (e) { showToast('Failed to fetch plugin state from server; using local values', 'error'); }
       }
-      try { const raw = localStorage.getItem(getPluginKey(serverId)); if (!raw) return {}; return JSON.parse(raw) || {}; } catch (e) { return {}; }
+      try {
+        const raw = localStorage.getItem(getPluginKey(serverId));
+        cachedPluginState = raw ? JSON.parse(raw) : {};
+        return cachedPluginState;
+      } catch (e) { return {}; }
     }
     async function savePluginState(state) {
+      // Update local cache first
+      cachedPluginState = state;
+      localStorage.setItem(getPluginKey(serverId), JSON.stringify(state));
+
       if (serverAuth) {
         try {
           const res = await fetch(`/api/server-plugins/${encodeURIComponent(serverId)}`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ state }) });
           if (res.ok) { showToast('Saved to server', 'info'); return; }
           if (res.status === 401) { serverAuth = false; }
-        } catch (e) { showToast('Failed to save to server; falling back to local', 'error'); }
+        } catch (e) { showToast('Failed to save to server', 'error'); }
+      } else {
+        showToast('Saved locally', 'info');
       }
-
-      try { localStorage.setItem(getPluginKey(serverId), JSON.stringify(state)); showToast('Saved locally', 'info'); } catch (e) { showToast('Failed to save', 'error'); }
     }
 
     // Wire up header actions
@@ -1108,28 +1122,11 @@
           btn.textContent = '...';
 
           try {
-            const st = await loadPluginState();
-            const current = (id in st) ? !!st[id] : true;
+            // Use local cache for immediate toggle calculation
+            const current = (id in cachedPluginState) ? !!cachedPluginState[id] : true;
             const targetEnabled = !current;
 
-            // optimistic UI update
-            btn.classList.toggle('primary', !targetEnabled);
-            btn.classList.toggle('ghost', targetEnabled);
-            btn.textContent = targetEnabled ? 'Disable' : 'Enable';
-
-            const plugin = PLUGINS.find(x => (x.id === id) || (x.title && x.title.toLowerCase() === id));
-            // update status dot on card
-            const card = btn.closest('.plugin-card');
-            if (card) {
-              const dot = card.querySelector('.plugin-card-status');
-              if (dot) {
-                dot.classList.toggle('enabled', targetEnabled);
-                dot.classList.toggle('disabled', !targetEnabled);
-                dot.title = targetEnabled ? 'Status: Enabled' : 'Status: Disabled';
-              }
-              const statusText = card.querySelector('strong');
-              if (statusText) statusText.textContent = targetEnabled ? 'Enabled' : 'Disabled';
-            }
+            const plugin = PLUGINS.find(x => x.id === id);
 
             if (serverAuth) {
               const res = await fetch(`/api/server-plugins/${encodeURIComponent(serverId)}`, {
@@ -1140,6 +1137,8 @@
               });
 
               if (res.ok) {
+                const body = await res.json();
+                if (body && body.state) cachedPluginState = body.state;
                 showToast(`${targetEnabled ? 'Enabled' : 'Disabled'} plugin: ${plugin ? (plugin.title || plugin.titleNice) : id}`, 'info');
               } else if (res.status === 401) {
                 serverAuth = false;
@@ -1149,11 +1148,29 @@
               }
             }
 
-            // always update local state as a fast-cache
-            st[id] = targetEnabled;
-            savePluginState(st);
+            // Sync cache and local storage
+            cachedPluginState[id] = targetEnabled;
+            localStorage.setItem(getPluginKey(serverId), JSON.stringify(cachedPluginState));
+
             if (!serverAuth) {
               showToast(`${targetEnabled ? 'Enabled' : 'Disabled'} plugin: ${plugin ? (plugin.title || plugin.titleNice) : id}`, 'info');
+            }
+
+            // Update UI
+            btn.classList.toggle('primary', !targetEnabled);
+            btn.classList.toggle('ghost', targetEnabled);
+            btn.textContent = targetEnabled ? 'Disable' : 'Enable';
+
+            const card = btn.closest('.plugin-card');
+            if (card) {
+              const dot = card.querySelector('.plugin-card-status');
+              if (dot) {
+                dot.classList.toggle('enabled', targetEnabled);
+                dot.classList.toggle('disabled', !targetEnabled);
+                dot.title = targetEnabled ? 'Status: Enabled' : 'Status: Disabled';
+              }
+              const statusText = card.querySelector('strong');
+              if (statusText) statusText.textContent = targetEnabled ? 'Enabled' : 'Disabled';
             }
           } catch (e) {
             console.error('Plugin toggle failed', e);
