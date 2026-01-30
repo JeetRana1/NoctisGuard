@@ -210,10 +210,16 @@ async function notifyBotOfPluginChange(guildId, state) {
   try {
     const headers = {};
     if (BOT_NOTIFY_SECRET) headers['x-dashboard-secret'] = BOT_NOTIFY_SECRET;
-    console.log('Notifying bot at', BOT_NOTIFY_URL, 'for guild', guildId, 'secretSet=', !!headers['x-dashboard-secret']);
-    const resp = await axios.post(BOT_NOTIFY_URL, { type: 'plugin_update', guildId, state }, { timeout: 5000, headers, validateStatus: () => true });
+
+    // Ensure we are hitting the /webhook endpoint
+    const base = BOT_NOTIFY_URL.replace(/\/webhook\/?$/i, '').replace(/\/$/, '');
+    const url = `${base}/webhook`;
+
+    console.log(`[bot-notify] POST to ${url} for plugin_update (guild: ${guildId})`);
+    const resp = await axios.post(url, { type: 'plugin_update', guildId, state }, { timeout: 8000, headers, validateStatus: () => true });
+
     if (resp.status >= 200 && resp.status < 300) {
-      console.log('Successfully notified bot for', guildId, 'status', resp.status);
+      console.log(`[bot-notify] Successfully notified bot for ${guildId} (status ${resp.status})`);
       // If bot returned presence snapshot, cache it locally so dashboard can read it even when BOT_PRESENCE_URL is not set
       if (resp.data && resp.data.presences) {
         try {
@@ -246,13 +252,17 @@ async function notifyBotOfPluginConfigChange(guildId, pluginId, config) {
   try {
     const headers = {};
     if (BOT_NOTIFY_SECRET) headers['x-dashboard-secret'] = BOT_NOTIFY_SECRET;
-    console.log('Notifying bot (config) at', BOT_NOTIFY_URL, 'for guild', guildId, 'plugin', pluginId, 'timeoutMs=', BOT_NOTIFY_TIMEOUT_MS, 'retries=', BOT_NOTIFY_RETRIES);
+
+    const base = BOT_NOTIFY_URL.replace(/\/webhook\/?$/i, '').replace(/\/$/, '');
+    const url = `${base}/webhook`;
+
+    console.log(`[bot-notify] POST to ${url} for plugin_config (guild: ${guildId}, plugin: ${pluginId})`);
     let lastErr = null;
     for (let attempt = 0; attempt <= BOT_NOTIFY_RETRIES; attempt++) {
       try {
-        const resp = await axios.post(BOT_NOTIFY_URL, { type: 'plugin_config', guildId, pluginId, config }, { timeout: BOT_NOTIFY_TIMEOUT_MS, headers, validateStatus: () => true });
+        const resp = await axios.post(url, { type: 'plugin_config', guildId, pluginId, config }, { timeout: 8000, headers, validateStatus: () => true });
         if (resp.status >= 200 && resp.status < 300) {
-          console.log('Successfully notified bot (config) for', guildId, 'status', resp.status);
+          console.log(`[bot-notify] Successfully notified bot (config) for ${guildId} (status ${resp.status})`);
           // if bot returned presences, cache them
           if (resp.data && resp.data.presences) {
             try {
@@ -288,13 +298,17 @@ async function notifyBotOfPluginTest(guildId, pluginId, payload) {
   try {
     const headers = {};
     if (BOT_NOTIFY_SECRET) headers['x-dashboard-secret'] = BOT_NOTIFY_SECRET;
-    console.log('Notifying bot (test) at', BOT_NOTIFY_URL, 'for guild', guildId, 'plugin', pluginId, 'timeoutMs=', BOT_NOTIFY_TIMEOUT_MS, 'retries=', BOT_NOTIFY_RETRIES);
+
+    const base = BOT_NOTIFY_URL.replace(/\/webhook\/?$/i, '').replace(/\/$/, '');
+    const url = `${base}/webhook`;
+
+    console.log(`[bot-notify] POST to ${url} for plugin_test (guild: ${guildId}, type: ${payload?.testType || pluginId})`);
     let lastErr = null;
     for (let attempt = 0; attempt <= BOT_NOTIFY_RETRIES; attempt++) {
       try {
-        const resp = await axios.post(BOT_NOTIFY_URL, { type: 'plugin_test', guildId, pluginId, payload }, { timeout: BOT_NOTIFY_TIMEOUT_MS, headers, validateStatus: () => true });
-        if (resp.status >= 200 && resp.status < 300) { console.log('Successfully notified bot (test) for', guildId, 'status', resp.status); return resp.data; }
-        console.warn('Bot test notify returned non-2xx for', guildId, 'status', resp.status, 'body:', resp.data);
+        const resp = await axios.post(url, { type: 'plugin_test', guildId, pluginId, payload }, { timeout: 10000, headers, validateStatus: () => true });
+        if (resp.status >= 200 && resp.status < 300) { console.log(`[bot-notify] Successfully notified bot (test) for ${guildId} (status ${resp.status})`); return resp.data; }
+        console.warn(`[bot-notify] Bot test notify returned ${resp.status} for ${guildId}:`, resp.data);
         return resp.data;
       } catch (err) { lastErr = err; console.warn('Failed to notify bot of plugin test attempt', attempt + 1, 'of', BOT_NOTIFY_RETRIES + 1, err?.message || err); if (attempt < BOT_NOTIFY_RETRIES) { const backoff = 500 * Math.pow(2, attempt); await new Promise(r => setTimeout(r, backoff)); } }
     }
@@ -311,15 +325,19 @@ async function notifyBotOfGiveawayAction(guildId, action, payload, opts) {
   try {
     const headers = {};
     if (BOT_NOTIFY_SECRET) headers['x-dashboard-secret'] = BOT_NOTIFY_SECRET;
-    console.log('Notifying bot (giveaway_action) at', BOT_NOTIFY_URL, 'for guild', guildId, 'action', action, 'timeoutMs=', timeoutMs, 'retries=', retries);
+    // Ensure we hit the /webhook endpoint
+    const base = BOT_NOTIFY_URL.replace(/\/webhook\/?$/i, '').replace(/\/$/, '');
+    const url = `${base}/webhook`;
+
+    console.log(`[bot-notify] POST to ${url} for giveaway_action (guild: ${guildId}, action: ${action})`);
 
     // Attempt with retries (per-call)
     let lastErr = null;
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
-        const resp = await axios.post(BOT_NOTIFY_URL, { type: 'giveaway_action', guildId, action, payload }, { timeout: timeoutMs, headers, validateStatus: () => true });
+        const resp = await axios.post(url, { type: 'giveaway_action', guildId, action, payload }, { timeout: timeoutMs, headers, validateStatus: () => true });
         if (resp.status >= 200 && resp.status < 300) {
-          console.log('Successfully notified bot (giveaway_action) for', guildId, 'action', action, 'status', resp.status, 'bodyKeys=', resp.data && typeof resp.data === 'object' ? Object.keys(resp.data) : typeof resp.data);
+          console.log(`[bot-notify] Successfully notified bot (giveaway_action) for ${guildId} (status ${resp.status})`);
           return { ok: true, data: resp.data, status: resp.status };
         }
         console.warn('Bot giveaway_action notify returned non-2xx for', guildId, 'status', resp.status, 'body:', resp.data);
