@@ -5,47 +5,42 @@
       "maxDuration": 10
     }
   },
-  "cleanUrls": true,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/",
-      "destination": "/index.html"
+      "src": "/api/(.*)",
+      "dest": "/server.js"
     },
     {
-      "source": "/dashboard",
-      "destination": "/dashboard.html"
+      "src": "/auth",
+      "dest": "/server.js"
     },
     {
-      "source": "/api/(.*)",
-      "destination": "/server.js"
+      "src": "/callback",
+      "dest": "/server.js"
     },
     {
-      "source": "/auth",
-      "destination": "/server.js"
+      "src": "/logout",
+      "dest": "/server.js"
     },
     {
-      "source": "/callback",
-      "destination": "/server.js"
+      "src": "/bot-event",
+      "dest": "/server.js"
     },
     {
-      "source": "/logout",
-      "destination": "/server.js"
+      "src": "/invite-now",
+      "dest": "/server.js"
     },
     {
-      "source": "/bot-event",
-      "destination": "/server.js"
+      "src": "/invite-callback",
+      "dest": "/server.js"
     },
     {
-      "source": "/invite-now",
-      "destination": "/server.js"
+      "src": "/internal/(.*)",
+      "dest": "/server.js"
     },
     {
-      "source": "/invite-callback",
-      "destination": "/server.js"
-    },
-    {
-      "source": "/internal/(.*)",
-      "destination": "/server.js"
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }
