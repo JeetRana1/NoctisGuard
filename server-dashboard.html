@@ -2545,13 +2545,23 @@
           list.innerHTML = '';
           const listContainer = document.createElement('div'); listContainer.className = 'member-list';
 
-          // Fetch presences from server proxy (optional)
+          // Fetch presences from server proxy
+          // We wait just a moment (150ms) to let the Bot's fetch (triggered by the concurrent guild-members call) populate its cache
+          await new Promise(r => setTimeout(r, 150));
           let presenceMap = {};
           try {
             const pRes = await fetch(`/api/guild-presences/${encodeURIComponent(serverId)}`);
             if (pRes.ok) {
-              const pBody = await pRes.json(); const presences = pBody.presences || pBody || [];
-              presences.forEach(p => { if (p && p.id) presenceMap[p.id] = (p.status || p.presence || 'unknown').toLowerCase(); });
+              const pBody = await pRes.json();
+              const presences = pBody.presences || [];
+              presences.forEach(p => {
+                if (p && p.id) {
+                  // status can be in p.status (directly from bot) or p.presence (nested)
+                  const s = (p.status || (p.presence && p.presence.status) || 'unknown').toLowerCase();
+                  presenceMap[p.id] = s;
+                }
+              });
+              console.log('[Dashboard] Received presences count:', Object.keys(presenceMap).length);
             }
           } catch (e) { console.warn('Failed to fetch presences', e); }
 
