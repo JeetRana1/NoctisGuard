@@ -2563,7 +2563,13 @@
               });
               console.log('[Dashboard] Received presences count:', Object.keys(presenceMap).length);
             }
-          } catch (e) { console.warn('Failed to fetch presences', e); }
+          } catch (e) {
+            console.warn('Failed to fetch presences', e);
+          }
+
+          if (Object.keys(presenceMap).length === 0) {
+            console.log('[Dashboard] No live statuses found. Check if Bot is online and BOT_PRESENCE_URL is correct.');
+          }
 
           members.forEach(m => {
             const item = document.createElement('div'); item.className = 'member-item';

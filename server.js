@@ -1001,13 +1001,19 @@ app.get('/api/guild-presences/:guildId', async (req, res) => {
   if (presenceBase) {
     try {
       const url = `${presenceBase.replace(/\/$/, '')}/presences/${encodeURIComponent(guildId)}`;
-      console.log('Proxying presence request to:', url);
-      const resp = await axios.get(url, { headers, timeout: 5000, validateStatus: () => true });
-      if (resp.status >= 200 && resp.status < 300) { return res.json(resp.data); }
-      console.warn('Presence proxy returned non-2xx:', resp.status, resp.data);
+      console.log(`[Proxy] Fetching presences from bot: ${url}`);
+      // Increased timeout to 8s to allow for bot cold starts
+      const resp = await axios.get(url, { headers, timeout: 8000, validateStatus: () => true });
+      if (resp.status >= 200 && resp.status < 300) {
+        console.log(`[Proxy] Successfully fetched ${resp.data?.presences?.length || 0} presences`);
+        return res.json(resp.data);
+      }
+      console.warn(`[Proxy] Bot presence endpoint returned ${resp.status}:`, JSON.stringify(resp.data).slice(0, 200));
     } catch (e) {
-      console.warn('Failed to proxy presence request to bot:', e?.message || e);
+      console.warn(`[Proxy] Failed to reach bot at ${presenceBase}:`, e?.message || e);
     }
+  } else {
+    console.warn(`[Proxy] No BOT_PRESENCE_URL or BOT_URL configured; skipping bot presence fetch.`);
   }
 
   // Fallback: read cached presences if they exist, or return empty list
