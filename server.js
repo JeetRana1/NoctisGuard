@@ -19,9 +19,6 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
   console.warn('Warning: DISCORD_CLIENT_ID or DISCORD_CLIENT_SECRET not set. OAuth /auth will fail until you set them in .env');
 }
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
 app.use(express.static(path.join(__dirname)));
 app.use(cookieParser());
 app.use(express.json()); // parse JSON bodies for API endpoints
