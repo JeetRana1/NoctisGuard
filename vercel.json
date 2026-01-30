@@ -5,9 +5,38 @@
       "maxDuration": 10
     }
   },
+  "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/(.*)",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/auth",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/callback",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/logout",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/bot-event",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/invite-now",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/invite-callback",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/internal/(.*)",
       "destination": "/server.js"
     }
   ]
