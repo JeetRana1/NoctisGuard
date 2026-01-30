@@ -5,42 +5,10 @@
       "maxDuration": 10
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/auth",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/callback",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/logout",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/bot-event",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/invite-now",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/invite-callback",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/internal/(.*)",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/(.*)",
+      "destination": "/server.js"
     }
   ]
 }
