@@ -35,9 +35,11 @@ app.get('/Profile-Pic.svg', (req, res) => res.sendFile(path.join(__dirname, 'Pro
 // Public stats endpoint for the home page preview
 // Public stats endpoint for the home page preview
 app.get('/api/stats', async (req, res) => {
-  // If we have no stats (likely a fresh serverless instance), try a quick fetch from the bot
-  if (botStats.guildCount === 0 && BOT_NOTIFY_URL) {
-    try { await pollBotStatsOnce(2000); } catch (e) { }
+  // If we have no stats or they are stale (>1m old), try a quick fetch from the bot
+  // This helps when Vercel wakes up with a stale data/stats.json file but the bot has newer data
+  const isStale = (Date.now() - (botStats.lastUpdated || 0)) > 60000;
+  if ((botStats.guildCount === 0 || isStale) && BOT_NOTIFY_URL) {
+    try { await pollBotStatsOnce(1000); } catch (e) { }
   }
 
   const uptimeHours = Math.floor((Date.now() - (botStats.uptimeStart || Date.now())) / (1000 * 60 * 60));
@@ -195,12 +197,12 @@ function updateBotStats(newStats) {
       botStats.commandsToday = newStats.commandsToday;
     }
 
-    // If the bot provides its own history array (which it does), use that instead of trying to append locally
-    // This prevents desync where dashboard history is just flat lines
+    // Only overwrite history if the incoming stats has a valid, non-empty history array
+    // This prevents partial updates (e.g. from pollBotStatsOnce hitting a simplified endpoint) from wiping the graph
     if (Array.isArray(newStats.history) && newStats.history.length > 0) {
       botStats.history = newStats.history;
-    } else if (typeof newStats.commandsToday === 'number') {
-      // Fallback: append locally only if we didn't get history from upstream
+    } else if (typeof newStats.commandsToday === 'number' && (!botStats.history || botStats.history.length === 0)) {
+      // Fallback: append locally only if we have NO history yet
       try { botStats.history = botStats.history || []; botStats.history.push({ t: Date.now(), v: Number(newStats.commandsToday) || 0 }); if (botStats.history.length > 48) botStats.history.shift(); } catch (e) { }
     }
     botStats.lastUpdated = Date.now();
