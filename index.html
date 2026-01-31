@@ -46,11 +46,28 @@
       } catch (e) { }
     }
 
+    // State to act as a buffer against "0" flashes during server cold-starts
+    let lastValidStats = { guildCount: 0, totalMembers: 0 };
+
     async function fetchAndRenderStats() {
       try {
         const res = await fetch('/api/stats');
         if (!res.ok) { console.error('/api/stats not ok', res.status); document.getElementById('stats-last-updated').textContent = 'Updated: failed'; return; }
         const jb = await res.json();
+
+        // Zero-Protection: If we get 0s but have seen real data before, this is likely a cold start glitch. Ignore it.
+        const isLikelyColdStart = (jb.guildCount === 0 && jb.totalMembers === 0);
+        const hasSeenRealData = (lastValidStats.guildCount > 0 || lastValidStats.totalMembers > 0);
+
+        if (isLikelyColdStart && hasSeenRealData) {
+          console.warn('Ignoring likely cold-start stats (0/0) to preserve valid display.');
+          return;
+        }
+
+        // Updating valid state
+        if (typeof jb.guildCount === 'number' && jb.guildCount > 0) lastValidStats.guildCount = jb.guildCount;
+        if (typeof jb.totalMembers === 'number' && jb.totalMembers > 0) lastValidStats.totalMembers = jb.totalMembers;
+
         const fmt = (n) => { if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
 
         document.getElementById('stat-servers').textContent = (typeof jb.guildCount === 'number') ? fmt(jb.guildCount) : '0';
