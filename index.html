@@ -38,18 +38,21 @@
         document.getElementById('stat-commands').textContent = (typeof jb.commandsToday === 'number') ? fmt(jb.commandsToday) : '0';
 
         let uptimeTxt = '—';
-        if (typeof jb.uptimeHours === 'number') {
-          if (jb.uptimeHours >= 24) {
-            const d = Math.floor(jb.uptimeHours / 24);
-            const h = jb.uptimeHours % 24;
-            uptimeTxt = `${d}d ${h}h`;
-          } else {
-            uptimeTxt = String(jb.uptimeHours);
-          }
+        // Prefer uptimeSeconds if available for better accuracy, otherwise fall back to uptimeHours
+        const secs = (typeof jb.uptimeSeconds === 'number') ? jb.uptimeSeconds : ((typeof jb.uptimeHours === 'number') ? jb.uptimeHours * 3600 : null);
+
+        if (secs !== null) {
+          const days = Math.floor(secs / 86400);
+          const hours = Math.floor((secs % 86400) / 3600);
+          const minutes = Math.floor((secs % 3600) / 60);
+
+          if (days > 0) uptimeTxt = `${days}d ${hours}h`;
+          else if (hours > 0) uptimeTxt = `${hours}h ${minutes}m`;
+          else uptimeTxt = `${minutes}m`;
         }
         document.getElementById('stat-uptime').textContent = uptimeTxt;
 
-        if (jb.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Updated: ' + new Date(jb.lastUpdated).toLocaleTimeString();
+        if (jb.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Live: ' + new Date().toLocaleTimeString(); // Show local time of update
         else document.getElementById('stats-last-updated').textContent = 'Updated: —';
 
         try {
@@ -64,15 +67,14 @@
 
     // Initial fetch
     fetchAndRenderStats();
+    // Poll every 5 seconds for a "live" feel
+    setInterval(fetchAndRenderStats, 5000);
 
     const refreshBtn = document.getElementById('stats-refresh');
     if (refreshBtn) refreshBtn.addEventListener('click', () => {
       fetchAndRenderStats();
       if (typeof showToast === 'function') showToast('Stats refreshed', 'info');
     });
-
-    // Poll every 5 seconds for a "live" feel
-    setInterval(fetchAndRenderStats, 5000);
   </script>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.svg" sizes="any">
