@@ -1184,6 +1184,9 @@
               const statusText = card.querySelector('strong');
               if (statusText) statusText.textContent = targetEnabled ? 'Enabled' : 'Disabled';
             }
+
+            // Immediately refresh activity feed after a toggle so it feels instant
+            try { if (typeof loadActivityFeed === 'function') setTimeout(loadActivityFeed, 500); } catch (e) { }
           } catch (e) {
             console.error('Plugin toggle failed', e);
             showToast('An error occurred while toggling the plugin', 'error');
@@ -2544,7 +2547,8 @@
     }
 
     // Live Activity Feed Polling
-    let _activityPoll = setInterval(loadActivityFeed, 10000);
+    // Live Activity Feed Polling: every 5 seconds for a "live" feel
+    let _activityPoll = setInterval(loadActivityFeed, 5000);
 
     async function loadMembers() {
       const list = document.getElementById('members-list'); if (!list) return;
