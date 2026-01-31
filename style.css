@@ -1811,8 +1811,8 @@ textarea:-internal-autofill-selected {
   background-image: none !important;
   color: var(--on-accent) !important;
   border: 0 !important;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 10px 16px !important;
+  border-radius: 12px !important;
   box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.06) !important;
 }
 
@@ -1834,8 +1834,8 @@ textarea:-internal-autofill-selected {
   background-image: none !important;
   color: var(--on-accent) !important;
   border: 0 !important;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 10px 16px !important;
+  border-radius: 12px !important;
   box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.06) !important;
 }
 
@@ -1893,8 +1893,8 @@ textarea:-internal-autofill-selected {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.04);
   color: var(--text);
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 10px 16px !important;
+  border-radius: 12px !important;
 }
 
 .modal:not(.light-theme) .modal-content.modal-config .btn.ghost {
@@ -2071,7 +2071,7 @@ textarea:-internal-autofill-selected {
 /* Modal side panel */
 .modal-side {
   width: 210px;
-  border-right: 1px solid rgba(255, 255, 255, 0.03);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -2473,7 +2473,7 @@ body:not(.theme-light) .winners-modal-card {
     flex-direction: column !important;
   }
 
-  #activity-and-members > div {
+  #activity-and-members>div {
     width: 100% !important;
   }
 
@@ -2517,7 +2517,8 @@ body #plugin-modal-welcome[aria-hidden="false"],
   width: 100% !important;
   height: 100% !important;
   padding: 20px !important;
-  inset: 0 !important; /* Override any inset values */
+  inset: 0 !important;
+  /* Override any inset values */
 }
 
 body .modal-content,
@@ -2527,16 +2528,203 @@ body .modal-config .modal-content,
   max-width: 90vw !important;
   max-height: 90vh !important;
   overflow-y: auto !important;
-  margin: 0 auto !important; /* Center the content box itself */
-  position: relative !important; /* Ensure it's positioned relative to flex container */
+  margin: 0 auto !important;
+  /* Center the content box itself */
+  position: relative !important;
+  /* Ensure it's positioned relative to flex container */
 }
 
 /* Specific styling for server settings modals */
 .page-server-settings .modal-content {
-  max-width: 800px;
-  width: 90% !important;
+  max-width: 700px !important;
+  width: 85% !important;
   max-height: 90vh;
   overflow-y: auto;
+}
+
+/* Modals for desktop */
+@media (min-width: 769px) {
+
+  .page-server-settings .modal-content,
+  .modal-config .modal-content,
+  #plugin-modal .modal-content,
+  #plugin-modal-giveaway .modal-content,
+  #plugin-modal-welcome .modal-content {
+    max-width: 900px !important;
+    width: 85% !important;
+    min-height: 500px !important;
+  }
+}
+
+/* Add internal spacing for config modals */
+.modal-config .modal-content,
+#plugin-modal .modal-content,
+#plugin-modal-giveaway .modal-content,
+#plugin-modal-welcome .modal-content {
+  padding: 30px !important;
+}
+
+/* Add spacing between elements in config modals */
+.modal-config .section-block,
+#plugin-modal .section-block,
+#plugin-modal-giveaway .section-block,
+#plugin-modal-welcome .section-block {
+  margin-bottom: 24px !important;
+  padding-bottom: 20px !important;
+}
+
+/* Add spacing to form elements */
+.modal-config .section-block label,
+#plugin-modal .section-block label,
+#plugin-modal-giveaway .section-block label,
+#plugin-modal-welcome .section-block label {
+  margin-bottom: 8px !important;
+  display: block !important;
+}
+
+/* Add spacing to inputs */
+.modal-config .section-block input,
+.modal-config .section-block textarea,
+#plugin-modal .section-block input,
+#plugin-modal .section-block textarea,
+#plugin-modal-giveaway .section-block input,
+#plugin-modal-giveaway .section-block textarea,
+#plugin-modal-welcome .section-block input,
+#plugin-modal-welcome .section-block textarea {
+  margin-bottom: 12px !important;
+  align-self: center !important;
+}
+
+/* Align labels and inputs properly */
+.modal-config .section-block label,
+#plugin-modal .section-block label,
+#plugin-modal-giveaway .section-block label,
+#plugin-modal-welcome .section-block label {
+  align-self: center !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Specific spacing for giveaway modal sections */
+#plugin-modal-giveaway .section-block {
+  margin-bottom: 30px !important;
+  padding: 20px !important;
+  border-radius: 10px !important;
+}
+
+/* Add more spacing to giveaway specific fields */
+#plugin-modal-giveaway .section-block input,
+#plugin-modal-giveaway .section-block textarea,
+#plugin-modal-giveaway .section-block .custom-dropdown,
+#plugin-modal-giveaway .section-block .number-box {
+  margin-bottom: 16px !important;
+}
+
+/* Add spacing for giveaway toggle */
+#plugin-modal-giveaway .switch-giveaway-mention {
+  margin-bottom: 20px !important;
+}
+
+/* Center modal footer buttons */
+.modal-footer,
+.modal-actions,
+.modal-content .modal-footer,
+.modal-content .modal-actions {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  padding: 20px !important;
+}
+
+/* Center buttons in plugin modals */
+#plugin-modal .modal-footer,
+#plugin-modal-giveaway .modal-footer,
+#plugin-modal-welcome .modal-footer {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  width: 100% !important;
+  padding: 24px !important;
+}
+
+/* Style for modal action buttons (footer buttons only) */
+.modal-footer .btn,
+.modal-actions .btn {
+  flex: 1 !important;
+  max-width: 200px !important;
+  margin: 0 !important;
+}
+
+/* Separate styling for non-footer buttons in modals */
+#plugin-modal-giveaway .giveaway-item .btn,
+#plugin-modal-giveaway .section-block .btn,
+#plugin-modal-giveaway .activity-tab .btn {
+  flex: none !important;
+  max-width: none !important;
+  width: auto !important;
+  min-width: auto !important;
+}
+
+/* Specific giveaway modal button container */
+#plugin-modal-giveaway .modal-footer,
+#plugin-modal-giveaway .modal-actions,
+#plugin-modal-giveaway .picker-actions,
+#plugin-modal-giveaway .winners-modal-actions,
+#plugin-modal-giveaway .section-block:last-child {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  width: 100% !important;
+  padding: 24px !important;
+  align-items: center !important;
+}
+
+/* Specific giveaway modal buttons */
+#plugin-modal-giveaway #giveaway-modal-save,
+#plugin-modal-giveaway #giveaway-modal-reset,
+#plugin-modal-giveaway .btn.ghost {
+  margin: 0 8px !important;
+}
+
+/* Make duration input fields smaller */
+#plugin-modal-giveaway .number-box {
+  padding: 2px !important;
+  height: auto !important;
+}
+
+#plugin-modal-giveaway .number-box input[type="number"] {
+  height: 32px !important;
+  padding: 4px 8px !important;
+  min-width: 60px !important;
+  font-size: 14px !important;
+  text-align: center !important;
+  margin-top: 15px !important;
+}
+
+#plugin-modal-giveaway .num-btn {
+  width: 30px !important;
+  height: 30px !important;
+  padding: 4px !important;
+  font-size: 14px !important;
+}
+
+/* Center the entire number box */
+#plugin-modal-giveaway .number-box {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  margin-top: 20px !important;
+  align-self: center !important;
+  position: relative !important;
+  top: 0px !important;
+}
+
+/* More specific duration section styling */
+#plugin-modal-giveaway .section-block:has(.number-box) {
+  padding-top: 15px !important;
+  margin-top: 15px !important;
 }
 
 /* Center modals on smaller screens */
@@ -2545,8 +2733,335 @@ body .modal-config .modal-content,
     width: 95% !important;
     max-width: 95% !important;
     margin: 0 auto !important;
+    flex-direction: column !important;
+  }
+
+  /* Adjust modal side panel for mobile */
+  .modal-side {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Adjust modal section for mobile */
+  .modal-section {
+    width: 100% !important;
+  }
+
+  /* Left-align content on mobile */
+  .modal-content,
+  .section-block,
+  .section-block label,
+  #plugin-modal-giveaway .section-block,
+  #plugin-modal-giveaway .section-block label {
+    text-align: left !important;
+    align-items: flex-start !important;
+  }
+
+  /* Adjust button sizes on mobile */
+  .modal-footer .btn,
+  .modal-actions .btn,
+  #plugin-modal-giveaway .modal-footer .btn,
+  #plugin-modal-giveaway .modal-actions .btn {
+    width: auto !important;
+    min-width: 620px !important;
+    height: auto !important;
+    padding: 6px 20px !important;
+    margin: 4px !important;
+  }
+
+  /* Ultra-specific mobile button styling */
+  @media (max-width: 768px) {
+
+    .modal-footer .btn,
+    .modal-actions .btn,
+    #plugin-modal-giveaway .modal-footer .btn,
+    #plugin-modal-giveaway .modal-actions .btn,
+    #plugin-modal-giveaway .modal-footer button,
+    #plugin-modal-giveaway .modal-actions button {
+      height: 10px !important;
+      min-height: 10px !important;
+      max-height: 10px !important;
+      padding: 1px 20px !important;
+      line-height: 1 !important;
+      box-sizing: border-box !important;
+      font-size: 10px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 2px !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      min-width: 80px !important;
+    }
+
+    /* Even more specific selectors for mobile buttons */
+    body #plugin-modal-giveaway .modal-footer .btn.ghost,
+    body #plugin-modal-giveaway .modal-footer .btn.primary,
+    body #plugin-modal-giveaway .modal-actions .btn.ghost,
+    body #plugin-modal-giveaway .modal-actions .btn.primary {
+      height: 10px !important;
+      min-height: 10px !important;
+      max-height: 10px !important;
+      padding: 1px 20px !important;
+      line-height: 1 !important;
+      box-sizing: border-box !important;
+      font-size: 10px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 2px !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      min-width: 80px !important;
+    }
+  }
+
+  /* Individual mobile button styling - match PC version */
+  @media (max-width: 768px) {
+
+    /* Cancel button */
+    body .modal-footer #cancel-btn,
+    body .modal-actions #cancel-btn,
+    body #plugin-modal .modal-footer #cancel-btn,
+    body #plugin-modal-giveaway .modal-footer #cancel-btn,
+    body #plugin-modal-welcome .modal-footer #cancel-btn {
+      height: auto !important;
+      padding: 10px 16px !important;
+      font-size: 14px !important;
+      min-width: auto !important;
+      text-align: center !important;
+    }
+
+    /* Reset button */
+    body .modal-footer #reset-btn,
+    body .modal-actions #reset-btn,
+    body #plugin-modal .modal-footer #reset-btn,
+    body #plugin-modal-giveaway .modal-footer #reset-btn,
+    body #plugin-modal-welcome .modal-footer #reset-btn {
+      height: auto !important;
+      padding: 10px 16px !important;
+      font-size: 14px !important;
+      min-width: auto !important;
+      text-align: center !important;
+    }
+
+    /* Send test button */
+    body .modal-footer #send-test-btn,
+    body .modal-actions #send-test-btn,
+    body #plugin-modal .modal-footer #send-test-btn,
+    body #plugin-modal-giveaway .modal-footer #send-test-btn,
+    body #plugin-modal-welcome .modal-footer #send-test-btn {
+      height: auto !important;
+      padding: 10px 16px !important;
+      font-size: 14px !important;
+      min-width: auto !important;
+      text-align: center !important;
+    }
+
+    /* Save/Create button */
+    body .modal-footer #save-btn,
+    body .modal-footer #create-btn,
+    body .modal-actions #save-btn,
+    body .modal-actions #create-btn,
+    body #plugin-modal .modal-footer #plugin-modal-save,
+    body #plugin-modal-giveaway .modal-footer #giveaway-modal-save,
+    body #plugin-modal-welcome .modal-footer #plugin-modal-welcome-save {
+      height: auto !important;
+      padding: 10px 16px !important;
+      font-size: 14px !important;
+      min-width: auto !important;
+      text-align: center !important;
+    }
   }
 }
+
+/* Dynamic height for activity and reroll tabs */
+#plugin-modal-giveaway #giveaway-activity-list,
+#plugin-modal-giveaway .activity-tab-content,
+#plugin-modal-giveaway .reroll-tab-content {
+  max-height: 50vh !important;
+  overflow-y: auto !important;
+}
+
+/* Reduce modal height when on activity/reroll tabs */
+#plugin-modal-giveaway.activity-view .modal-content,
+#plugin-modal-giveaway.reroll-view .modal-content {
+  min-height: auto !important;
+  max-height: 60vh !important;
+  height: auto !important;
+}
+
+/* Ensure height is reduced on desktop as well */
+@media (min-width: 769px) {
+
+  #plugin-modal-giveaway.activity-view .modal-content,
+  #plugin-modal-giveaway.reroll-view .modal-content {
+    max-height: 55vh !important;
+    height: auto !important;
+  }
+}
+
+/* Make reroll button smaller */
+#plugin-modal-giveaway .reroll-giveaway,
+#plugin-modal-giveaway .btn.reroll-giveaway {
+  width: auto !important;
+  min-width: auto !important;
+  max-width: 100px !important;
+  padding: 8px 10px !important;
+  flex: 0 0 auto !important;
+}
+
+/* More specific reroll button styling */
+#plugin-modal-giveaway .reroll-giveaway,
+#plugin-modal-giveaway .giveaway-item .reroll-giveaway {
+  width: fit-content !important;
+  min-width: 0 !important;
+  padding: 8px 10px !important;
+  margin: 0 4px !important;
+  max-width: 100px !important;
+  flex: none !important;
+}
+
+/* Even more specific reroll button styling for both PC and mobile */
+body #plugin-modal-giveaway .reroll-giveaway,
+body #plugin-modal-giveaway .btn.reroll-giveaway,
+body #plugin-modal-giveaway .giveaway-item .btn.reroll-giveaway {
+  width: auto !important;
+  min-width: auto !important;
+  max-width: 100px !important;
+  padding: 8px 12px !important;
+  flex: none !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Specific styling for the main reroll button in reroll tab */
+#plugin-modal-giveaway .modal-content .btn.reroll-giveaway,
+#plugin-modal-giveaway .reroll-tab .btn.primary,
+#plugin-modal-giveaway .reroll-tab .btn {
+  width: auto !important;
+  min-width: auto !important;
+  max-width: 120px !important;
+  padding: 10px 16px !important;
+  margin: 0 auto !important;
+  display: inline-block !important;
+}
+
+/* Specific styling for the refresh button in activity tab */
+#plugin-modal-giveaway .activity-tab .btn,
+#plugin-modal-giveaway .activity-tab .btn.ghost,
+#plugin-modal-giveaway #refresh-giveaway-activity {
+  width: auto !important;
+  min-width: auto !important;
+  max-width: 120px !important;
+  padding: 8px 12px !important;
+  margin: 0 auto !important;
+  display: inline-block !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Individual button styling for customization */
+/* Refresh button in activity tab - ultra specific */
+body #plugin-modal-giveaway #refresh-giveaway-activity,
+body #plugin-modal-giveaway .activity-tab #refresh-giveaway-activity,
+body #plugin-modal-giveaway .activity-tab .refresh-btn {
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 80px !important;
+  padding: 6px 8px !important;
+  margin: 0 auto !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
+  position: static !important;
+  min-height: auto !important;
+  height: auto !important;
+  line-height: 1 !important;
+}
+
+/* Even more specific refresh button styling */
+#plugin-modal-giveaway div:last-child #refresh-giveaway-activity,
+#plugin-modal-giveaway .modal-content #refresh-giveaway-activity,
+#plugin-modal-giveaway .section-block #refresh-giveaway-activity {
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 80px !important;
+  padding: 6px 8px !important;
+  margin: 0 auto !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
+  min-height: auto !important;
+  height: auto !important;
+  line-height: 1 !important;
+}
+
+/* Copy ID button */
+body #plugin-modal-giveaway .copy-id,
+body #plugin-modal-giveaway .giveaway-item .copy-id {
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 100px !important;
+  padding: 8px 10px !important;
+  margin: 0 4px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* View Winners button */
+body #plugin-modal-giveaway .view-winners,
+body #plugin-modal-giveaway .giveaway-item .view-winners {
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 110px !important;
+  padding: 8px 10px !important;
+  margin: 0 4px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Reroll button */
+body #plugin-modal-giveaway .reroll-giveaway,
+body #plugin-modal-giveaway .giveaway-item .reroll-giveaway {
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 100px !important;
+  padding: 8px 10px !important;
+  margin: 0 4px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure buttons stack properly on mobile */
+.modal-content .btn {
+  width: 100% !important;
+  margin-bottom: 8px !important;
+}
+
+.modal-content .btn:last-child {
+  margin-bottom: 0 !important;
+}
+
 
 
 /* Buttons inside winners modal: dark theme (default) */
@@ -2655,8 +3170,8 @@ body.theme-light .winners-modal-card {
 .theme-light #plugin-modal-giveaway .btn.primary#giveaway-modal-save {
   border: 2px solid rgba(0, 0, 0, 0.12);
   box-shadow: 0 6px 18px rgba(6, 10, 20, 0.06);
-  padding: 8px 14px;
-  border-radius: 8px;
+  padding: 10px 16px !important;
+  border-radius: 12px !important;
 }
 
 /* Reset button: final style — semi-transparent with subtle border */
@@ -4396,7 +4911,7 @@ html.theme-light *::-webkit-scrollbar-corner {
     align-items: center !important;
   }
 
-  #server-header > .server-info-card {
+  #server-header>.server-info-card {
     flex-shrink: 0;
     margin-top: 0 !important;
   }
@@ -4411,7 +4926,7 @@ html.theme-light *::-webkit-scrollbar-corner {
   }
 
   /* Ensure server info cards stack below the header */
-  #server-header > .server-info-card {
+  #server-header>.server-info-card {
     width: 100% !important;
   }
 }
@@ -4484,7 +4999,7 @@ html.theme-light *::-webkit-scrollbar-corner {
   }
 
   /* Ensure server info cards appear below the header and are centered */
-  #server-header > .server-info-card {
+  #server-header>.server-info-card {
     width: 100% !important;
     margin-top: 0 !important;
     text-align: left !important;
