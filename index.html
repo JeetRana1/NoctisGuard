@@ -7,6 +7,7 @@
   <title>NoctisGuard - Moderation & Utilities Bot</title>
   <!-- Removed external Google Fonts to avoid network DNS errors; using system fonts -->
   <link rel="stylesheet" href="style.css">
+  <script src="/socket.io/socket.io.js"></script>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.svg" sizes="any">
   <link rel="shortcut icon" href="/favicon.svg">
@@ -239,6 +240,36 @@
     fetchAndRenderStats();
     if (typeof showToast === 'function') showToast('Stats refreshed', 'info');
   });
+
+  // Socket.IO for real-time updates
+  try {
+    const socket = io();
+    socket.on('bot-stats', (data) => {
+      if (data && data.stats) {
+        const s = data.stats;
+        const fmt = (n) => { if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
+
+        if (typeof s.guildCount === 'number') document.getElementById('stat-servers').textContent = fmt(s.guildCount);
+        if (typeof s.totalMembers === 'number') document.getElementById('stat-members').textContent = fmt(s.totalMembers);
+        if (typeof s.commandsToday === 'number') document.getElementById('stat-commands').textContent = fmt(s.commandsToday);
+
+        if (typeof s.uptimeHours === 'number') {
+          let txt = String(s.uptimeHours);
+          if (s.uptimeHours >= 24) {
+            const d = Math.floor(s.uptimeHours / 24);
+            const h = s.uptimeHours % 24;
+            txt = `${d}d ${h}h`;
+          }
+          document.getElementById('stat-uptime').textContent = txt;
+        }
+
+        if (s.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Live: ' + new Date(s.lastUpdated).toLocaleTimeString();
+      }
+    });
+    socket.on('bot-stats-history', (data) => {
+      if (data && data.history) renderSparkline(data.history);
+    });
+  } catch (e) { console.warn('Socket.IO init failed', e); }
 
 
 </script>
