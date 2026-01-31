@@ -33,7 +33,13 @@ app.get('/Site-Logo.svg', (req, res) => res.sendFile(path.join(__dirname, 'Site-
 app.get('/Profile-Pic.svg', (req, res) => res.sendFile(path.join(__dirname, 'Profile-Pic.svg')));
 
 // Public stats endpoint for the home page preview
-app.get('/api/stats', (req, res) => {
+// Public stats endpoint for the home page preview
+app.get('/api/stats', async (req, res) => {
+  // If we have no stats (likely a fresh serverless instance), try a quick fetch from the bot
+  if (botStats.guildCount === 0 && BOT_NOTIFY_URL) {
+    try { await pollBotStatsOnce(2000); } catch (e) { }
+  }
+
   const uptimeHours = Math.floor((Date.now() - (botStats.uptimeStart || Date.now())) / (1000 * 60 * 60));
   return res.json({
     guildCount: botStats.guildCount,
@@ -111,7 +117,7 @@ const botPresenceCache = new Map(); // key -> { present, expiresAt }
 const BOT_PRESENCE_TTL_MS = 60_000; // 60 seconds
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const BOT_ID = process.env.DISCORD_BOT_ID || process.env.DISCORD_CLIENT_ID;
-const BOT_NOTIFY_URL = process.env.BOT_NOTIFY_URL || null;
+const BOT_NOTIFY_URL = process.env.BOT_NOTIFY_URL || 'https://blank-bliss-personal122-181955cc.koyeb.app';
 const BOT_NOTIFY_SECRET = process.env.BOT_NOTIFY_SECRET || process.env.WEBHOOK_SECRET || 'change-me-to-a-secret';
 // Bot notify timing and retry settings
 const BOT_NOTIFY_TIMEOUT_MS = Number(process.env.BOT_NOTIFY_TIMEOUT_MS || 30000); // default 30s
@@ -1368,7 +1374,8 @@ app.get('/callback', async (req, res) => {
 });
 
 // If a BOT_NOTIFY_URL is configured, periodically poll it for stats (GET /stats)
-async function pollBotStatsOnce() {
+// If a BOT_NOTIFY_URL is configured, periodically poll it for stats (GET /stats)
+async function pollBotStatsOnce(timeoutMs = null) {
   if (!BOT_NOTIFY_URL) return;
   const base = BOT_NOTIFY_URL.replace(/\/$/, '');
   // Support polling both the configured notify URL and the origin root (in case BOT_NOTIFY_URL points at /webhook)
@@ -1377,9 +1384,13 @@ async function pollBotStatsOnce() {
   const tryUrls = Array.from(new Set([base + '/stats', base, base + '/presence', origin + '/stats', origin, origin + '/presence']));
   const headers = {};
   if (BOT_NOTIFY_SECRET) headers['x-dashboard-secret'] = BOT_NOTIFY_SECRET;
+
+  // Use provided timeout or default to configured timeout (min 5s -> min 1.5s for demand fetch)
+  const effTimeout = timeoutMs !== null ? timeoutMs : Math.max(5000, BOT_NOTIFY_TIMEOUT_MS);
+
   for (const url of tryUrls) {
     try {
-      const r = await axios.get(url, { headers, timeout: Math.max(5000, BOT_NOTIFY_TIMEOUT_MS), validateStatus: () => true });
+      const r = await axios.get(url, { headers, timeout: effTimeout, validateStatus: () => true });
       if (r && r.status >= 200 && r.status < 300 && r.data) {
         const data = r.data.stats || r.data || {};
         // Accept either full stats or partials
