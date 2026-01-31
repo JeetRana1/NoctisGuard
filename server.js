@@ -179,9 +179,21 @@ function updateBotStats(newStats) {
     if (!newStats || typeof newStats !== 'object') return;
     if (typeof newStats.guildCount === 'number') botStats.guildCount = newStats.guildCount;
     if (typeof newStats.totalMembers === 'number') botStats.totalMembers = newStats.totalMembers;
+
+    // Map uptime information if provided
+    if (newStats.uptimeStart) botStats.uptimeStart = newStats.uptimeStart;
+
+    // Handle commands today and history
     if (typeof newStats.commandsToday === 'number') {
       botStats.commandsToday = newStats.commandsToday;
-      // append to history (cap at 48 samples)
+    }
+
+    // If the bot provides its own history array (which it does), use that instead of trying to append locally
+    // This prevents desync where dashboard history is just flat lines
+    if (Array.isArray(newStats.history) && newStats.history.length > 0) {
+      botStats.history = newStats.history;
+    } else if (typeof newStats.commandsToday === 'number') {
+      // Fallback: append locally only if we didn't get history from upstream
       try { botStats.history = botStats.history || []; botStats.history.push({ t: Date.now(), v: Number(newStats.commandsToday) || 0 }); if (botStats.history.length > 48) botStats.history.shift(); } catch (e) { }
     }
     botStats.lastUpdated = Date.now();
