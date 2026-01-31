@@ -26,6 +26,21 @@
         <h2 id="server-title">Server</h2>
         <div class="small-muted" id="server-sub">Manage plugins & settings</div>
       </div>
+
+      <!-- Server ID Card -->
+      <div class="server-info-card" style="margin-top: 16px;">
+        <strong>Server ID</strong>
+        <div class="small-muted" id="server-id"></div>
+      </div>
+
+      <!-- Actions Card -->
+      <div class="server-info-card" style="margin-top: 12px;">
+        <strong>Actions</strong>
+        <div style="margin-top:8px">
+          <button id="sync-plugins" class="btn ghost">Sync plugins</button>
+          <button id="refresh-guilds" class="btn ghost">Refresh</button>
+        </div>
+      </div>
     </div>
 
     <section>
@@ -546,14 +561,11 @@
       };
     }
 
-    // Add a compact server info panel (fills empty space and gives quick actions)
-    const headerMeta = document.createElement('div'); headerMeta.style.display = 'flex'; headerMeta.style.gap = '18px'; headerMeta.style.marginTop = '6px';
-    const infoCard = document.createElement('div'); infoCard.className = 'server-info-card';
-    infoCard.innerHTML = `<strong>Server ID</strong><div class="small-muted" id="server-id">${serverId}</div>`;
-    const actionsCard = document.createElement('div'); actionsCard.className = 'server-info-card';
-    actionsCard.innerHTML = `<strong>Actions</strong><div style="margin-top:8px"><button id="sync-plugins" class="btn ghost">Sync plugins</button> <button id="refresh-guilds" class="btn ghost">Refresh</button></div>`;
-    headerMeta.appendChild(infoCard); headerMeta.appendChild(actionsCard);
-    const header = document.getElementById('server-header'); if (header) header.appendChild(headerMeta);
+
+    // Populate the Server ID (card is now in HTML)
+    const serverIdEl = document.getElementById('server-id');
+    if (serverIdEl) serverIdEl.textContent = serverId;
+
 
     // Modal markup (inserted early so it's available before handlers run)
     (function () {
