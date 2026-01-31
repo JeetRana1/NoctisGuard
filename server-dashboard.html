@@ -2502,37 +2502,44 @@
 
     async function loadActivityFeed() {
       const feed = document.getElementById('activity-feed'); if (!feed) return;
-      feed.innerHTML = '<p class="small-muted">Loading activity…</p>';
+      // only show loading on very first load
+      if (feed.innerHTML === '') feed.innerHTML = '<p class="small-muted">Loading activity…</p>';
+
       try {
         const res = await fetch(`/api/server-activity/${encodeURIComponent(serverId)}`);
         if (res.ok) {
           const body = await res.json(); const arr = body.activity || [];
           if (arr.length === 0) { feed.innerHTML = '<p class="small-muted">No recent activity for this server.</p>'; return; }
-          feed.innerHTML = '';
+
+          let html = '';
           arr.slice(0, 30).forEach(a => {
             const d = new Date(a.ts || Date.now());
             const who = a.user ? (a.user.username) : 'System';
-            const p = document.createElement('div'); p.className = 'activity-item';
-            let bodyHtml = '';
-            if (a.type === 'plugin_update') {
-              bodyHtml = `<div style="display:flex;gap:10px;align-items:center">
-              <div style="width:10px;height:10px;border-radius:999px;background:${a.enabled ? 'var(--accent)' : 'var(--danger)'}"></div>
-              <div style="flex:1"><strong>${a.pluginId}</strong> ${a.enabled ? 'enabled' : 'disabled'} <div class="small-muted">by ${who} · ${d.toLocaleString()}</div></div>
-            </div>`;
-            } else {
-              bodyHtml = `<div style="display:flex;gap:10px;align-items:center">
-              <div style="width:10px;height:10px;border-radius:999px;background:var(--accent)"></div>
-              <div style="flex:1"><strong>${a.pluginId || 'System'}</strong> ${a.description || a.type} <div class="small-muted">${d.toLocaleString()}</div></div>
-            </div>`;
-            }
-            p.innerHTML = bodyHtml;
-            feed.appendChild(p);
+            const pluginLabel = a.pluginId ? (a.pluginId.charAt(0).toUpperCase() + a.pluginId.slice(1)) : 'System';
+
+            // Determine state carefully
+            const isEnabled = a.enabled === true;
+            const actionText = a.type === 'plugin_update' ? (isEnabled ? 'enabled' : 'disabled') : (a.description || a.type);
+            const dotColor = (a.type === 'plugin_update') ? (isEnabled ? 'var(--accent)' : 'var(--danger)') : 'var(--accent)';
+
+            html += `
+              <div class="activity-item" style="margin-bottom:12px;display:flex;gap:12px;align-items:center">
+                <div style="width:10px;height:10px;border-radius:999px;background:${dotColor};flex-shrink:0"></div>
+                <div style="flex:1">
+                  <strong>${pluginLabel}</strong> ${actionText}
+                  <div class="small-muted" style="font-size:0.8rem">by ${who} · ${d.toLocaleString()}</div>
+                </div>
+              </div>`;
           });
+          feed.innerHTML = html;
           return;
         }
       } catch (e) { console.warn('Failed to load activity', e); }
-      feed.innerHTML = '<p class="small-muted">Failed to load activity.</p>';
+      if (feed.innerHTML === '') feed.innerHTML = '<p class="small-muted">Failed to load activity.</p>';
     }
+
+    // Live Activity Feed Polling
+    let _activityPoll = setInterval(loadActivityFeed, 10000);
 
     async function loadMembers() {
       const list = document.getElementById('members-list'); if (!list) return;
