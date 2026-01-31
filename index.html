@@ -7,13 +7,7 @@
   <title>NoctisGuard - Moderation & Utilities Bot</title>
   <!-- Removed external Google Fonts to avoid network DNS errors; using system fonts -->
   <link rel="stylesheet" href="style.css">
-  <!-- Use CDN for Socket.IO client to avoid 404s on serverless/Vercel -->
-  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js" crossorigin="anonymous"></script>
   <script>
-    // Fallback: If Socket.IO fails to load or connect, we poll manually
-    // This ensures auto-refresh works on Vercel where WebSockets are limited
-    let usePolling = true;
-
     // Render sparkline from history points (array of {t,v})
     function renderSparkline(points) {
       try {
@@ -77,59 +71,8 @@
       if (typeof showToast === 'function') showToast('Stats refreshed', 'info');
     });
 
-    // Try initializing Socket.IO
-    try {
-      if (typeof io !== 'undefined') {
-        const socket = io({
-          transports: ['polling', 'websocket'], // Force polling first for better Vercel compat
-          reconnectionAttempts: 3
-        });
-
-        socket.on('connect', () => {
-          console.log('Socket connected, disabling polling fallback');
-          usePolling = false; // Socket works, disable polling
-        });
-
-        socket.on('bot-stats', (data) => {
-          if (data && data.stats) {
-            const s = data.stats;
-            const fmt = (n) => { if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
-
-            if (typeof s.guildCount === 'number') document.getElementById('stat-servers').textContent = fmt(s.guildCount);
-            if (typeof s.totalMembers === 'number') document.getElementById('stat-members').textContent = fmt(s.totalMembers);
-            if (typeof s.commandsToday === 'number') document.getElementById('stat-commands').textContent = fmt(s.commandsToday);
-
-            if (typeof s.uptimeHours === 'number') {
-              let txt = String(s.uptimeHours);
-              if (s.uptimeHours >= 24) {
-                const d = Math.floor(s.uptimeHours / 24);
-                const h = s.uptimeHours % 24;
-                txt = `${d}d ${h}h`;
-              }
-              document.getElementById('stat-uptime').textContent = txt;
-            }
-
-            if (s.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Live: ' + new Date(s.lastUpdated).toLocaleTimeString();
-          }
-        });
-        socket.on('bot-stats-history', (data) => {
-          if (data && data.history) renderSparkline(data.history);
-        });
-
-        socket.on('connect_error', () => {
-          console.warn('Socket connect error, falling back to polling');
-          usePolling = true;
-        });
-      }
-    } catch (e) {
-      console.warn('Socket.IO init failed', e);
-      usePolling = true;
-    }
-
-    // Robust Fallback: Poll every 10s if socket isn't active
-    setInterval(() => {
-      if (usePolling) fetchAndRenderStats();
-    }, 10000);
+    // Poll every 5 seconds for a "live" feel
+    setInterval(fetchAndRenderStats, 5000);
   </script>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.svg" sizes="any">
