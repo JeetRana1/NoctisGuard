@@ -58,9 +58,15 @@ header{position:fixed;width:100%;top:0;z-index:100;background:transparent;backdr
 header nav.container{position:relative;align-items:center}
 .dashboard-title{position:absolute;left:50%;transform:translateX(-50%);color:var(--muted);font-size:0.95rem;margin:0;font-weight:600;pointer-events:none}
 @media (max-width:700px){
-  .dashboard-title{position:static;transform:none;margin-left:6px}
+  .dashboard-title{display:none} /* Hide title to make room for nav */
   header nav.container{gap:10px}
-  .nav-menu{display:none}
+  .nav-menu{display:flex} /* Show menu */
+}
+
+/* Fix server dashboard activity/members layout on mobile */
+@media (max-width: 900px) {
+  #activity-and-members { flex-direction: column; }
+  #activity-and-members > div { width: 100% !important; min-width: 0 !important; }
 }
 
 nav.container{display:flex;align-items:center;gap:16px;padding:18px 0}
