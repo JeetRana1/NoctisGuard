@@ -115,6 +115,33 @@
       fetchAndRenderStats();
       if (typeof showToast === 'function') showToast('Stats refreshed', 'info');
     });
+
+
+    // Mobile menu toggle - wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', () => {
+      const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+      const mobileDropdown = document.getElementById('mobile-dropdown');
+
+      console.log('Mobile menu elements:', { mobileMenuToggle, mobileDropdown }); // Debug
+
+      if (mobileMenuToggle && mobileDropdown) {
+        mobileMenuToggle.addEventListener('click', () => {
+          console.log('Hamburger clicked!'); // Debug
+          mobileMenuToggle.classList.toggle('active');
+          mobileDropdown.classList.toggle('active');
+        });
+
+        // Close menu when clicking a link
+        mobileDropdown.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            mobileMenuToggle.classList.remove('active');
+            mobileDropdown.classList.remove('active');
+          });
+        });
+      } else {
+        console.error('Mobile menu elements not found!');
+      }
+    });
   </script>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.svg" sizes="any">
@@ -145,7 +172,21 @@
         <a id="invite-btn" href="/invite-now" class="btn ghost" title="Invite bot">Invite</a>
         <a id="login-btn" href="/auth" class="btn primary" title="Login with Discord">Login with Discord</a>
       </div>
+
+      <!-- Hamburger menu button (mobile only) -->
+      <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
     </nav>
+
+    <!-- Mobile dropdown menu -->
+    <div id="mobile-dropdown" class="mobile-dropdown">
+      <a href="#features">Features</a>
+      <a href="#team">Team</a>
+      <a href="#invite">Invite</a>
+    </div>
   </header>
 
   <section id="home" class="hero">
@@ -299,4 +340,3 @@
 
 
 </html>
-```

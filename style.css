@@ -98,13 +98,20 @@ header nav.container {
 
   header nav.container {
     gap: 10px;
+    position: relative;
   }
 
   .nav-menu {
     display: flex !important;
-    margin-left: auto !important;
+    position: absolute !important;
+    top: 50% !important;
+    right: 0 !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
     gap: 8px !important;
     flex-direction: row !important;
+    background: transparent !important;
+    padding: 0 !important;
   }
 
   .nav-menu a {
@@ -2376,26 +2383,169 @@ body:not(.theme-light) .winners-modal-card {
   border: 0
 }
 
-/* Back button (dashboard) thicker border styling */
+/* Modern back button with clean icon */
 #back-btn {
-  border-width: 2px;
-  border-style: solid;
-  border-color: rgba(255, 255, 255, 0.12);
-  padding: 8px 12px;
-  border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
 }
 
 #back-btn:hover {
-  transform: translateY(-1px);
+  background: var(--glass);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(124, 92, 255, 0.15);
 }
 
-/* Light theme: subtler border */
+#back-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Back arrow icon */
+#back-btn::before {
+  content: "←";
+  font-size: 1.3em;
+  font-weight: bold;
+}
+
+/* Light theme styling */
 .theme-light #back-btn {
+  background: rgba(255, 255, 255, 0.85);
   border-color: rgba(16, 20, 24, 0.12);
-  box-shadow: 0 6px 18px rgba(6, 10, 20, 0.06);
   color: var(--text);
-  background: rgba(255, 255, 255, 0.02)
+  box-shadow: 0 4px 10px rgba(6, 10, 20, 0.05);
+}
+
+.theme-light #back-btn:hover {
+  background: #ffffff;
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 6px 14px rgba(124, 92, 255, 0.2);
+}
+
+/* Dashboard header styling */
+.dashboard-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  backdrop-filter: blur(10px);
+}
+
+.dashboard-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+#dashboard-title {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.5rem;
+  font-weight: 700;
+  flex-grow: 1;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Mobile adjustments for activity feed and members sections */
+@media (max-width: 768px) {
+  #activity-and-members {
+    flex-direction: column !important;
+  }
+
+  #activity-and-members > div {
+    width: 100% !important;
+  }
+
+  /* Align activity feed title to the left on mobile */
+  #activity-and-members h4 {
+    text-align: left !important;
+  }
+}
+
+/* Mobile adjustments for invite section on index.html */
+@media (max-width: 768px) {
+  #invite .section-title {
+    text-align: center;
+  }
+
+  #invite .section-lead {
+    text-align: center;
+  }
+
+  #invite .invite-ctas {
+    justify-content: center;
+  }
+}
+
+/* Ensure modals are centered properly with highest specificity */
+body .modal[aria-hidden="false"],
+body .modal-config[aria-hidden="false"],
+body #plugin-modal[aria-hidden="false"],
+body #plugin-modal-giveaway[aria-hidden="false"],
+body #plugin-modal-welcome[aria-hidden="false"],
+.page-server-settings .modal[aria-hidden="false"],
+.page-server-settings .modal-config[aria-hidden="false"] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 20px !important;
+  inset: 0 !important; /* Override any inset values */
+}
+
+body .modal-content,
+body .modal-config .modal-content,
+.page-server-settings .modal-content,
+.page-server-settings .modal-config .modal-content {
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  margin: 0 auto !important; /* Center the content box itself */
+  position: relative !important; /* Ensure it's positioned relative to flex container */
+}
+
+/* Specific styling for server settings modals */
+.page-server-settings .modal-content {
+  max-width: 800px;
+  width: 90% !important;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Center modals on smaller screens */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95% !important;
+    max-width: 95% !important;
+    margin: 0 auto !important;
+  }
 }
 
 
@@ -3724,7 +3874,50 @@ section {
   background: var(--card);
   display: flex;
   align-items: center;
-  justify-content: center
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.server-dashboard-header .server-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  z-index: 1;
+  /* Override flexbox behavior */
+  margin: 0 !important;
+  padding: 0 !important;
+  inset: 0;
+}
+
+/* When image is present, adjust the flex container to not interfere */
+.server-dashboard-header .server-avatar img[src] {
+  display: block !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  z-index: 1 !important;
+}
+
+.server-dashboard-header .server-avatar img[src]:not([src=""]) {
+  display: block !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  z-index: 1 !important;
 }
 
 .server-dashboard-header .server-meta {
@@ -4161,8 +4354,9 @@ html.theme-light *::-webkit-scrollbar-corner {
 /* Server dashboard header - hybrid layout */
 .server-dashboard-header {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 /* Avatar and server name side by side */
@@ -4172,12 +4366,54 @@ html.theme-light *::-webkit-scrollbar-corner {
 }
 
 .server-dashboard-header .server-avatar {
-  float: left;
-  margin-right: 12px;
+  flex-shrink: 0;
 }
 
 .server-dashboard-header .server-meta {
-  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Layout for server header elements */
+#server-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* On desktop, arrange server avatar, name, and info cards horizontally */
+@media (min-width: 769px) {
+  #server-header {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+  }
+
+  .server-dashboard-header {
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  #server-header > .server-info-card {
+    flex-shrink: 0;
+    margin-top: 0 !important;
+  }
+}
+
+/* On mobile, ensure server info cards appear below the header */
+@media (max-width: 768px) {
+  #server-header {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* Ensure server info cards stack below the header */
+  #server-header > .server-info-card {
+    width: 100% !important;
+  }
 }
 
 /* Clear float after avatar/meta section */
@@ -4200,6 +4436,60 @@ html.theme-light *::-webkit-scrollbar-corner {
     width: 100% !important;
   }
 
+  /* Adjust server dashboard header for mobile - horizontal layout with avatar on left */
+  .server-dashboard-header {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  /* Make the server avatar larger on mobile devices to ensure it fills properly */
+  .server-dashboard-header .server-avatar {
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px;
+    min-height: 72px;
+    position: relative !important;
+  }
+
+  .server-dashboard-header .server-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 12px !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    display: block !important;
+    z-index: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    inset: 0 !important;
+  }
+
+  /* Allow server meta to take remaining space */
+  .server-dashboard-header .server-meta {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  /* Center the server header content on mobile */
+  #server-header {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  /* Ensure server info cards appear below the header and are centered */
+  #server-header > .server-info-card {
+    width: 100% !important;
+    margin-top: 0 !important;
+    text-align: left !important;
+  }
+
   /* Make action buttons stack on very small screens */
   @media (max-width: 480px) {
     .server-info-card div[style*="margin-top"] {
@@ -4213,4 +4503,191 @@ html.theme-light *::-webkit-scrollbar-corner {
       justify-content: center;
     }
   }
+}
+
+/* Very small mobile screens */
+@media (max-width: 480px) {
+  .server-dashboard-header .server-avatar {
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px;
+    min-height: 64px;
+    position: relative !important;
+  }
+
+  .server-dashboard-header .server-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 12px !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    display: block !important;
+    z-index: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    inset: 0 !important;
+  }
+}
+
+/* Medium mobile screens */
+@media (min-width: 481px) and (max-width: 600px) {
+  .server-dashboard-header .server-avatar {
+    width: 70px !important;
+    height: 70px !important;
+    min-width: 70px;
+    min-height: 70px;
+    position: relative !important;
+  }
+
+  .server-dashboard-header .server-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 12px !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    display: block !important;
+    z-index: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    inset: 0 !important;
+  }
+}
+
+/* Larger mobile screens */
+@media (min-width: 601px) and (max-width: 768px) {
+  .server-dashboard-header .server-avatar {
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px;
+    min-height: 72px;
+    position: relative !important;
+  }
+
+  .server-dashboard-header .server-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 12px !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    display: block !important;
+    z-index: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    inset: 0 !important;
+  }
+}
+
+
+/* Hamburger menu button (mobile only) */
+.mobile-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 101;
+}
+
+.hamburger-line {
+  width: 24px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Mobile dropdown menu */
+.mobile-dropdown {
+  display: none;
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  width: 200px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+.mobile-dropdown.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.mobile-dropdown a {
+  display: block;
+  padding: 16px 20px;
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+
+.mobile-dropdown a:last-child {
+  border-bottom: none;
+}
+
+.mobile-dropdown a:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Mobile styles for index.html */
+@media (max-width: 900px) {
+
+  /* Hide desktop nav menu */
+  #nav-menu {
+    display: none !important;
+  }
+
+  /* Hide invite button on mobile */
+  #invite-btn {
+    display: none !important;
+  }
+
+  /* Show hamburger menu */
+  .mobile-menu-toggle {
+    display: flex !important;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* Show mobile dropdown */
+  .mobile-dropdown {
+    display: block;
+  }
+
+  /* Move actions (user info) to the left */
+  header nav.container .actions {
+    margin-left: auto;
+    margin-right: 50px;
+  }
+}
+
+/* Hamburger animation when active */
+.mobile-menu-toggle.active .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.mobile-menu-toggle.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-toggle.active .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
 }
