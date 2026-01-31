@@ -1116,7 +1116,26 @@ app.get('/internal/server-plugins/:guildId', async (req, res) => {
   if (!BOT_NOTIFY_SECRET || secret !== BOT_NOTIFY_SECRET) return res.status(403).json({ error: 'Forbidden' });
   const guildId = req.params.guildId;
   const all = await loadPluginsFile();
-  return res.json({ guildId, state: all[guildId] || {} });
+  let state = all[guildId] || {};
+
+  // Vercel fallback: if dashboard is empty, ask the bot for its state
+  if (Object.keys(state).length === 0 && BOT_NOTIFY_URL) {
+    try {
+      const base = BOT_NOTIFY_URL.replace(/\/webhook\/?$/i, '').replace(/\/$/, '');
+      const url = `${base}/webhook/plugin-state/${encodeURIComponent(guildId)}`;
+      const headers = { 'x-dashboard-secret': BOT_NOTIFY_SECRET };
+
+      console.log(`[internal] Dashboard state empty for ${guildId}; fetching from bot...`);
+      const resp = await axios.get(url, { headers, timeout: 4000, validateStatus: () => true });
+      if (resp.status >= 200 && resp.status < 300 && resp.data?.state) {
+        state = resp.data.state;
+        // Optionally cache it back to persistence if not on Vercel
+        if (!process.env.VERCEL) { all[guildId] = state; await savePluginsFile(all); }
+      }
+    } catch (e) { console.warn(`[internal] Bot plugin state fallback failed for ${guildId}:`, e.message); }
+  }
+
+  return res.json({ guildId, state });
 });
 
 app.post('/api/server-plugins/:guildId', async (req, res) => {
