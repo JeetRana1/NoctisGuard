@@ -111,8 +111,8 @@ const botPresenceCache = new Map(); // key -> { present, expiresAt }
 const BOT_PRESENCE_TTL_MS = 60_000; // 60 seconds
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const BOT_ID = process.env.DISCORD_BOT_ID || process.env.DISCORD_CLIENT_ID;
-const BOT_NOTIFY_URL = process.env.BOT_NOTIFY_URL || null; // optional webhook on the bot to notify of changes
-const BOT_NOTIFY_SECRET = process.env.BOT_NOTIFY_SECRET || null; // optional shared secret sent as x-dashboard-secret header
+const BOT_NOTIFY_URL = process.env.BOT_NOTIFY_URL || null;
+const BOT_NOTIFY_SECRET = process.env.BOT_NOTIFY_SECRET || process.env.WEBHOOK_SECRET || 'change-me-to-a-secret';
 // Bot notify timing and retry settings
 const BOT_NOTIFY_TIMEOUT_MS = Number(process.env.BOT_NOTIFY_TIMEOUT_MS || 30000); // default 30s
 const BOT_NOTIFY_RETRIES = Number(process.env.BOT_NOTIFY_RETRIES || 1); // number of extra retries on failure (total attempts = 1 + retries)

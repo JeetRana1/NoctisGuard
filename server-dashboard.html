@@ -2506,9 +2506,12 @@
       if (feed.innerHTML === '') feed.innerHTML = '<p class="small-muted">Loading activity…</p>';
 
       try {
+        console.log(`[Dashboard] Fetching activity for ${serverId}...`);
         const res = await fetch(`/api/server-activity/${encodeURIComponent(serverId)}`);
         if (res.ok) {
-          const body = await res.json(); const arr = body.activity || [];
+          const body = await res.json();
+          const arr = body.activity || [];
+          console.log(`[Dashboard] Received ${arr.length} activity entries.`);
           if (arr.length === 0) { feed.innerHTML = '<p class="small-muted">No recent activity for this server.</p>'; return; }
 
           let html = '';
@@ -2533,8 +2536,10 @@
           });
           feed.innerHTML = html;
           return;
+        } else {
+          console.warn('[Dashboard] Activity fetch failed with status:', res.status);
         }
-      } catch (e) { console.warn('Failed to load activity', e); }
+      } catch (e) { console.warn('[Dashboard] Failed to load activity', e); }
       if (feed.innerHTML === '') feed.innerHTML = '<p class="small-muted">Failed to load activity.</p>';
     }
 
