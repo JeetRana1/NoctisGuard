@@ -205,7 +205,7 @@ async function savePluginsFile(obj) {
   if (process.env.VERCEL) return; // Read-only FS on Vercel
   try { await fs.mkdir(path.dirname(PLUGINS_FILE), { recursive: true }); await fs.writeFile(PLUGINS_FILE, JSON.stringify(obj, null, 2), 'utf8'); } catch (e) { console.warn('Failed to save plugins file', e); }
 }
-async function notifyBotOfPluginChange(guildId, state) {
+async function notifyBotOfPluginChange(guildId, state, req) {
   if (!BOT_NOTIFY_URL) { console.log('BOT_NOTIFY_URL not set; skipping notify for guild', guildId); return; }
   try {
     const headers = {};
@@ -216,7 +216,9 @@ async function notifyBotOfPluginChange(guildId, state) {
     const url = `${base}/webhook`;
 
     console.log(`[bot-notify] POST to ${url} for plugin_update (guild: ${guildId})`);
-    const resp = await axios.post(url, { type: 'plugin_update', guildId, state }, { timeout: 8000, headers, validateStatus: () => true });
+    const userJson = req.cookies?.ng_user || null;
+    let user = null; try { user = userJson ? JSON.parse(userJson) : null; } catch (e) { }
+    const resp = await axios.post(url, { type: 'plugin_update', guildId, state, user }, { timeout: 8000, headers, validateStatus: () => true });
 
     if (resp.status >= 200 && resp.status < 300) {
       console.log(`[bot-notify] Successfully notified bot for ${guildId} (status ${resp.status})`);
@@ -247,7 +249,7 @@ async function savePluginConfigsFile(obj) {
   try { await fs.mkdir(path.dirname(PLUGIN_CONFIG_FILE), { recursive: true }); await fs.writeFile(PLUGIN_CONFIG_FILE, JSON.stringify(obj, null, 2), 'utf8'); } catch (e) { console.warn('Failed to save plugin-configs file', e); }
 }
 
-async function notifyBotOfPluginConfigChange(guildId, pluginId, config) {
+async function notifyBotOfPluginConfigChange(guildId, pluginId, config, req) {
   if (!BOT_NOTIFY_URL) { console.log('BOT_NOTIFY_URL not set; skipping config notify for guild', guildId); return; }
   try {
     const headers = {};
@@ -260,7 +262,9 @@ async function notifyBotOfPluginConfigChange(guildId, pluginId, config) {
     let lastErr = null;
     for (let attempt = 0; attempt <= BOT_NOTIFY_RETRIES; attempt++) {
       try {
-        const resp = await axios.post(url, { type: 'plugin_config', guildId, pluginId, config }, { timeout: 8000, headers, validateStatus: () => true });
+        const userJson = req.cookies?.ng_user || null;
+        let user = null; try { user = userJson ? JSON.parse(userJson) : null; } catch (e) { }
+        const resp = await axios.post(url, { type: 'plugin_config', guildId, pluginId, config, user }, { timeout: 8000, headers, validateStatus: () => true });
         if (resp.status >= 200 && resp.status < 300) {
           console.log(`[bot-notify] Successfully notified bot (config) for ${guildId} (status ${resp.status})`);
           // if bot returned presences, cache them
@@ -293,7 +297,7 @@ app.get('/api/server-plugin-config/:guildId', async (req, res) => {
 });
 
 // Notify bot to perform a test (e.g., send a sample welcome/bye message)
-async function notifyBotOfPluginTest(guildId, pluginId, payload) {
+async function notifyBotOfPluginTest(guildId, pluginId, payload, req) {
   if (!BOT_NOTIFY_URL) { console.log('BOT_NOTIFY_URL not set; skipping test notify for guild', guildId); return; }
   try {
     const headers = {};
@@ -306,7 +310,9 @@ async function notifyBotOfPluginTest(guildId, pluginId, payload) {
     let lastErr = null;
     for (let attempt = 0; attempt <= BOT_NOTIFY_RETRIES; attempt++) {
       try {
-        const resp = await axios.post(url, { type: 'plugin_test', guildId, pluginId, payload }, { timeout: 10000, headers, validateStatus: () => true });
+        const userJson = req.cookies?.ng_user || null;
+        let user = null; try { user = userJson ? JSON.parse(userJson) : null; } catch (e) { }
+        const resp = await axios.post(url, { type: 'plugin_test', guildId, pluginId, payload, user }, { timeout: 10000, headers, validateStatus: () => true });
         if (resp.status >= 200 && resp.status < 300) { console.log(`[bot-notify] Successfully notified bot (test) for ${guildId} (status ${resp.status})`); return resp.data; }
         console.warn(`[bot-notify] Bot test notify returned ${resp.status} for ${guildId}:`, resp.data);
         return resp.data;
@@ -317,7 +323,7 @@ async function notifyBotOfPluginTest(guildId, pluginId, payload) {
   } catch (e) { console.warn('Failed to notify bot of plugin test', e?.message || e); return null; }
 }
 
-async function notifyBotOfGiveawayAction(guildId, action, payload, opts) {
+async function notifyBotOfGiveawayAction(guildId, action, payload, opts, req) {
   opts = opts || {};
   const timeoutMs = typeof opts.timeoutMs === 'number' ? opts.timeoutMs : BOT_NOTIFY_TIMEOUT_MS;
   const retries = typeof opts.retries === 'number' ? opts.retries : BOT_NOTIFY_RETRIES;
@@ -335,7 +341,9 @@ async function notifyBotOfGiveawayAction(guildId, action, payload, opts) {
     let lastErr = null;
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
-        const resp = await axios.post(url, { type: 'giveaway_action', guildId, action, payload }, { timeout: timeoutMs, headers, validateStatus: () => true });
+        const userJson = req.cookies?.ng_user || null;
+        let user = null; try { user = userJson ? JSON.parse(userJson) : null; } catch (e) { }
+        const resp = await axios.post(url, { type: 'giveaway_action', guildId, action, payload, user }, { timeout: timeoutMs, headers, validateStatus: () => true });
         if (resp.status >= 200 && resp.status < 300) {
           console.log(`[bot-notify] Successfully notified bot (giveaway_action) for ${guildId} (status ${resp.status})`);
           return { ok: true, data: resp.data, status: resp.status };
@@ -391,7 +399,7 @@ app.post('/api/server-plugin-test/:guildId', async (req, res) => {
     await appendActivity(entry);
   } catch (e) { console.warn('Failed to record plugin test activity', e); }
 
-  const result = await notifyBotOfPluginTest(guildId, pluginId, payload);
+  const result = await notifyBotOfPluginTest(guildId, pluginId, payload, req);
   return res.json({ ok: true, result });
 });
 
@@ -427,7 +435,7 @@ app.post('/api/server-plugin-config/:guildId', async (req, res) => {
 
   // Notify the bot
   try {
-    await notifyBotOfPluginConfigChange(guildId, (body.pluginId || null), (body.pluginId ? body.config : body.config || body));
+    await notifyBotOfPluginConfigChange(guildId, (body.pluginId || null), (body.pluginId ? body.config : body.config || body), req);
   } catch (e) { console.warn('notifyBotOfPluginConfigChange error', e?.message || e); }
 
   return res.json({ ok: true, config: all[guildId] });
@@ -438,7 +446,7 @@ app.get('/api/server-giveaways/:guildId', async (req, res) => {
   const guildId = req.params.guildId;
   try {
     // Use a short timeout for 'list' to avoid blocking the UI when the bot is slow/unavailable
-    const resp = await notifyBotOfGiveawayAction(guildId, 'list', {}, { timeoutMs: Number(process.env.BOT_LIST_TIMEOUT_MS || 3000), retries: Number(process.env.BOT_LIST_RETRIES || 0) });
+    const resp = await notifyBotOfGiveawayAction(guildId, 'list', {}, { timeoutMs: Number(process.env.BOT_LIST_TIMEOUT_MS || 3000), retries: Number(process.env.BOT_LIST_RETRIES || 0) }, req);
     console.log('server-giveaways: bot response for', guildId, resp && resp.ok ? (Array.isArray(resp.data && resp.data.giveaways) ? `giveaways=${resp.data.giveaways.length}` : 'no giveaways') : ('failed: ' + (resp && (resp.error || resp.message) || 'no body')));
     if (resp && resp.ok && Array.isArray(resp.data.giveaways) && resp.data.giveaways.length) {
       // Normalize giveaway objects so the dashboard has consistent fields it expects
@@ -521,7 +529,7 @@ app.post('/api/server-giveaway-reroll/:guildId', async (req, res) => {
     // For rerolls, allow a longer timeout but fewer retries by default (bot may need time)
     const rerollTimeout = Number(process.env.BOT_NOTIFY_REROLL_TIMEOUT_MS || 60000);
     const rerollRetries = Number(process.env.BOT_NOTIFY_REROLL_RETRIES || 1);
-    const result = await notifyBotOfGiveawayAction(guildId, 'reroll', { giveawayId }, { timeoutMs: rerollTimeout, retries: rerollRetries });
+    const result = await notifyBotOfGiveawayAction(guildId, 'reroll', { giveawayId }, { timeoutMs: rerollTimeout, retries: rerollRetries }, req);
 
     if (!result || !result.ok) {
       console.warn('Reroll: bot failed or no response for', guildId, 'giveaway', giveawayId, 'details:', result);
@@ -546,7 +554,7 @@ app.get('/api/giveaway-winners-resolve/:guildId/:giveawayId', async (req, res) =
     // Try to ask bot for giveaways first (fast path)
     let winners = [];
     try {
-      const resp = await notifyBotOfGiveawayAction(guildId, 'list', {}, { timeoutMs: Number(process.env.BOT_LIST_TIMEOUT_MS || 3000), retries: Number(process.env.BOT_LIST_RETRIES || 0) });
+      const resp = await notifyBotOfGiveawayAction(guildId, 'list', {}, { timeoutMs: Number(process.env.BOT_LIST_TIMEOUT_MS || 3000), retries: Number(process.env.BOT_LIST_RETRIES || 0) }, req);
       if (resp && resp.ok && Array.isArray(resp.data.giveaways)) {
         const g = resp.data.giveaways.find(x => String(x.id) === String(giveawayId) || String(x.giveawayId) === String(giveawayId));
         if (g) { const w = g.winners || g.winner || []; winners = Array.isArray(w) ? w : [w]; }
@@ -1104,7 +1112,24 @@ async function appendActivity(entry) {
 
 // Expose activity for a guild
 app.get('/api/server-activity/:guildId', async (req, res) => {
-  const guildId = req.params.guildId; // allow public access (not sensitive)
+  const guildId = req.params.guildId;
+
+  // Try to fetch truth from bot if available, otherwise fallback to local
+  const notifyUrl = BOT_NOTIFY_URL || process.env.BOT_NOTIFY_URL || process.env.BOT_PRESENCE_URL;
+  if (notifyUrl) {
+    try {
+      const base = notifyUrl.replace(/\/webhook\/?$/i, '').replace(/\/$/, '');
+      const url = `${base}/webhook/activity/${encodeURIComponent(guildId)}`;
+      const headers = {};
+      if (BOT_NOTIFY_SECRET) headers['x-dashboard-secret'] = BOT_NOTIFY_SECRET;
+
+      const resp = await axios.get(url, { headers, timeout: 4000, validateStatus: () => true });
+      if (resp.status >= 200 && resp.status < 300 && resp.data?.activity) {
+        return res.json({ guildId, activity: resp.data.activity });
+      }
+    } catch (e) { console.warn(`[server] Failed to fetch activity from bot for ${guildId}:`, e.message); }
+  }
+
   const all = await loadActivityFile();
   const items = all.filter(x => x.guildId === guildId).slice(0, 40);
   return res.json({ guildId, activity: items });
@@ -1180,7 +1205,7 @@ app.post('/api/server-plugins/:guildId', async (req, res) => {
 
   // Notify the bot (best-effort) and wait so we can observe logging
   try {
-    await notifyBotOfPluginChange(guildId, all[guildId]);
+    await notifyBotOfPluginChange(guildId, all[guildId], req);
   } catch (e) { console.warn('notifyBotOfPluginChange error', e?.message || e); }
 
   return res.json({ ok: true, state: all[guildId] });
