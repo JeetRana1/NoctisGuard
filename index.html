@@ -7,7 +7,130 @@
   <title>NoctisGuard - Moderation & Utilities Bot</title>
   <!-- Removed external Google Fonts to avoid network DNS errors; using system fonts -->
   <link rel="stylesheet" href="style.css">
-  <script src="/socket.io/socket.io.js"></script>
+  <!-- Use CDN for Socket.IO client to avoid 404s on serverless/Vercel -->
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js" crossorigin="anonymous"></script>
+  <script>
+    // Fallback: If Socket.IO fails to load or connect, we poll manually
+    // This ensures auto-refresh works on Vercel where WebSockets are limited
+    let usePolling = true;
+
+    // Render sparkline from history points (array of {t,v})
+    function renderSparkline(points) {
+      try {
+        if (!points || !points.length) { document.querySelector('#stat-sparkline polyline').setAttribute('points', ''); return; }
+        const values = points.map(p => Number(p.v) || 0);
+        const max = Math.max.apply(null, values);
+        const min = Math.min.apply(null, values);
+        const w = 100, h = 22; const len = values.length;
+        const pad = 4; const innerW = w - pad * 2; const innerH = h - pad * 2;
+        const pts = values.map((v, i) => {
+          const x = pad + (i / (Math.max(1, len - 1))) * innerW;
+          const y = pad + (max === min ? innerH / 2 : (1 - (v - min) / (max - min)) * innerH);
+          return x.toFixed(2) + ',' + y.toFixed(2);
+        }).join(' ');
+        document.querySelector('#stat-sparkline polyline').setAttribute('points', pts);
+      } catch (e) { }
+    }
+
+    async function fetchAndRenderStats() {
+      try {
+        const res = await fetch('/api/stats');
+        if (!res.ok) { console.error('/api/stats not ok', res.status); document.getElementById('stats-last-updated').textContent = 'Updated: failed'; return; }
+        const jb = await res.json();
+        const fmt = (n) => { if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
+
+        document.getElementById('stat-servers').textContent = (typeof jb.guildCount === 'number') ? fmt(jb.guildCount) : '0';
+        document.getElementById('stat-members').textContent = (typeof jb.totalMembers === 'number') ? fmt(jb.totalMembers) : '0';
+        document.getElementById('stat-commands').textContent = (typeof jb.commandsToday === 'number') ? fmt(jb.commandsToday) : '0';
+
+        let uptimeTxt = '—';
+        if (typeof jb.uptimeHours === 'number') {
+          if (jb.uptimeHours >= 24) {
+            const d = Math.floor(jb.uptimeHours / 24);
+            const h = jb.uptimeHours % 24;
+            uptimeTxt = `${d}d ${h}h`;
+          } else {
+            uptimeTxt = String(jb.uptimeHours);
+          }
+        }
+        document.getElementById('stat-uptime').textContent = uptimeTxt;
+
+        if (jb.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Updated: ' + new Date(jb.lastUpdated).toLocaleTimeString();
+        else document.getElementById('stats-last-updated').textContent = 'Updated: —';
+
+        try {
+          const hr = await fetch('/api/stats-history');
+          if (hr.ok) {
+            const hj = await hr.json();
+            renderSparkline(hj.history || []);
+          }
+        } catch (e) { console.error('Failed to fetch history', e); }
+      } catch (e) { console.error('fetchAndRenderStats error', e); document.getElementById('stats-last-updated').textContent = 'Updated: failed'; }
+    }
+
+    // Initial fetch
+    fetchAndRenderStats();
+
+    const refreshBtn = document.getElementById('stats-refresh');
+    if (refreshBtn) refreshBtn.addEventListener('click', () => {
+      fetchAndRenderStats();
+      if (typeof showToast === 'function') showToast('Stats refreshed', 'info');
+    });
+
+    // Try initializing Socket.IO
+    try {
+      if (typeof io !== 'undefined') {
+        const socket = io({
+          transports: ['polling', 'websocket'], // Force polling first for better Vercel compat
+          reconnectionAttempts: 3
+        });
+
+        socket.on('connect', () => {
+          console.log('Socket connected, disabling polling fallback');
+          usePolling = false; // Socket works, disable polling
+        });
+
+        socket.on('bot-stats', (data) => {
+          if (data && data.stats) {
+            const s = data.stats;
+            const fmt = (n) => { if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
+
+            if (typeof s.guildCount === 'number') document.getElementById('stat-servers').textContent = fmt(s.guildCount);
+            if (typeof s.totalMembers === 'number') document.getElementById('stat-members').textContent = fmt(s.totalMembers);
+            if (typeof s.commandsToday === 'number') document.getElementById('stat-commands').textContent = fmt(s.commandsToday);
+
+            if (typeof s.uptimeHours === 'number') {
+              let txt = String(s.uptimeHours);
+              if (s.uptimeHours >= 24) {
+                const d = Math.floor(s.uptimeHours / 24);
+                const h = s.uptimeHours % 24;
+                txt = `${d}d ${h}h`;
+              }
+              document.getElementById('stat-uptime').textContent = txt;
+            }
+
+            if (s.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Live: ' + new Date(s.lastUpdated).toLocaleTimeString();
+          }
+        });
+        socket.on('bot-stats-history', (data) => {
+          if (data && data.history) renderSparkline(data.history);
+        });
+
+        socket.on('connect_error', () => {
+          console.warn('Socket connect error, falling back to polling');
+          usePolling = true;
+        });
+      }
+    } catch (e) {
+      console.warn('Socket.IO init failed', e);
+      usePolling = true;
+    }
+
+    // Robust Fallback: Poll every 10s if socket isn't active
+    setInterval(() => {
+      if (usePolling) fetchAndRenderStats();
+    }, 10000);
+  </script>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.svg" sizes="any">
   <link rel="shortcut icon" href="/favicon.svg">
@@ -190,86 +313,8 @@
 </body>
 <script>
   // Render sparkline from history points (array of {t,v})
-  function renderSparkline(points) {
-    try {
-      if (!points || !points.length) { document.querySelector('#stat-sparkline polyline').setAttribute('points', ''); return; }
-      const values = points.map(p => Number(p.v) || 0);
-      const max = Math.max.apply(null, values);
-      const min = Math.min.apply(null, values);
-      const w = 100, h = 22; const len = values.length;
-      const pad = 4; const innerW = w - pad * 2; const innerH = h - pad * 2;
-      const pts = values.map((v, i) => {
-        const x = pad + (i / (Math.max(1, len - 1))) * innerW;
-        const y = pad + (max === min ? innerH / 2 : (1 - (v - min) / (max - min)) * innerH);
-        return x.toFixed(2) + ',' + y.toFixed(2);
-      }).join(' ');
-      document.querySelector('#stat-sparkline polyline').setAttribute('points', pts);
-    } catch (e) { }
-  }
 
-  async function fetchAndRenderStats() {
-    try {
-      const res = await fetch('/api/stats');
-      if (!res.ok) { console.error('/api/stats not ok', res.status); document.getElementById('stats-last-updated').textContent = 'Updated: failed'; return; }
-      const jb = await res.json();
-      const fmt = (n) => { if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
 
-      document.getElementById('stat-servers').textContent = (typeof jb.guildCount === 'number') ? fmt(jb.guildCount) : '0';
-      document.getElementById('stat-members').textContent = (typeof jb.totalMembers === 'number') ? fmt(jb.totalMembers) : '0';
-      document.getElementById('stat-commands').textContent = (typeof jb.commandsToday === 'number') ? fmt(jb.commandsToday) : '0';
-      document.getElementById('stat-uptime').textContent = (typeof jb.uptimeHours === 'number') ? String(jb.uptimeHours) : '—';
-
-      if (jb.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Updated: ' + new Date(jb.lastUpdated).toLocaleString();
-      else document.getElementById('stats-last-updated').textContent = 'Updated: —';
-
-      try {
-        const hr = await fetch('/api/stats-history');
-        if (hr.ok) {
-          const hj = await hr.json();
-          renderSparkline(hj.history || []);
-        }
-      } catch (e) { console.error('Failed to fetch history', e); }
-    } catch (e) { console.error('fetchAndRenderStats error', e); document.getElementById('stats-last-updated').textContent = 'Updated: failed'; }
-  }
-
-  fetchAndRenderStats();
-  setInterval(fetchAndRenderStats, 30000);
-
-  const refreshBtn = document.getElementById('stats-refresh');
-  if (refreshBtn) refreshBtn.addEventListener('click', () => {
-    fetchAndRenderStats();
-    if (typeof showToast === 'function') showToast('Stats refreshed', 'info');
-  });
-
-  // Socket.IO for real-time updates
-  try {
-    const socket = io();
-    socket.on('bot-stats', (data) => {
-      if (data && data.stats) {
-        const s = data.stats;
-        const fmt = (n) => { if (n === null || typeof n === 'undefined') return '—'; if (typeof n === 'number') return n.toLocaleString(); return String(n); };
-
-        if (typeof s.guildCount === 'number') document.getElementById('stat-servers').textContent = fmt(s.guildCount);
-        if (typeof s.totalMembers === 'number') document.getElementById('stat-members').textContent = fmt(s.totalMembers);
-        if (typeof s.commandsToday === 'number') document.getElementById('stat-commands').textContent = fmt(s.commandsToday);
-
-        if (typeof s.uptimeHours === 'number') {
-          let txt = String(s.uptimeHours);
-          if (s.uptimeHours >= 24) {
-            const d = Math.floor(s.uptimeHours / 24);
-            const h = s.uptimeHours % 24;
-            txt = `${d}d ${h}h`;
-          }
-          document.getElementById('stat-uptime').textContent = txt;
-        }
-
-        if (s.lastUpdated) document.getElementById('stats-last-updated').textContent = 'Live: ' + new Date(s.lastUpdated).toLocaleTimeString();
-      }
-    });
-    socket.on('bot-stats-history', (data) => {
-      if (data && data.history) renderSparkline(data.history);
-    });
-  } catch (e) { console.warn('Socket.IO init failed', e); }
 
 
 </script>
