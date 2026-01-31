@@ -47,6 +47,7 @@ app.get('/api/stats', async (req, res) => {
     commandsToday: botStats.commandsToday,
     uptimeHours: uptimeHours,
     uptimeSeconds: botStats.uptimeSeconds,
+    uptimeStart: botStats.uptimeStart,
     lastUpdated: botStats.lastUpdated,
     history: botStats.history || []
   });
