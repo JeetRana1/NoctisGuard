@@ -46,6 +46,7 @@ app.get('/api/stats', async (req, res) => {
     totalMembers: botStats.totalMembers,
     commandsToday: botStats.commandsToday,
     uptimeHours: uptimeHours,
+    uptimeSeconds: botStats.uptimeSeconds,
     lastUpdated: botStats.lastUpdated,
     history: botStats.history || []
   });
@@ -183,6 +184,11 @@ function updateBotStats(newStats) {
     // Map uptime information if provided
     if (newStats.uptimeStart) botStats.uptimeStart = newStats.uptimeStart;
 
+    // Also capture uptimeSeconds if the bot sends it directly
+    if (typeof newStats.uptimeSeconds === 'number') {
+      botStats.uptimeSeconds = newStats.uptimeSeconds;
+    }
+
     // Handle commands today and history
     if (typeof newStats.commandsToday === 'number') {
       botStats.commandsToday = newStats.commandsToday;
@@ -204,7 +210,7 @@ function updateBotStats(newStats) {
     try {
       if (io) {
         const uptimeHours = Math.floor((Date.now() - (botStats.uptimeStart || Date.now())) / (1000 * 60 * 60));
-        io.emit('bot-stats', { stats: { guildCount: botStats.guildCount, totalMembers: botStats.totalMembers, commandsToday: botStats.commandsToday, uptimeHours, lastUpdated: botStats.lastUpdated } });
+        io.emit('bot-stats', { stats: { guildCount: botStats.guildCount, totalMembers: botStats.totalMembers, commandsToday: botStats.commandsToday, uptimeHours, uptimeSeconds: botStats.uptimeSeconds, lastUpdated: botStats.lastUpdated } });
         io.emit('bot-stats-history', { history: botStats.history || [] });
         lastStatsEmitAt = Date.now();
         console.log('Emitted live bot-stats', { guildCount: botStats.guildCount, commandsToday: botStats.commandsToday, uptimeHours });
