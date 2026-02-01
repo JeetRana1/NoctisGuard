@@ -105,10 +105,11 @@ header nav.container {
     display: flex !important;
     position: absolute !important;
     top: 50% !important;
-    right: 0 !important;
+    /* nudge left from the right edge on mobile */
+    right: 12px !important;
     transform: translateY(-50%) !important;
     margin: 0 !important;
-    gap: 8px !important;
+    gap: 16px !important;
     flex-direction: row !important;
     background: transparent !important;
     padding: 0 !important;
@@ -117,11 +118,17 @@ header nav.container {
   .nav-menu a {
     display: inline-block !important;
     padding: 8px 12px !important;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: transparent !important; /* transparent so only the button borders show */
+    border: 1px solid var(--border) !important; /* individual button border */
     color: var(--text) !important;
     font-size: 0.85rem !important;
     border-radius: 8px;
+  }
+
+  /* Slight hover to highlight the button without making a full background block */
+  .nav-menu a:hover {
+    background: rgba(255,255,255,0.03) !important;
+    transform: translateY(-1px) !important;
   }
 }
 
@@ -4231,20 +4238,29 @@ section {
     display: block
   }
 
+  /* keep the menu container transparent when inline; only show the panel background when the menu is explicitly opened */
   .nav-menu {
     position: absolute;
     top: 70px;
     right: 20px;
+    background: transparent; /* transparent by default so only buttons show */
+    padding: 0;
+    border-radius: 0;
+    flex-direction: row; /* keep inline layout for header buttons */
+    display: none;
+    border: none;
+    gap: 12px;
+  }
+
+  /* When the menu is toggled (burger open), show the dropdown panel */
+  .nav-menu.show {
+    display: flex;
+    flex-direction: column;
     background: rgba(11, 15, 18, 0.95);
     padding: 14px;
     border-radius: 10px;
-    flex-direction: column;
-    display: none;
-    border: 1px solid var(--border)
-  }
-
-  .nav-menu.show {
-    display: flex
+    border: 1px solid var(--border);
+    gap: 0;
   }
 
   .team-grid {
