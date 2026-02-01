@@ -3,3 +3,4 @@ node_modules
 data/stats.json
 data/settings.json
 *.log
+.vscode/settings.json
