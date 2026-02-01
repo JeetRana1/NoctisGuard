@@ -21,7 +21,7 @@
 
   document.getElementById('server-title').textContent = serverName;
 
-  // Modal theme helper (same behavior as server-dashboard)
+  // Modal theme helper (same behavior as server-dashboard) 
   function modalShouldUseLight(){
     try{ const sRaw = localStorage.getItem('ng_theme_' + serverId); if (sRaw){ const sObj = JSON.parse(sRaw); if (sObj && sObj.bgMode === 'light') return true; } }catch(e){}
     try{ const gRaw = localStorage.getItem('ng_theme_global'); if (gRaw){ const gObj = JSON.parse(gRaw); if (gObj && gObj.bgMode === 'light') return true; } }catch(e){}

@@ -1859,6 +1859,84 @@ textarea:-internal-autofill-selected {
   transform: translateY(0)
 }
 
+/* Responsive: Make modal footer buttons the same size on mobile */
+@media (max-width: 700px) {
+  /* Target the action/footer row (last child inside modal sections) so all modals get consistent button sizing */
+  .modal-content .modal-section > div:last-child {
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* Make each button take equal available width, slightly shorter height and a wider minimum */
+  .modal-content .modal-section > div:last-child .btn {
+    /* give a sensible flex-basis so buttons are a little wider on narrow screens */
+    flex: 1 1 120px !important;
+    min-width: 100px !important; /* ensure buttons aren't tiny */
+    padding: 8px 12px !important;
+    height: 40px !important; /* smaller height on mobile */
+    border-radius: 10px !important;
+    font-size: 0.95rem !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Ensure the primary button matches height and looks consistent */
+  .modal-content .modal-section > div:last-child .btn.primary {
+    padding: 8px 12px !important;
+    height: 40px !important;
+  }
+
+  /* If buttons wrap onto two lines keep equal widths per row */
+  .modal-content .modal-section > div:last-child .btn { box-sizing: border-box; }
+
+  /* Specific fix for Giveaway modal (uses inline styles on footer div) */
+  #plugin-modal-giveaway .modal-section > div[style*="display:flex"] {
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+  }
+
+  #plugin-modal-giveaway .modal-section > div[style*="display:flex"] .btn,
+  #plugin-modal-giveaway .btn {
+    /* match the general modal button sizing: wider min-width and flex-basis */
+    flex: 1 1 120px !important;
+    min-width: 100px !important;
+    padding: 8px 12px !important;
+    height: 40px !important;
+    border-radius: 10px !important;
+    font-size: 0.95rem !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Also cover confirm and welcome modals if structure differs */
+  #confirm-modal .btn,
+  #plugin-modal-welcome .modal-section > div:last-child .btn {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    padding: 8px 12px !important;
+    height: 40px !important;
+  }
+
+  /* Prevent 'Send test' from wrapping to multiple lines on mobile */
+  /* Targets known test buttons and any id ending in -test as a fallback */
+  #plugin-modal-test,
+  #welcome-modal-test,
+  .btn[id$="-test"] {
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    padding-left: 10px !important; /* tiny padding tweak to keep look */
+    padding-right: 10px !important;
+    min-width: 110px !important; /* make the test button a bit wider */
+  }
+}
+
 /* Dark-mode modal buttons (Copy ID, Winners, Reroll, Cancel, Reset, Send test) */
 .modal:not(.light-theme) .giveaway-item .btn,
 .modal:not(.light-theme) .modal[aria-hidden="false"] .btn.ghost,
@@ -2620,6 +2698,57 @@ body .modal-config .modal-content,
   margin-bottom: 16px !important;
 }
 
+/* Extra vertical spacing specifically for the Default tab inputs */
+#plugin-modal-giveaway #giveaway-modal-channel,
+#plugin-modal-giveaway #giveaway-modal-prize {
+  /* push inputs slightly down from their labels for better visual separation */
+  margin-top: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+/* Place the minutes/seconds helper text beneath the duration inputs on Defaults tab */
+#plugin-modal-giveaway .section-block[data-section="defaults"] > .small-muted {
+  /* ensure the combined helper spans full width beneath the inputs when present */
+  flex: 0 0 100% !important;
+  display: block !important;
+  width: 100% !important;
+  margin-top: 8px !important;
+  text-align: left !important;
+}
+
+/* Per-input helper labels (minutes / seconds) - center them under each number box */
+#plugin-modal-giveaway .section-block[data-section="defaults"] > div > div > .small-muted {
+  text-align: center !important;
+  margin-top: 6px !important;
+  width: auto !important;
+  display: block !important;
+}
+
+/* Also allow the number input row to wrap so helper can sit below on narrow screens */
+#plugin-modal-giveaway .section-block[data-section="defaults"] > div[style*="display:flex"] {
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+}
+
+/* Move Giveaway modal titles and subtext slightly to the right across all tabs */
+#plugin-modal-giveaway .modal-section h3,
+#plugin-modal-giveaway .modal-section .small-muted {
+  margin-left: 12px !important;
+  padding-left: 2px !important;
+}
+
+/* Reroll tab spacing tweaks: move title and input down slightly */
+#plugin-modal-giveaway .section-block[data-section="reroll"] h4,
+#plugin-modal-giveaway .section-block[data-section="reroll"] label {
+  margin-top: 12px !important;
+  margin-bottom: 8px !important;
+}
+
+#plugin-modal-giveaway #giveaway-reroll-id {
+  margin-top: 8px !important;
+  margin-bottom: 12px !important;
+}
+
 /* Add spacing for giveaway toggle */
 #plugin-modal-giveaway .switch-giveaway-mention {
   margin-bottom: 20px !important;
@@ -2687,19 +2816,77 @@ body .modal-config .modal-content,
   margin: 0 8px !important;
 }
 
-/* Make duration input fields smaller */
+/* Make Welcome modal footer match Giveaway modal positioning and spacing */
+#plugin-modal-welcome .modal-section > div[style*="display:flex"] {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  width: 100% !important;
+  padding: 24px !important;
+  align-items: center !important;
+}
+
+#plugin-modal-welcome .modal-section > div[style*="display:flex"] .btn,
+#plugin-modal-welcome .modal-section > div[style*="display:flex"] .btn.ghost {
+  margin: 0 8px !important;
+}
+
+/* Make duration input fields smaller and place helper labels inside neatly */
 #plugin-modal-giveaway .number-box {
-  padding: 2px !important;
+  padding: 6px 6px 28px !important; /* add bottom padding for helper label */
   height: auto !important;
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  border-radius: 10px !important;
 }
 
 #plugin-modal-giveaway .number-box input[type="number"] {
-  height: 32px !important;
-  padding: 4px 8px !important;
-  min-width: 60px !important;
+  height: 36px !important;
+  padding: 6px 12px !important;
+  min-width: 66px !important;
   font-size: 14px !important;
   text-align: center !important;
-  margin-top: 15px !important;
+  margin: 0 !important;
+  background: var(--card) !important;
+  border-radius: 8px !important;
+}
+
+#plugin-modal-giveaway .number-box .helper-label {
+  position: absolute !important;
+  /* nudge slightly left of center for better alignment */
+  left: 42% !important;
+  transform: translateX(-50%) !important;
+  bottom: 8px !important;
+  font-size: 0.75rem !important;
+  color: rgba(255,255,255,0.66) !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  background: transparent !important;
+  padding: 0 2px !important;
+}
+
+/* Slightly more left shift on very small screens so it feels centered visually */
+@media (max-width: 420px) {
+  #plugin-modal-giveaway .number-box .helper-label {
+    left: 40% !important;
+    transform: translateX(-50%) !important;
+  }
+}
+
+/* Slightly smaller helper on very small screens */
+@media (max-width: 420px) {
+  #plugin-modal-giveaway .number-box {
+    padding-bottom: 22px !important;
+  }
+  #plugin-modal-giveaway .number-box input[type="number"] {
+    min-width: 52px !important;
+    height: 34px !important;
+    padding: 4px 10px !important;
+  }
+  #plugin-modal-giveaway .number-box .helper-label { font-size: 0.7rem !important; bottom: 6px !important; }
 }
 
 #plugin-modal-giveaway .num-btn {
@@ -2892,8 +3079,24 @@ body .modal-config .modal-content,
 #plugin-modal-giveaway.activity-view .modal-content,
 #plugin-modal-giveaway.reroll-view .modal-content {
   min-height: auto !important;
-  max-height: 60vh !important;
+  max-height: 80vh !important;
   height: auto !important;
+  /* make the modal nearly full-viewport width so the feed has maximum horizontal space */
+  width: calc(100vw - 32px) !important;
+  max-width: none !important;
+  margin: 0 16px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+/* Make the activity feed card wider and centered */
+#plugin-modal-giveaway .activity-tab #giveaway-activity-list,
+#plugin-modal-giveaway .activity-tab-content {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 }
 
 /* Ensure height is reduced on desktop as well */
@@ -2901,11 +3104,51 @@ body .modal-config .modal-content,
 
   #plugin-modal-giveaway.activity-view .modal-content,
   #plugin-modal-giveaway.reroll-view .modal-content {
-    max-height: 55vh !important;
+    max-height: 78vh !important;
     height: auto !important;
+    width: calc(100vw - 48px) !important;
+    max-width: none !important;
+    margin: 0 24px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  /* Allow the activity list to utilize more of the modal width on desktop */
+  #plugin-modal-giveaway .activity-tab #giveaway-activity-list,
+  #plugin-modal-giveaway .activity-tab-content {
+    max-width: none !important;
+    width: 100% !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
   }
 }
 
+/* Mobile-specific: make giveaway modal and activity feed nearly full width */
+@media (max-width: 700px) {
+  #plugin-modal-giveaway[aria-hidden="false"] .modal-content {
+    /* tighten gutters to maximize usable space on small screens */
+    width: calc(100vw - 4px) !important;
+    max-width: none !important;
+    margin: 0 2px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    border-radius: 10px !important;
+  }
+
+  #plugin-modal-giveaway[aria-hidden="false"] .modal-section {
+    width: 100% !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+
+  #plugin-modal-giveaway[aria-hidden="false"] #giveaway-activity-list {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 6px 6px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
 /* Make reroll button smaller */
 #plugin-modal-giveaway .reroll-giveaway,
 #plugin-modal-giveaway .btn.reroll-giveaway {
@@ -3062,6 +3305,32 @@ body #plugin-modal-giveaway .giveaway-item .reroll-giveaway {
   margin-bottom: 0 !important;
 }
 
+/* Override for Welcome modal footer to match Giveaway sizing/layout */
+#plugin-modal-welcome .modal-section > div[style*="display:flex"] .btn,
+#plugin-modal-welcome .modal-footer .btn {
+  /* don't stretch to 100% like other modal buttons */
+  width: auto !important;
+  margin-bottom: 0 !important;
+  /* match giveaway button sizing */
+  flex: 1 1 120px !important;
+  min-width: 100px !important;
+  padding: 8px 12px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  font-size: 0.95rem !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ensure the primary Save button in Welcome modal matches spacing */
+#plugin-modal-welcome #plugin-modal-welcome-save {
+  padding: 8px 12px !important;
+  height: 40px !important;
+}
+
+
 
 
 /* Buttons inside winners modal: dark theme (default) */
@@ -3175,7 +3444,10 @@ body.theme-light .winners-modal-card {
 }
 
 /* Reset button: final style — semi-transparent with subtle border */
-#giveaway-modal-reset {
+#giveaway-modal-reset,
+#plugin-modal-reset,
+#welcome-modal-reset,
+#confirm-ok {
   background: rgba(255, 107, 107, 0.12);
   color: var(--danger);
   border: 1px solid rgba(255, 107, 107, 0.14);
@@ -3183,14 +3455,20 @@ body.theme-light .winners-modal-card {
   transition: transform .12s, filter .12s, background .12s;
 }
 
-#giveaway-modal-reset:hover {
+#giveaway-modal-reset:hover,
+#plugin-modal-reset:hover,
+#welcome-modal-reset:hover,
+#confirm-ok:hover {
   background: rgba(255, 107, 107, 0.18);
   transform: translateY(-2px);
   filter: brightness(1.02);
 }
 
 /* Light theme tweak: slightly lighter background and darker text for contrast */
-.theme-light #giveaway-modal-reset {
+.theme-light #giveaway-modal-reset,
+.theme-light #plugin-modal-reset,
+.theme-light #welcome-modal-reset,
+.theme-light #confirm-ok {
   background: rgba(255, 107, 107, 0.08);
   color: var(--danger);
   border: 1px solid rgba(255, 107, 107, 0.12);

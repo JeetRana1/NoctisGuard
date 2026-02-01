@@ -840,18 +840,23 @@
             <div class="section-block" data-section="defaults">
               <div style="margin-top:12px">
                 <label style="display:block;margin-bottom:6px">Default duration</label>
-                <div style="display:flex;gap:8px;align-items:center">
-                  <div class="number-box" style="display:flex;align-items:center">
-                    <button type="button" class="num-btn num-decr-min" aria-label="Decrease minutes">−</button>
-                    <input id="giveaway-modal-duration-min" type="number" min="0" placeholder="Minutes" value="60" />
-                    <button type="button" class="num-btn num-incr-min" aria-label="Increase minutes">+</button>
+                <div style="display:flex;gap:16px;align-items:flex-start">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                    <div class="number-box" style="display:flex;align-items:center;position:relative;padding-bottom:22px">
+                      <button type="button" class="num-btn num-decr-min" aria-label="Decrease minutes">−</button>
+                      <input id="giveaway-modal-duration-min" type="number" min="0" placeholder="Minutes" value="60" />
+                      <button type="button" class="num-btn num-incr-min" aria-label="Increase minutes">+</button>
+                      <div class="helper-label small-muted" style="font-size:0.82rem;position:absolute;left:50%;transform:translateX(-50%);bottom:6px">minutes</div>
+                    </div>
                   </div>
-                  <div class="number-box" style="display:flex;align-items:center">
-                    <button type="button" class="num-btn num-decr-sec" aria-label="Decrease seconds">−</button>
-                    <input id="giveaway-modal-duration-sec" type="number" min="0" max="59" placeholder="Seconds" value="0" />
-                    <button type="button" class="num-btn num-incr-sec" aria-label="Increase seconds">+</button>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                    <div class="number-box" style="display:flex;align-items:center;position:relative;padding-bottom:22px">
+                      <button type="button" class="num-btn num-decr-sec" aria-label="Decrease seconds">−</button>
+                      <input id="giveaway-modal-duration-sec" type="number" min="0" max="59" placeholder="Seconds" value="0" />
+                      <button type="button" class="num-btn num-incr-sec" aria-label="Increase seconds">+</button>
+                      <div class="helper-label small-muted" style="font-size:0.82rem;position:absolute;left:50%;transform:translateX(-50%);bottom:6px">seconds</div>
+                    </div>
                   </div>
-                  <div class="small-muted" style="font-size:0.9rem">minutes / seconds</div>
                 </div>
               </div>
               <div style="margin-top:12px">
