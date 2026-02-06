@@ -4,3 +4,6 @@ data/stats.json
 data/settings.json
 *.log
 .vscode/settings.json
+BotFile'swebhook.js
+bot-presence-endpoint-example.js
+bot-webhook-example.js
